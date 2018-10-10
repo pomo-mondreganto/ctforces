@@ -296,3 +296,5 @@ $RECYCLE.BIN/
 
 .idea
 virtualenv
+config.json
+local_settings.py
