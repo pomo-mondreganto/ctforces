@@ -14,7 +14,10 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
         extra_kwargs = {
             'password': {
                 'write_only': True
-            }
+            },
+            'username': {
+                'validators': [api_models.User.username_validator]
+            },
         }
 
     @staticmethod
@@ -36,6 +39,8 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
 
         if errors:
             raise rest_serializers.ValidationError(errors)
+
+        return data
 
     def create(self, validated_data):
         user = api_models.User.objects.create_user(**validated_data, is_active=False)

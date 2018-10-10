@@ -3,4 +3,4 @@ from django.contrib.auth.validators import ASCIIUsernameValidator
 
 
 class User(AbstractUser):
-    username_validator = ASCIIUsernameValidator
+    username_validator = ASCIIUsernameValidator()
