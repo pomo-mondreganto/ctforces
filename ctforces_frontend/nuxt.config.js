@@ -1,8 +1,7 @@
-const pkg = require('./package')
+const pkg = require('./package');
 
-module.exports = {
+export default {
   mode: 'universal',
-
   /*
   ** Headers of the page
   */
@@ -57,7 +56,7 @@ module.exports = {
     ** You can extend webpack config here
     */
     extend(config, ctx) {
-      
+
     }
   }
-}
+};
