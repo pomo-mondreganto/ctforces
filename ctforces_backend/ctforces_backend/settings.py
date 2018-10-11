@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
-from ctforces_backend.local_settings import *
+from .local_settings import *
 
 INSTALLED_APPS = [
     'django.contrib.admin',
