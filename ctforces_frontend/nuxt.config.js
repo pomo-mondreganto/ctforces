@@ -5,7 +5,7 @@ import pkg from './package';
 export default {
   mode: 'universal',
   server: {
-    port: 8000,
+    port: 3000,
     host: '0.0.0.0',
   },
   head: {
