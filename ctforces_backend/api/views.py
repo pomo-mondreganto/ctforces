@@ -1,9 +1,10 @@
 from django.conf import settings
+from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -50,6 +51,8 @@ class UserCreateView(CreateAPIView):
 
 
 class EmailConfirmationEndpointView(APIView):
+    permission_classes = (AllowAny,)
+
     @staticmethod
     def post(request):
         token = request.data.get('token')
@@ -67,3 +70,18 @@ class EmailConfirmationEndpointView(APIView):
         user.is_active = True
         user.save()
         return Response(user_id)
+
+
+class LoginView(APIView):
+    permission_classes = (AllowAny,)
+
+    @staticmethod
+    def post(request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(request, username=username, password=password)
+        if not user:
+            raise AuthenticationFailed('Invalid credentials.')
+
+        login(request, user)
+        return Response(user.id)

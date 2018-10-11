@@ -376,7 +376,7 @@ dist
 # IDE
 .idea
 
-.idea
 virtualenv
 config.json
 local_settings.py
+ctforces_venv
