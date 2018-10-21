@@ -10,11 +10,8 @@ RUN pip3 install -U pip
 RUN pip3 install -Ur /requirements.txt
 RUN pip3 install gunicorn
 
-ADD ./ctforces_backend /app
+ADD ./configs/django.start.sh /entrypoint.sh
+ADD ./configs/db.check.py /db.check.py
+RUN chmod +x /entrypoint.sh
 
-WORKDIR /app
-
-RUN python3 manage.py migrate
-RUN python3 manage.py collectstatic --noinput -v 3
-
-CMD ["gunicorn", "--access-logfile", "/logs/access.log", "--error-logfile", "/logs/error.log", "--workers", "3", "--timeout", "120", "--bind", "unix:/socks/ctforces.sock", "ctforces_backend.wsgi:application"]
+CMD ["./entrypoint.sh"]

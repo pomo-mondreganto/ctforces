@@ -377,7 +377,19 @@ dist
 .idea
 
 virtualenv
-config.json
 local_settings.py
 ctforces_venv
-volumes
+
+volumes/db/*
+# !volumes/db/.gitkeep
+
+volumes/server_logs/*
+# !volumes/server_logs/.gitkeep
+
+volumes/socks/*
+
+volumes/static/*
+
+!volumes/*/.gitkeep
+
+environment.env

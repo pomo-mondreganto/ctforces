@@ -41,6 +41,8 @@ services:
     - ./volumes/db/data:/var/lib/postgresql/data
     restart: on-failure
     container_name: ctforces-postgres-main
+    ports:
+      - "5432:5432"
     env_file:
       - ./configs/environment.env
 
