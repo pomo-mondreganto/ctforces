@@ -7,6 +7,9 @@ class User(AbstractUser):
     username_validator = ASCIIUsernameValidator()
     email = models.EmailField('email address', blank=False, unique=True, null=False)
 
+    rating = models.IntegerField(default=2000)
+    max_rating = models.IntegerField(default=2000)
+
     created_at = models.DateTimeField(auto_created=True)
     updated_at = models.DateTimeField(auto_now=True)
 

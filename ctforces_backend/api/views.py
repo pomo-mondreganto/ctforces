@@ -4,14 +4,18 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
+from django.db.models.functions import Coalesce
+from django.db.models import Sum
+
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
-from rest_framework.generics import CreateAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api import models as api_models
 from api import serializers as api_serializers
+from api import pagination as api_pagination
 from api.token_operations import serialize, deserialize
 
 
@@ -85,3 +89,10 @@ class LoginView(APIView):
 
         login(request, user)
         return Response(user.id)
+
+
+class UserRatingTopList(ListAPIView):
+    permission_classes = (AllowAny,)
+    pagination_class = api_pagination.UserTopPagination
+    queryset = api_models.User.objects.only('username', 'rating').order_by('-rating')
+    serializer_class = api_serializers.UserRatingSerializer
