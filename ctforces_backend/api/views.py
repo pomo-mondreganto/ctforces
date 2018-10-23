@@ -4,12 +4,10 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
-from django.db.models.functions import Coalesce
-from django.db.models import Sum
 
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.generics import CreateAPIView, ListAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -88,11 +86,12 @@ class LoginView(APIView):
             raise AuthenticationFailed('Invalid credentials.')
 
         login(request, user)
-        return Response(user.id)
+        response_data = api_serializers.UserBasicSerializer(user).data
+        return Response(response_data)
 
 
 class UserRatingTopList(ListAPIView):
     permission_classes = (AllowAny,)
     pagination_class = api_pagination.UserTopPagination
     queryset = api_models.User.objects.only('username', 'rating').order_by('-rating')
-    serializer_class = api_serializers.UserRatingSerializer
+    serializer_class = api_serializers.UserBasicSerializer

@@ -47,7 +47,7 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
         return user
 
 
-class UserRatingSerializer(rest_serializers.ModelSerializer):
+class UserBasicSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.User
         fields = ('id', 'username', 'rating')
