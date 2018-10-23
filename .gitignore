@@ -103,3 +103,4 @@ volumes/static/*
 !volumes/*/.gitkeep
 
 environment.env
+.DS_Store
