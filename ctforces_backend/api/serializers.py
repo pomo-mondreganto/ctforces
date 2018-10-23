@@ -45,3 +45,9 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
     def create(self, validated_data):
         user = api_models.User.objects.create_user(**validated_data, is_active=False)
         return user
+
+
+class UserBasicSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.User
+        fields = ('id', 'username', 'rating')

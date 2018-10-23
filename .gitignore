@@ -88,3 +88,18 @@ local_settings.py
 db.sqlite3
 .prettierrc
 .editorconfig
+ctforces_venv
+
+volumes/db/*
+# !volumes/db/.gitkeep
+
+volumes/server_logs/*
+# !volumes/server_logs/.gitkeep
+
+volumes/socks/*
+
+volumes/static/*
+
+!volumes/*/.gitkeep
+
+environment.env
