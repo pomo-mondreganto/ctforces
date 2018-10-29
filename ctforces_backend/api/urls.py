@@ -25,6 +25,8 @@ urlpatterns = [
 
     re_path('^users_rating_top/$', api_views.UserRatingTopList.as_view(), name='users_rating_top'),
 
+    re_path('^me/$', api_views.GetCurrentUserView.as_view(), name='current_user'),
+
     re_path(r'^schema_swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^schema_swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^schema_redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
