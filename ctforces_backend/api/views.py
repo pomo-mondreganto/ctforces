@@ -6,8 +6,8 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
 
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
-from rest_framework.generics import CreateAPIView, ListAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -95,3 +95,11 @@ class UserRatingTopList(ListAPIView):
     pagination_class = api_pagination.UserTopPagination
     queryset = api_models.User.objects.only('username', 'rating').order_by('-rating')
     serializer_class = api_serializers.UserBasicSerializer
+
+
+class GetCurrentUserView(RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = api_serializers.UserBasicSerializer
+
+    def get_object(self):
+        return self.request.user
