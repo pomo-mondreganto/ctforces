@@ -5,8 +5,11 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
+from rest_framework import mixins as rest_mixins
+from rest_framework import viewsets as rest_viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -91,26 +94,14 @@ class LoginView(APIView):
         return Response(response_data)
 
 
-class UserRatingTopList(ListAPIView):
-    permission_classes = (AllowAny,)
-    pagination_class = api_pagination.UserTopPagination
-    queryset = api_models.User.objects.only('username', 'rating').order_by('-rating', 'last_solve')
-    serializer_class = api_serializers.UserBasicSerializer
-
-
-class UserUpsolvingTopList(ListAPIView):
-    permission_classes = (AllowAny,)
-    pagination_class = api_pagination.UserTopPagination
-    queryset = api_models.User.upsolving_annotated.only('username', 'cost_sum').order_by('-cost_sum', 'last_solve')
-    serializer_class = api_serializers.UserBasicSerializer
-
-
 class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = api_serializers.UserMainSerializer
 
     def get_queryset(self):
-        return api_models.User.upsolving_annotated.all()
+        if self.request.method == 'GET':
+            return api_models.User.upsolving_annotated.all()
+        return api_models.User.objects.all()
 
     def get_object(self):
         queryset = self.get_queryset()
@@ -128,3 +119,45 @@ class AvatarUploadView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
+
+
+class UserViewSet(rest_mixins.RetrieveModelMixin,
+                  rest_mixins.ListModelMixin,
+                  rest_viewsets.GenericViewSet):
+    permission_classes = (AllowAny,)
+    serializer_class = api_serializers.UserBasicSerializer
+    queryset = api_models.User.upsolving_annotated.all()
+    pagination_class = api_pagination.UserTopPagination
+    lookup_field = 'username'
+    lookup_url_kwarg = 'username'
+
+    @action(detail=False, url_name='upsolving_top', url_path='upsolving_top')
+    def get_upsolving_top(self, _request):
+        users_with_upsolving = self.get_queryset().only('username').order_by('-cost_sum', 'last_solve')
+        page = self.paginate_queryset(users_with_upsolving)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(users_with_upsolving, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, url_name='rating_top', url_path='rating_top')
+    def get_rating_top(self, _request):
+        users_with_rating = api_models.User.objects.only('username', 'rating').order_by('-rating', 'last_solve')
+        page = self.paginate_queryset(users_with_rating)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(users_with_rating, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, url_name='search', url_path='search')
+    def search_users(self, request):
+        username = request.query_params.get('username', '')
+        users_list = api_models.User.objects.only('username').filter(username__istartswith=username)[:10]
+        serializer = self.get_serializer(users_list, many=True)
+        return Response(serializer.data)

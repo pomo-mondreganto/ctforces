@@ -1,9 +1,13 @@
-from django.urls import re_path
+from django.urls import re_path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework.routers import SimpleRouter
 
 from api import views as api_views
+
+router = SimpleRouter()
+router.register('users', api_views.UserViewSet)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -18,13 +22,11 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     re_path('^$', api_views.test_view, name='test_view'),
+    re_path('^', include(router.urls)),
 
     re_path('^register/$', api_views.UserCreateView.as_view(), name='registration_view'),
     re_path('^confirm_email/$', api_views.EmailConfirmationEndpointView.as_view(), name='email_confirmation_view'),
     re_path('^login/$', api_views.LoginView.as_view(), name='login_view'),
-
-    re_path('^users/rating_top/$', api_views.UserRatingTopList.as_view(), name='users_rating_top'),
-    re_path('^users/upsolving_top/$', api_views.UserUpsolvingTopList.as_view(), name='users_upsolving_top'),
 
     re_path('^me/$', api_views.CurrentUserRetrieveUpdateView.as_view(), name='current_user'),
 
