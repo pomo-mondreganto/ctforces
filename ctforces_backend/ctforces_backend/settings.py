@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_extensions',
     'django_redis',
+    'stdimage',
 ]
 
 MIDDLEWARE = [
@@ -112,4 +113,12 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = [
     'api.backends.CustomAuthenticationBackend',
+]
+
+CELERY_BROKER_URL = 'redis://localhost'
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULT_SERIALIZER = 'pickle'
+CELERY_ACCEPT_CONTENT = ['pickle']
+CELERY_IMPORTS = [
+    'api.tasks'
 ]

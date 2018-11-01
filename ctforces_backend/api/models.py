@@ -3,6 +3,10 @@ from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.db import models
 from django.utils import timezone
 
+from stdimage.models import StdImageField
+
+from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor
+
 
 class User(AbstractUser):
     username_validator = ASCIIUsernameValidator()
@@ -13,6 +17,28 @@ class User(AbstractUser):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    avatar = StdImageField(
+        variations={
+            'main': (500, 500),
+            'small': (150, 150)
+        },
+        upload_to=CustomUploadTo(
+            upload_type='avatars',
+            path='',
+            random_filename=True,
+        ),
+        validators=[
+            CustomImageSizeValidator(
+                ratio=2,
+                min_limit=(150, 150),
+                max_limit=(1500, 1500),
+            ),
+        ],
+        render_variations=stdimage_processor,
+        default='avatars/default_avatar.png',
+        blank=False, null=False
+    )
 
 
 class Post(models.Model):

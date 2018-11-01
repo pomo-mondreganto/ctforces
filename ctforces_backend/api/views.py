@@ -10,6 +10,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import FileUploadParser, MultiPartParser
 
 from api import models as api_models
 from api import serializers as api_serializers
@@ -103,3 +104,15 @@ class GetCurrentUserView(RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class AvatarUploadView(APIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = (IsAuthenticated,)
+
+    @staticmethod
+    def post(request):
+        serializer = api_serializers.AvatarUploadSerializer(data=request.data, instance=request.user)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)

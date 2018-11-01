@@ -48,6 +48,21 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
 
 
 class UserBasicSerializer(rest_serializers.ModelSerializer):
+    avatar_main = rest_serializers.URLField(source='avatar.main.url')
+    avatar_small = rest_serializers.URLField(source='avatar.small.url')
+
     class Meta:
         model = api_models.User
-        fields = ('id', 'username', 'rating')
+        fields = (
+            'id',
+            'username',
+            'rating',
+            'avatar_main',
+            'avatar_small',
+        )
+
+
+class AvatarUploadSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.User
+        fields = ('avatar',)
