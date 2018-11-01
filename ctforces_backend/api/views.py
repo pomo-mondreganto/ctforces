@@ -4,17 +4,16 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
-
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.parsers import FileUploadParser, MultiPartParser
 
 from api import models as api_models
-from api import serializers as api_serializers
 from api import pagination as api_pagination
+from api import serializers as api_serializers
 from api.token_operations import serialize, deserialize
 
 
