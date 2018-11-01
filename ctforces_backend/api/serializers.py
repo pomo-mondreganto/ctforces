@@ -50,6 +50,7 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
 class UserBasicSerializer(rest_serializers.ModelSerializer):
     avatar_main = rest_serializers.URLField(source='avatar.main.url')
     avatar_small = rest_serializers.URLField(source='avatar.small.url')
+    cost_sum = rest_serializers.IntegerField(read_only=True)
 
     class Meta:
         model = api_models.User
@@ -57,9 +58,61 @@ class UserBasicSerializer(rest_serializers.ModelSerializer):
             'id',
             'username',
             'rating',
+            'max_rating',
+            'cost_sum',
             'avatar_main',
             'avatar_small',
         )
+
+
+class UserMainSerializer(rest_serializers.ModelSerializer):
+    cost_sum = rest_serializers.IntegerField(read_only=True)
+    avatar_main = rest_serializers.URLField(source='avatar.main.url', read_only=True)
+    avatar_small = rest_serializers.URLField(source='avatar.small.url', read_only=True)
+
+    class Meta:
+        model = api_models.User
+        fields = (
+            'id',
+            'username',
+            'email',
+            'rating',
+            'max_rating',
+            'cost_sum',
+            'avatar_main',
+            'avatar_small',
+            'first_name',
+            'last_name',
+            'password',
+        )
+
+        extra_kwargs = {
+            'password': {
+                'write_only': True,
+            },
+            'email': {
+                'read_only': True,
+            },
+        }
+
+    def validate(self, data):
+        user = api_models.User(**data)
+        password = data.get('password')
+        if not password:
+            if password is not None:
+                data.pop('password')
+            return data
+
+        errors = dict()
+        try:
+            validate_password(password=password, user=user)
+        except django_core_exceptions.ValidationError as e:
+            errors['password'] = list(e.messages)
+
+        if errors:
+            raise rest_serializers.ValidationError(errors)
+
+        return data
 
 
 class AvatarUploadSerializer(rest_serializers.ModelSerializer):

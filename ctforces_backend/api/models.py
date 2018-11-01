@@ -1,11 +1,25 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.db import models
+from django.db.models import Sum, Q, Value as V
+from django.db.models.functions import Coalesce
 from django.utils import timezone
-
 from stdimage.models import StdImageField
 
 from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor
+
+
+class UserUpsolvingAnnotatedManager(models.Manager):
+    def get_queryset(self):
+        return super(UserUpsolvingAnnotatedManager, self).get_queryset().annotate(
+            cost_sum=Coalesce(
+                Sum(
+                    'solved_tasks__cost',
+                    filter=Q(solved_tasks__is_published=True),
+                ),
+                V(0),
+            )
+        )
 
 
 class User(AbstractUser):
@@ -39,6 +53,10 @@ class User(AbstractUser):
         default='avatars/default_avatar.png',
         blank=False, null=False
     )
+
+    last_solve = models.DateTimeField(auto_now_add=True)
+
+    upsolving_annotated = UserUpsolvingAnnotatedManager()
 
 
 class Post(models.Model):
@@ -84,3 +102,6 @@ class Task(models.Model):
 
         super(Task, self).save(force_insert=force_insert, force_update=force_update, using=using,
                                update_fields=update_fields)
+
+    def __str__(self):
+        return "Task object ({}:{})".format(self.id, self.name)

@@ -2,10 +2,11 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -93,16 +94,28 @@ class LoginView(APIView):
 class UserRatingTopList(ListAPIView):
     permission_classes = (AllowAny,)
     pagination_class = api_pagination.UserTopPagination
-    queryset = api_models.User.objects.only('username', 'rating').order_by('-rating')
+    queryset = api_models.User.objects.only('username', 'rating').order_by('-rating', 'last_solve')
     serializer_class = api_serializers.UserBasicSerializer
 
 
-class GetCurrentUserView(RetrieveAPIView):
+class UserUpsolvingTopList(ListAPIView):
+    permission_classes = (AllowAny,)
+    pagination_class = api_pagination.UserTopPagination
+    queryset = api_models.User.upsolving_annotated.only('username', 'cost_sum').order_by('-cost_sum', 'last_solve')
+    serializer_class = api_serializers.UserBasicSerializer
+
+
+class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = api_serializers.UserBasicSerializer
+    serializer_class = api_serializers.UserMainSerializer
+
+    def get_queryset(self):
+        return api_models.User.upsolving_annotated.all()
 
     def get_object(self):
-        return self.request.user
+        queryset = self.get_queryset()
+        obj = get_object_or_404(queryset, id=self.request.user.id)
+        return obj
 
 
 class AvatarUploadView(APIView):

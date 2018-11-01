@@ -23,9 +23,10 @@ urlpatterns = [
     re_path('^confirm_email/$', api_views.EmailConfirmationEndpointView.as_view(), name='email_confirmation_view'),
     re_path('^login/$', api_views.LoginView.as_view(), name='login_view'),
 
-    re_path('^users_rating_top/$', api_views.UserRatingTopList.as_view(), name='users_rating_top'),
+    re_path('^users/rating_top/$', api_views.UserRatingTopList.as_view(), name='users_rating_top'),
+    re_path('^users/upsolving_top/$', api_views.UserUpsolvingTopList.as_view(), name='users_upsolving_top'),
 
-    re_path('^me/$', api_views.GetCurrentUserView.as_view(), name='current_user'),
+    re_path('^me/$', api_views.CurrentUserRetrieveUpdateView.as_view(), name='current_user'),
 
     re_path('^avatar_upload/$', api_views.AvatarUploadView.as_view(), name='avatar_upload_view'),
 
