@@ -127,7 +127,7 @@ class UserViewSet(rest_mixins.RetrieveModelMixin,
     permission_classes = (AllowAny,)
     serializer_class = api_serializers.UserBasicSerializer
     queryset = api_models.User.upsolving_annotated.all()
-    pagination_class = api_pagination.UserTopPagination
+    pagination_class = api_pagination.UserDefaultPagination
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
 
