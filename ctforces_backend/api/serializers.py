@@ -1,5 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_core_exceptions
+from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
 
 from api import models as api_models
@@ -144,3 +145,94 @@ class AvatarUploadSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.User
         fields = ('avatar',)
+
+
+class TaskTagSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.TaskTag
+        fields = ('id', 'name')
+
+
+class TaskPreviewSerializer(rest_serializers.ModelSerializer):
+    solved_count = rest_serializers.IntegerField(read_only=True)
+    task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
+
+    class Meta:
+        model = api_models.Task
+        fields = (
+            'id',
+            'name',
+            'task_tags_details',
+            'author',
+            'cost',
+            'publication_time',
+            'solved_count',
+        )
+
+
+class TaskViewSerializer(rest_serializers.ModelSerializer):
+    solved_count = rest_serializers.IntegerField(read_only=True)
+    task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
+    can_edit_task = rest_serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = api_models.Task
+        fields = (
+            'id',
+            'name',
+            'task_tags_details',
+            'author',
+            'cost',
+            'publication_time',
+            'description',
+            'solved_count',
+            'can_edit_task',
+        )
+
+
+class TaskFullSerializer(rest_serializers.ModelSerializer):
+    solved_count = rest_serializers.IntegerField(read_only=True)
+    task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
+
+    class Meta:
+        model = api_models.Task
+        fields = (
+            'id',
+            'name',
+            'task_tags_details',
+            'tags',
+            'author',
+            'cost',
+            'publication_time',
+            'flag',
+            'description',
+            'is_published',
+            'solved_count',
+        )
+
+        extra_kwargs = {
+            'author': {
+                'read_only': True,
+            },
+            'publication_time': {
+                'read_only': True,
+            },
+        }
+
+    def create(self, validated_data):
+        instance = super(TaskFullSerializer, self).create(validated_data)
+        instance.author = self.context['request'].user
+        assign_perm('view_task', instance.author, instance)
+        assign_perm('edit_task', instance.author, instance)
+        assign_perm('delete_task', instance.author, instance)
+        return instance
+
+
+class TaskSubmitSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.Task
+        fields = ('flag',)
+
+    def validate_flag(self, flag):
+        if flag != self.instance.flag:
+            raise rest_serializers.ValidationError('Invalid flag.')

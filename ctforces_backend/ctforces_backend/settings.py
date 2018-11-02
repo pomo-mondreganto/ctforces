@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_redis',
     'stdimage',
+    'guardian',
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,7 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = [
     'api.backends.CustomAuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
 ]
 
 CELERY_BROKER_URL = 'redis://localhost'
@@ -122,3 +124,5 @@ CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_IMPORTS = [
     'api.tasks'
 ]
+
+GUARDIAN_RAISE_403 = True

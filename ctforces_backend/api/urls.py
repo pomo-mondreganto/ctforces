@@ -8,6 +8,8 @@ from api import views as api_views
 
 router = SimpleRouter()
 router.register('users', api_views.UserViewSet)
+router.register('tasks', api_views.TaskViewSet)
+router.register('task_tags', api_views.TaskTagViewSet)
 
 schema_view = get_schema_view(
     openapi.Info(
