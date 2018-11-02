@@ -42,7 +42,7 @@ export default {
     /*
   ** Global CSS
   */
-    css: ['~semantic/dist/semantic.min.css'],
+  css: ['~semantic/dist/semantic.min.css', '~assets/css/main.css'],
 
     /*
   ** Plugins to load before mounting the App
@@ -60,7 +60,9 @@ export default {
   ** Axios module configuration
   */
     axios: {
-        // See https://github.com/nuxt-community/axios-module#options
+      host: '0.0.0.0',
+      port: '8800',
+      prefix: '/api/'
     },
 
     /*

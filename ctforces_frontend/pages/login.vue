@@ -4,12 +4,12 @@
             <div class="ui segment">
                 <div>Sign In</div>
                 <div class="ui clearing divider"></div>
-                <form class="ui basic vertical segment form error warning">
+                <form class="ui basic vertical segment form error warning" @submit.prevent="login">
                     <div class="field">
-                        <input type="text" name="username" placeholder="Handle">
+                        <input type="text" name="username" placeholder="Handle" v-model="formUsername">
                     </div>
                     <div class="field">
-                        <input type="password" name="password" placeholder="Password" />
+                        <input type="password" name="password" placeholder="Password" v-model="formPassword"/>
                     </div>
                     <button class="ui fluid teal button field" type="submit">Sign me in</button>
                     <div class="field center_aligned">
@@ -25,6 +25,25 @@
 
 <script>
 export default {
-    layout: 'base'
+    layout: 'base',
+    data() {
+        return {
+            formUsername: '',
+            formPassword: ''
+        }
+    },
+    methods: {
+        async login() {
+            try {
+                await this.$store.dispatch('login', {
+                    username: this.formUsername,
+                    password: this.formPassword
+                })
+            } catch(e) {
+                console.log(e);
+            }
+        }
+    }
+
 };
 </script>
