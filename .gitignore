@@ -104,3 +104,11 @@ volumes/static/*
 
 environment.env
 .DS_Store
+
+celery.state
+
+ctforces_backend/media/avatars/*
+ctforces_backend/media/files/*
+!ctforces_backend/media/avatars/default_avatar.png
+!ctforces_backend/media/avatars/default_avatar.small.png
+!ctforces_backend/media/avatars/default_avatar.main.png

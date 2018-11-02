@@ -48,6 +48,99 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
 
 
 class UserBasicSerializer(rest_serializers.ModelSerializer):
+    avatar_main = rest_serializers.URLField(source='avatar.main.url')
+    avatar_small = rest_serializers.URLField(source='avatar.small.url')
+    cost_sum = rest_serializers.IntegerField(read_only=True)
+
     class Meta:
         model = api_models.User
-        fields = ('id', 'username', 'rating')
+        fields = (
+            'id',
+            'username',
+            'rating',
+            'max_rating',
+            'cost_sum',
+            'avatar_main',
+            'avatar_small',
+        )
+
+
+class UserMainSerializer(rest_serializers.ModelSerializer):
+    cost_sum = rest_serializers.IntegerField(read_only=True)
+    avatar_main = rest_serializers.URLField(source='avatar.main.url', read_only=True)
+    avatar_small = rest_serializers.URLField(source='avatar.small.url', read_only=True)
+    old_password = rest_serializers.CharField(write_only=True)
+
+    class Meta:
+        model = api_models.User
+        fields = (
+            'id',
+            'username',
+            'email',
+            'rating',
+            'max_rating',
+            'cost_sum',
+            'avatar_main',
+            'avatar_small',
+            'first_name',
+            'last_name',
+            'password',
+            'old_password',
+        )
+
+        extra_kwargs = {
+            'password': {
+                'write_only': True,
+            },
+            'email': {
+                'read_only': True,
+            },
+        }
+
+    def validate(self, data):
+        password = data.pop('password', None)
+        old_password = data.pop('old_password', None)
+
+        user = self.instance
+
+        if not password:
+            return data
+
+        if not old_password:
+            raise rest_serializers.ValidationError(
+                {
+                    'old_password': 'To change password you need to provide the old one.'
+                }
+            )
+        if not user.check_password(raw_password=old_password):
+            raise rest_serializers.ValidationError(
+                {
+                    'old_password': 'Old password is incorrect.'
+                }
+            )
+
+        errors = dict()
+        try:
+            validate_password(password=password, user=user)
+        except django_core_exceptions.ValidationError as e:
+            errors['password'] = list(e.messages)
+
+        if errors:
+            raise rest_serializers.ValidationError(errors)
+
+        data['password'] = password
+        return data
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+
+        if password:
+            instance.set_password(password)
+
+        return super(UserMainSerializer, self).update(instance, validated_data)
+
+
+class AvatarUploadSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.User
+        fields = ('avatar',)
