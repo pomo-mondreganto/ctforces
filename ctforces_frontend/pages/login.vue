@@ -30,7 +30,7 @@ export default {
         return {
             formUsername: '',
             formPassword: ''
-        }
+        };
     },
     methods: {
         async login() {
@@ -38,12 +38,11 @@ export default {
                 await this.$store.dispatch('login', {
                     username: this.formUsername,
                     password: this.formPassword
-                })
-            } catch(e) {
+                });
+            } catch (e) {
                 console.log(e);
             }
         }
     }
-
 };
 </script>

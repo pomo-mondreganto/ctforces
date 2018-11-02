@@ -42,7 +42,8 @@ export default {
     /*
   ** Global CSS
   */
-  css: ['~semantic/dist/semantic.min.css', '~assets/css/main.css'],
+
+    css: ['~semantic/dist/semantic.min.css', '~assets/css/main.css'],
 
     /*
   ** Plugins to load before mounting the App
@@ -60,9 +61,8 @@ export default {
   ** Axios module configuration
   */
     axios: {
-      host: '0.0.0.0',
-      port: '8800',
-      prefix: '/api/'
+        baseURL: 'http://127.0.0.1:8000/api/',
+        browserBaseURL: 'http://127.0.0.1:8000/api/'
     },
 
     /*
