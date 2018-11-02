@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django_redis',
     'stdimage',
     'guardian',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
