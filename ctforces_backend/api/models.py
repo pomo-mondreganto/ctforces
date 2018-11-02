@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.db import models
 from django.db.models import Sum, Q, Value as V
@@ -9,7 +9,7 @@ from stdimage.models import StdImageField
 from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor
 
 
-class UserUpsolvingAnnotatedManager(models.Manager):
+class UserUpsolvingAnnotatedManager(BaseUserManager):
     def get_queryset(self):
         return super(UserUpsolvingAnnotatedManager, self).get_queryset().annotate(
             cost_sum=Coalesce(
