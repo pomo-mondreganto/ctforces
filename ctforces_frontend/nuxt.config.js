@@ -42,12 +42,12 @@ export default {
     /*
   ** Global CSS
   */
-    css: ['~/semantic/dist/semantic.min.css', '~assets/css/main.css'],
+    css: ['~semantic/dist/semantic.min.css'],
 
     /*
   ** Plugins to load before mounting the App
   */
-    plugins: ['~/plugins/sui.js'],
+    plugins: ['~plugins/sui.js'],
 
     /*
   ** Nuxt.js modules

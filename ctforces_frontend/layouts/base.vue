@@ -1,42 +1,37 @@
 <template>
     <div>
         <div class="ui container">
-            <div class="ui bottom attached grid huge menu">
-                <div class="one wide column item">
-                    <a class="ui mini image" href="/">
+            <div class="ui bottom attached large nine item stackable menu">
+                <div class="item">
+                    <nuxt-link class="ui mini image" to="/">
                         <img src="~assets/img/logo.png" alt="">
-                    </a>
+                    </nuxt-link>
                 </div>
-                <nuxt-link class="two wide column item center_aligned" to='/'>
-                    <i class="fas fa-home"></i> <div style="padding-left: 3px">Home</div>
+                <nuxt-link class="item" to='/'>
+                    <div>Home</div>
                 </nuxt-link>
-                <nuxt-link class="two wide column item center_aligned" to="/contests">
-                    <i class="fas fa-chess-knight"></i> <div style="padding-left: 3px">Contests</div>
+                <nuxt-link class="item" to="/contests">
+                    <div>Contests</div>
                 </nuxt-link>
-                <nuxt-link class="two wide column item center_aligned" to="/tasks">
-                    <i class="fas fa-tasks"></i> <div style="padding-left: 3px">Tasks</div>
+                <nuxt-link class="item" to="/tasks">
+                    <div>Tasks</div>
                 </nuxt-link>
-                <nuxt-link class="two wide column item center_aligned" to="/users_upsolving">
-                    <i class="fas fa-check-circle"></i> <div style="padding-left: 3px">Upsolving</div>
+                <nuxt-link class="item" to="/users_upsolving">
+                    <div>Upsolving</div>
                 </nuxt-link>
-                <nuxt-link class="two wide column item center_aligned" to="/users_rating">
-                    <i class="fas fa-chess-king"></i> <div style="padding-left: 3px">Rating</div>
+                <nuxt-link class="item" to="/users_rating">
+                    <div>Rating</div>
                 </nuxt-link>
-
-                    <div class="right item center_aligned">
-                        <div class="menu_item_in">
-                            <nuxt-link class="ui primary button" to="login">
-                                Sign In
-                            </nuxt-link>
-                        </div>
-                    </div>
-                    <div class="item center_aligned">
-                        <div class="menu_item_in">
-                            <nuxt-link class="ui button" to="register">
-                                Sign Up
-                            </nuxt-link>
-                        </div>
-                    </div>
+                <div class="right item">
+                    <nuxt-link class="ui primary button" to="login" style="white-space:nowrap;font-size:0.8em;">
+                        Sign In
+                    </nuxt-link>
+                </div>
+                <div class="item">
+                    <nuxt-link class="ui button" to="register" style="white-space:nowrap;font-size:0.8em;">
+                        Sign Up
+                    </nuxt-link>
+                </div>
                 <!--{% else %}
                     <div class="right item center_aligned">
                         <a class="ui primary button" href="{% url 'user_info' request.user.username %}">
@@ -56,9 +51,17 @@
 
         <div class="pusher">
             <div id="swipe-wrap">
-                <nuxt/>
+                <div class="ui container">
+                    <div class="ui grid">
+                        <div class="sixteen wide column">
+                            <div class="ui basic vertical segment">
+                                <nuxt/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <footer class="footer center_aligned">
+            <footer class="footer">
                 Powered by KekusCorporation.
             </footer>
         </div>

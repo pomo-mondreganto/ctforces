@@ -6,4 +6,3 @@ export default {
     layout: 'base'
 };
 </script>
-
