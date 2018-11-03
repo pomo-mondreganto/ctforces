@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -87,6 +87,15 @@ class LoginView(APIView):
         login(request, user)
         response_data = api_users_serializers.UserBasicSerializer(user).data
         return Response(response_data)
+
+
+class LogoutView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @staticmethod
+    def post(request):
+        logout(request)
+        return Response('ok')
 
 
 class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):

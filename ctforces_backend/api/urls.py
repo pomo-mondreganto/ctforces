@@ -38,6 +38,7 @@ urlpatterns = [
             name='email_confirmation_view'),
 
     re_path('^login/$', api_users_views.LoginView.as_view(), name='login_view'),
+    re_path('^logout/$', api_users_views.LogoutView.as_view(), name='logout_view'),
 
     re_path('^me/$', api_users_views.CurrentUserRetrieveUpdateView.as_view(), name='current_user'),
 
