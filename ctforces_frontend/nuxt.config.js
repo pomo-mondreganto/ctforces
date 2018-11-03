@@ -48,7 +48,7 @@ export default {
     /*
   ** Plugins to load before mounting the App
   */
-    plugins: ['~plugins/sui.js'],
+    plugins: ['~plugins/sui.js', '~plugins/axios'],
 
     /*
   ** Nuxt.js modules
@@ -62,7 +62,8 @@ export default {
   */
     axios: {
         baseURL: 'http://127.0.0.1:8000/api/',
-        browserBaseURL: 'http://127.0.0.1:8000/api/'
+        browserBaseURL: 'http://127.0.0.1:8000/api/',
+        credentials: true
     },
 
     /*

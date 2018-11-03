@@ -5,11 +5,14 @@
                 <div>Sign In</div>
                 <div class="ui clearing divider"></div>
                 <form class="ui basic vertical segment form error warning" @submit.prevent="login">
-                    <div class="field">
+                    <div class="field" v-bind:class="formErrors['username']">
                         <input type="text" name="username" placeholder="Handle" v-model="formUsername">
                     </div>
-                    <div class="field">
+                    <div class="field" v-bind:class="formErrors['password']">
                         <input type="password" name="password" placeholder="Password" v-model="formPassword"/>
+                    </div>
+                    <div v-if="formErrors['detail']" class="ui error message">
+                        {{ formErrors['detail'] }}
                     </div>
                     <button class="ui fluid teal button field" type="submit">Sign me in</button>
                     <div class="field center_aligned">
@@ -29,18 +32,20 @@ export default {
     data() {
         return {
             formUsername: '',
-            formPassword: ''
+            formPassword: '',
+            formErrors: {}
         };
     },
     methods: {
         async login() {
             try {
-                await this.$store.dispatch('login', {
+                await this.$store.dispatch('auth/login', {
                     username: this.formUsername,
                     password: this.formPassword
                 });
             } catch (e) {
-                console.log(e);
+                let { data } = e.response;
+                this.formErrors = data;
             }
         }
     }

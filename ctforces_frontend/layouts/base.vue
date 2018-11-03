@@ -22,30 +22,28 @@
                 <nuxt-link class="item" to="/users_rating">
                     <div>Rating</div>
                 </nuxt-link>
-                <div class="right item">
+
+                <div v-if="authUser" class="right item">
+                    <button class="ui primary button" to="/" style="white-space:nowrap;font-size:0.8em;">
+                        {{ authUser.username }}
+                    </button>
+                </div>
+                <div v-else class="right item">
                     <nuxt-link class="ui primary button" to="login" style="white-space:nowrap;font-size:0.8em;">
                         Sign In
                     </nuxt-link>
                 </div>
-                <div class="item">
+
+                <div v-if="authUser" class="item">
+                    <button class="ui button" @click="logout" style="white-space:nowrap;font-size:0.8em;">
+                        Logout
+                    </button>
+                </div>
+                <div v-else class="item">
                     <nuxt-link class="ui button" to="register" style="white-space:nowrap;font-size:0.8em;">
                         Sign Up
                     </nuxt-link>
                 </div>
-                <!--{% else %}
-                    <div class="right item center_aligned">
-                        <a class="ui primary button" href="{% url 'user_info' request.user.username %}">
-                            username
-                        </a>
-                    </div>
-                    <div class="item center_aligned">
-                        <div class="menu_item_in">
-                            <a class="ui button" href="{% url 'logout' %}">
-                                Logout
-                            </a>
-                        </div>
-                    </div>                
-                {% endif %}-->
             </div>
         </div>
 
@@ -67,3 +65,20 @@
         </div>
     </div>
 </template>
+
+<script>
+export default {
+    computed: {
+        authUser() {
+            return this.$store.state.auth.authUser;
+        }
+    },
+    methods: {
+        async logout() {
+            try {
+                await this.$store.dispatch('auth/logout');
+            } catch (e) {}
+        }
+    }
+};
+</script>
