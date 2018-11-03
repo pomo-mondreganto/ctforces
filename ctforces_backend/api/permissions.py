@@ -63,5 +63,9 @@ class HasDeleteTaskPermission(HasPermissionMixin):
     permission_name = 'delete_task'
 
 
-class HasCreateFilePermission(HasPermissionMixin):
-    permission_name = 'create_file'
+class HasCreateTaskFilePermission(HasPermissionMixin):
+    permission_name = 'create_taskfile'
+
+
+class HasCreateTaskFilePermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
+    permission_name = 'create_taskfile'

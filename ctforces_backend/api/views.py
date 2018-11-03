@@ -121,19 +121,31 @@ class AvatarUploadView(APIView):
 
     @staticmethod
     def post(request):
-        serializer = api_serializers.AvatarUploadSerializer(data=request.data, instance=request.user)
+        serializer = api_serializers.AvatarUploadSerializer(data=request.data,
+                                                            instance=request.user,
+                                                            context={'request': request})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
 
 
-class FileUploadView(APIView):
+class TaskFileViewSet(rest_mixins.RetrieveModelMixin,
+                      rest_mixins.ListModelMixin,
+                      rest_mixins.CreateModelMixin,
+                      rest_viewsets.GenericViewSet):
     parser_classes = (MultiPartParser,)
-    permission_classes = (api_permissions.HasCreateFilePermission,)
+    permission_classes = (IsAuthenticated, api_permissions.HasCreateTaskFilePermissionOrReadOnly)
+    serializer_class = api_serializers.TaskFileBasicSerializer
+    pagination_class = api_pagination.TaskFileDefaultPagination
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
 
-    @staticmethod
-    def post(request):
-        serializer = api_serializers.FileUploadSerializer(data=request.data)
+    def get_queryset(self):
+        return api_models.TaskFile.objects.filter(owner=self.request.user)
+
+    def create(self, request, *_args, **_kwargs):
+        serializer = api_serializers.TaskFileUploadSerializer(data=request.data,
+                                                              context={'request': self.request})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)

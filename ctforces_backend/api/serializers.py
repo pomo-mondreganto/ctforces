@@ -2,7 +2,6 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_core_exceptions
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
-from rest_framework.fields import CurrentUserDefault
 
 from api import models as api_models
 
@@ -148,26 +147,6 @@ class AvatarUploadSerializer(rest_serializers.ModelSerializer):
         fields = ('avatar',)
 
 
-class FileUploadSerializer(rest_serializers.ModelSerializer):
-    class Meta:
-        model = api_models.File
-        fields = ('id', 'file_field')
-
-    def __init__(self, *args, **kwargs):
-        self.filename = None
-        super(FileUploadSerializer, self).__init__(*args, **kwargs)
-
-    def validate_file_field(self, data):
-        self.filename = data.name
-        return data
-
-    def create(self, validated_data):
-        instance = super(FileUploadSerializer, self).create(validated_data)
-        instance.name = self.filename
-        instance.author = CurrentUserDefault()
-        return instance
-
-
 class TaskTagSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.TaskTag
@@ -257,3 +236,43 @@ class TaskSubmitSerializer(rest_serializers.ModelSerializer):
     def validate_flag(self, flag):
         if flag != self.instance.flag:
             raise rest_serializers.ValidationError('Invalid flag.')
+
+
+class TaskFileUploadSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.TaskFile
+        fields = ('id', 'file_field', 'owner', 'name')
+        extra_kwargs = {
+            'owner': {
+                'required': False,
+            },
+            'name': {
+                'required': False,
+            },
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.filename = None
+        super(TaskFileUploadSerializer, self).__init__(*args, **kwargs)
+
+    def validate_file_field(self, data):
+        self.filename = data.name
+        return data
+
+    def validate(self, attrs):
+        attrs['name'] = self.filename
+        attrs['owner'] = self.context['request'].user
+        return attrs
+
+
+class TaskFileBasicSerializer(rest_serializers.ModelSerializer):
+    task_details = TaskPreviewSerializer(read_only=True, source='task')
+
+    class Meta:
+        model = api_models.TaskFile
+        fields = (
+            'id',
+            'name',
+            'task_details',
+            'upload_time'
+        )

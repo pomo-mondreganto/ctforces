@@ -107,7 +107,7 @@ class Task(models.Model):
         return "Task object ({}:{})".format(self.id, self.name)
 
 
-class File(models.Model):
+class TaskFile(models.Model):
     owner = models.ForeignKey('User', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)
     task = models.ForeignKey('Task', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)
 

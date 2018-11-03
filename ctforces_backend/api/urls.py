@@ -10,6 +10,7 @@ router = SimpleRouter()
 router.register('users', api_views.UserViewSet)
 router.register('tasks', api_views.TaskViewSet)
 router.register('task_tags', api_views.TaskTagViewSet)
+router.register('task_files', api_views.TaskFileViewSet, base_name='task_files')
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -33,7 +34,6 @@ urlpatterns = [
     re_path('^me/$', api_views.CurrentUserRetrieveUpdateView.as_view(), name='current_user'),
 
     re_path('^avatar_upload/$', api_views.AvatarUploadView.as_view(), name='avatar_upload_view'),
-    re_path('^file_upload/$', api_views.FileUploadView.as_view(), name='file_upload_view'),
 
     re_path(r'^schema_swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^schema_swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
