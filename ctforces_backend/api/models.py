@@ -6,7 +6,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from stdimage.models import StdImageField
 
-from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor
+from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor, CustomFileField
 
 
 class UserUpsolvingAnnotatedManager(UserManager):
@@ -105,3 +105,20 @@ class Task(models.Model):
 
     def __str__(self):
         return "Task object ({}:{})".format(self.id, self.name)
+
+
+class File(models.Model):
+    owner = models.ForeignKey('User', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)
+    task = models.ForeignKey('Task', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)
+
+    name = models.CharField(max_length=100, null=False, blank=False)
+
+    upload_time = models.DateTimeField(auto_now_add=True)
+
+    file_field = CustomFileField(
+        upload_to=CustomUploadTo(
+            upload_type='files',
+            path='',
+            append_random=True),
+        blank=False, null=False
+    )

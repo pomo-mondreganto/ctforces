@@ -3,8 +3,11 @@ import uuid
 from io import BytesIO
 
 from PIL import Image
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models import FileField
 from django.utils.deconstruct import deconstructible
+from rest_framework import exceptions
 
 from .tasks import process_stdimage
 
@@ -95,3 +98,17 @@ class CustomImageSizeValidator:
 def stdimage_processor(file_name, variations, storage):
     process_stdimage.delay(file_name, variations, storage)
     return False
+
+
+class CustomFileField(FileField):
+
+    def __init__(self, *args, **kwargs):
+        self.max_file_size = kwargs.pop('max_file_size', settings.MAX_FILE_SIZE)
+        super(CustomFileField, self).__init__(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        data = super(CustomFileField, self).clean(*args, **kwargs)
+        file = data.file
+        if file.size > self.max_file_size:
+            raise exceptions.ValidationError('File size must be under {}MB.'.format(self.max_file_size // 1024 // 1024))
+        return data

@@ -127,6 +127,18 @@ class AvatarUploadView(APIView):
             return Response(serializer.data)
 
 
+class FileUploadView(APIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = (api_permissions.HasCreateFilePermission,)
+
+    @staticmethod
+    def post(request):
+        serializer = api_serializers.FileUploadSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
+
 class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     permission_classes = (AllowAny,)
     serializer_class = api_serializers.UserBasicSerializer

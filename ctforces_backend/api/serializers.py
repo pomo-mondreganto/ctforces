@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_core_exceptions
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
+from rest_framework.fields import CurrentUserDefault
 
 from api import models as api_models
 
@@ -145,6 +146,26 @@ class AvatarUploadSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.User
         fields = ('avatar',)
+
+
+class FileUploadSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.File
+        fields = ('id', 'file_field')
+
+    def __init__(self, *args, **kwargs):
+        self.filename = None
+        super(FileUploadSerializer, self).__init__(*args, **kwargs)
+
+    def validate_file_field(self, data):
+        self.filename = data.name
+        return data
+
+    def create(self, validated_data):
+        instance = super(FileUploadSerializer, self).create(validated_data)
+        instance.name = self.filename
+        instance.author = CurrentUserDefault()
+        return instance
 
 
 class TaskTagSerializer(rest_serializers.ModelSerializer):
