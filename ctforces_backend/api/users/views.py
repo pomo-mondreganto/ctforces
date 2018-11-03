@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 
 from api import models as api_models
 from api import pagination as api_pagination
+from api.posts import serializers as api_posts_serializers
 from api.tasks import serializers as api_tasks_serializers
 from api.token_operations import serialize, deserialize
 from api.users import serializers as api_users_serializers
@@ -166,7 +167,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             queryset = get_objects_for_user(request.user, 'view_task', api_models.Task)
 
         queryset = queryset.filter(author=user)
-        paginator = api_pagination.UserDefaultPagination()
+        paginator = api_pagination.TaskDefaultPagination()
         page = paginator.paginate_queryset(
             queryset=queryset,
             request=self.request,
@@ -177,4 +178,27 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             return paginator.get_paginated_response(serializer.data)
 
         serializer = api_tasks_serializers.TaskPreviewSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, url_name='posts', url_path='posts', methods=['get'])
+    def get_users_posts(self, request, **_kwargs):
+        posts_type = request.query_params.get('type', 'published')
+        user = self.get_object()
+        if posts_type == 'published':
+            queryset = api_models.Post.objects.filter(is_published=True)
+        else:
+            queryset = get_objects_for_user(request.user, 'view_post', api_models.Post)
+
+        queryset = queryset.filter(author=user)
+        paginator = api_pagination.PostDefaultPagination()
+        page = paginator.paginate_queryset(
+            queryset=queryset,
+            request=self.request,
+        )
+
+        if page is not None:
+            serializer = api_posts_serializers.PostMainSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+        serializer = api_posts_serializers.PostMainSerializer(queryset, many=True)
         return Response(serializer.data)

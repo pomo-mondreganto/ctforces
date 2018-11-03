@@ -16,16 +16,15 @@ from api.tasks import serializers as api_tasks_serializers
 from api.users import serializers as api_users_serializers
 
 
-class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin, rest_viewsets.ModelViewSet):
+class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
+                  api_mixins.CustomPermissionsQuerysetViewSetMixin,
+                  rest_viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
-
-    queryset = api_models.Task.objects.filter(is_published=True).annotate(
-        solved_count=Count('solved_by')
-    ).prefetch_related('tags')
-
     pagination_class = api_pagination.TaskDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
+    queryset = api_models.Task.objects.filter(is_published=True)
+
     action_permission_classes = {
         'get_full_task': (api_permissions.HasEditTaskPermission,),
         'create': (api_permissions.HasCreateTaskPermission,),
@@ -33,6 +32,17 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin, rest_viewsets.ModelV
         'partial_update': (api_permissions.HasEditTaskPermission,),
         'destroy': (api_permissions.HasDeleteTaskPermission,),
     }
+
+    klass = api_models.Task
+    action_permissions_querysets = {
+        'update': 'change_task',
+        'partial_update': 'change_task',
+        'destroy': 'delete_task',
+    }
+
+    def get_queryset(self):
+        queryset = super(TaskViewSet, self).get_queryset()
+        return queryset.annotate(solved_count=Count('solved_by')).prefetch_related('tags', 'files')
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -43,7 +53,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin, rest_viewsets.ModelV
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.can_edit_task = request.user.has_perm('edit_task')
+        instance.can_edit_task = request.user.has_perm('change_task')
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
@@ -55,7 +65,6 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin, rest_viewsets.ModelV
     )
     def get_full_task(self, _request, *_args, **_kwargs):
         instance = self.get_object()
-        print(_request.user.has_perm('edit_task', instance))
         serializer = api_tasks_serializers.TaskFullSerializer(instance=instance)
         return Response(serializer.data)
 
@@ -129,9 +138,10 @@ class TaskFileViewSet(rest_mixins.RetrieveModelMixin,
     pagination_class = api_pagination.TaskFileDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
+    queryset = api_models.TaskFile.objects.all()
 
     def get_queryset(self):
-        return api_models.TaskFile.objects.filter(owner=self.request.user)
+        return self.queryset.filter(owner=self.request.user)
 
     def create(self, request, *_args, **_kwargs):
         serializer = api_tasks_serializers.TaskFileUploadSerializer(data=request.data,

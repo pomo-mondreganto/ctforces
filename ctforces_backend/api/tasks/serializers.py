@@ -141,7 +141,6 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
 
     def create(self, validated_data):
         instance = super(TaskFullSerializer, self).create(validated_data)
-        instance.author = self.context['request'].user
         assign_perm('view_task', instance.author, instance)
         assign_perm('change_task', instance.author, instance)
         assign_perm('delete_task', instance.author, instance)

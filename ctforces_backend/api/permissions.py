@@ -69,3 +69,11 @@ class HasCreateTaskFilePermission(HasPermissionMixin):
 
 class HasCreateTaskFilePermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
     permission_name = 'add_taskfile'
+
+
+class HasEditPostPermission(HasPermissionMixin):
+    permission_name = 'change_post'
+
+
+class HasEditPostPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
+    permission_name = 'change_post'
