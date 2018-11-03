@@ -9,7 +9,7 @@ from django.db.models import FileField
 from django.utils.deconstruct import deconstructible
 from rest_framework import exceptions
 
-from .tasks import process_stdimage
+from api.celery_tasks import process_stdimage
 
 
 @deconstructible

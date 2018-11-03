@@ -106,6 +106,9 @@ class Task(models.Model):
     def __str__(self):
         return "Task object ({}:{})".format(self.id, self.name)
 
+    class Meta:
+        ordering = ('id',)
+
 
 class TaskFile(models.Model):
     owner = models.ForeignKey('User', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)
@@ -122,3 +125,6 @@ class TaskFile(models.Model):
             append_random=True),
         blank=False, null=False
     )
+
+    class Meta:
+        ordering = ('id',)

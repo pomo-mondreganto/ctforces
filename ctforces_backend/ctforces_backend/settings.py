@@ -124,7 +124,7 @@ CELERY_TASK_SERIALIZER = 'pickle'
 CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_IMPORTS = [
-    'api.tasks'
+    'api.celery_tasks'
 ]
 
 GUARDIAN_RAISE_403 = True

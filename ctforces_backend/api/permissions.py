@@ -40,19 +40,19 @@ class HasPermissionOrReadOnlyMixin(permissions.BasePermission):
 
 
 class HasEditTaskPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
-    permission_name = 'edit_task'
+    permission_name = 'change_task'
 
 
 class HasEditTaskPermission(HasPermissionMixin):
-    permission_name = 'edit_task'
+    permission_name = 'change_task'
 
 
 class HasCreateTaskPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
-    permission_name = 'create_task'
+    permission_name = 'add_task'
 
 
 class HasCreateTaskPermission(HasPermissionMixin):
-    permission_name = 'create_task'
+    permission_name = 'add_task'
 
 
 class HasDeleteTaskPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
@@ -64,8 +64,8 @@ class HasDeleteTaskPermission(HasPermissionMixin):
 
 
 class HasCreateTaskFilePermission(HasPermissionMixin):
-    permission_name = 'create_taskfile'
+    permission_name = 'add_taskfile'
 
 
 class HasCreateTaskFilePermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
-    permission_name = 'create_taskfile'
+    permission_name = 'add_taskfile'
