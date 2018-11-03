@@ -6,7 +6,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from stdimage.models import StdImageField
 
-from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor
+from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor, CustomFileField
 
 
 class UserUpsolvingAnnotatedManager(UserManager):
@@ -62,12 +62,15 @@ class User(AbstractUser):
 class Post(models.Model):
     author = models.ForeignKey('User', on_delete=models.SET_NULL, related_name='posts', null=True, blank=True)
     title = models.CharField(max_length=200, blank=False)
-    text = models.TextField(blank=False)
+    body = models.TextField(blank=False)
     is_published = models.BooleanField(default=False)
-    is_main_page = models.BooleanField(default=False)
+    show_on_main_page = models.BooleanField(default=False)
 
-    created_at = models.DateTimeField(auto_created=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('id',)
 
 
 class TaskTag(models.Model):
@@ -105,3 +108,26 @@ class Task(models.Model):
 
     def __str__(self):
         return "Task object ({}:{})".format(self.id, self.name)
+
+    class Meta:
+        ordering = ('id',)
+
+
+class TaskFile(models.Model):
+    owner = models.ForeignKey('User', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)
+    task = models.ForeignKey('Task', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)
+
+    name = models.CharField(max_length=100, null=False, blank=False)
+
+    upload_time = models.DateTimeField(auto_now_add=True)
+
+    file_field = CustomFileField(
+        upload_to=CustomUploadTo(
+            upload_type='files',
+            path='',
+            append_random=True),
+        blank=False, null=False
+    )
+
+    class Meta:
+        ordering = ('id',)
