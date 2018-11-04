@@ -27,26 +27,6 @@ class TaskPreviewSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class TaskViewSerializer(rest_serializers.ModelSerializer):
-    solved_count = rest_serializers.IntegerField(read_only=True)
-    task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
-    can_edit_task = rest_serializers.BooleanField(read_only=True)
-
-    class Meta:
-        model = api_models.Task
-        fields = (
-            'id',
-            'name',
-            'task_tags_details',
-            'author',
-            'cost',
-            'publication_time',
-            'description',
-            'solved_count',
-            'can_edit_task',
-        )
-
-
 class TaskFileUploadSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.TaskFile
@@ -87,6 +67,28 @@ class TaskFileBasicSerializer(rest_serializers.ModelSerializer):
         )
 
 
+class TaskViewSerializer(rest_serializers.ModelSerializer):
+    solved_count = rest_serializers.IntegerField(read_only=True)
+    task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
+    task_files_details = TaskFileBasicSerializer(many=True, read_only=True, source='files')
+    can_edit_task = rest_serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = api_models.Task
+        fields = (
+            'id',
+            'name',
+            'task_tags_details',
+            'task_files_details',
+            'author',
+            'cost',
+            'publication_time',
+            'description',
+            'solved_count',
+            'can_edit_task',
+        )
+
+
 class TaskFullSerializer(rest_serializers.ModelSerializer):
     solved_count = rest_serializers.IntegerField(read_only=True)
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
@@ -118,10 +120,10 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
                 'read_only': True,
             },
             'tags': {
-                'read_only': True,
+                'write_only': True,
             },
             'files': {
-                'read_only': True,
+                'write_only': True,
             },
         }
 
