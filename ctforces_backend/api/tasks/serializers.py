@@ -9,6 +9,13 @@ class TaskTagSerializer(rest_serializers.ModelSerializer):
         model = api_models.TaskTag
         fields = ('id', 'name')
 
+    @staticmethod
+    def validate_name(data):
+        data = data.lower()
+        if api_models.TaskTag.objects.filter(name=data).exists():
+            raise rest_serializers.ValidationError('Tag with this name already exists.')
+        return data
+
 
 class TaskPreviewSerializer(rest_serializers.ModelSerializer):
     solved_count = rest_serializers.IntegerField(read_only=True)
