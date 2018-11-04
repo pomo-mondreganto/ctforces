@@ -30,7 +30,6 @@ class User(AbstractUser):
     rating = models.IntegerField(default=2000)
     max_rating = models.IntegerField(default=2000)
 
-    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     avatar = StdImageField(
@@ -55,7 +54,7 @@ class User(AbstractUser):
         blank=False, null=False
     )
 
-    last_solve = models.DateTimeField(auto_now_add=True)
+    last_solve = models.DateTimeField(default=timezone.now)
 
     upsolving_annotated = UserUpsolvingAnnotatedManager()
 
