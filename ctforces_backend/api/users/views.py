@@ -175,7 +175,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         else:
             queryset = get_objects_for_user(request.user, 'view_task', api_models.Task)
 
-        queryset = queryset.filter(author=user)
+        queryset = queryset.filter(author=user).order_by('-id')
         paginator = api_pagination.TaskDefaultPagination()
         page = paginator.paginate_queryset(
             queryset=queryset,
@@ -198,7 +198,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         else:
             queryset = get_objects_for_user(request.user, 'view_post', api_models.Post)
 
-        queryset = queryset.filter(author=user)
+        queryset = queryset.filter(author=user).order_by('-id')
         paginator = api_pagination.PostDefaultPagination()
         page = paginator.paginate_queryset(
             queryset=queryset,

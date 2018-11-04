@@ -23,7 +23,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     pagination_class = api_pagination.TaskDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api_models.Task.objects.filter(is_published=True)
+    queryset = api_models.Task.objects.filter(is_published=True).order_by('-publication_time')
 
     action_permission_classes = {
         'get_full_task': (api_permissions.HasEditTaskPermission,),
