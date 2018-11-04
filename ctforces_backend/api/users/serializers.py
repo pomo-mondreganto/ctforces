@@ -1,6 +1,8 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_core_exceptions
+from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
+from rest_framework.fields import empty
 
 from api import models as api_models
 
@@ -44,13 +46,25 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = api_models.User.objects.create_user(**validated_data, is_active=False)
+        assign_perm('view_personal_info', user, user)
         return user
+
+
+class UserPersonalInfoSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.User
+        fields = (
+            'first_name',
+            'last_name',
+        )
+        nested_proxy_field = True
 
 
 class UserBasicSerializer(rest_serializers.ModelSerializer):
     avatar_main = rest_serializers.URLField(source='avatar.main.url')
     avatar_small = rest_serializers.URLField(source='avatar.small.url')
     cost_sum = rest_serializers.IntegerField(read_only=True)
+    personal_info = UserPersonalInfoSerializer(read_only=True)
 
     class Meta:
         model = api_models.User
@@ -62,14 +76,25 @@ class UserBasicSerializer(rest_serializers.ModelSerializer):
             'cost_sum',
             'avatar_main',
             'avatar_small',
+            'personal_info',
+            'hide_personal_info',
         )
+
+    def __init__(self, instance=None, data=empty, **kwargs):
+        super(UserBasicSerializer, self).__init__(instance=instance, data=data, **kwargs)
+        if isinstance(instance, list) \
+                or (instance.hide_personal_info
+                    and not self.context['request'].user.has_perm('view_personal_info', instance)):
+            self.fields.pop('personal_info')
 
 
 class UserMainSerializer(rest_serializers.ModelSerializer):
     cost_sum = rest_serializers.IntegerField(read_only=True)
     avatar_main = rest_serializers.URLField(source='avatar.main.url', read_only=True)
     avatar_small = rest_serializers.URLField(source='avatar.small.url', read_only=True)
-    old_password = rest_serializers.CharField(write_only=True)
+    old_password = rest_serializers.CharField(write_only=True, required=False)
+    password = rest_serializers.CharField(write_only=True, required=False)
+    personal_info = UserPersonalInfoSerializer(required=False)
 
     class Meta:
         model = api_models.User
@@ -82,10 +107,10 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
             'cost_sum',
             'avatar_main',
             'avatar_small',
-            'first_name',
-            'last_name',
             'password',
             'old_password',
+            'hide_personal_info',
+            'personal_info',
         )
 
         extra_kwargs = {
@@ -133,6 +158,10 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
+
+        personal_info = validated_data.pop('personal_info', None)
+        if personal_info:
+            validated_data.update(**personal_info)
 
         if password:
             instance.set_password(password)

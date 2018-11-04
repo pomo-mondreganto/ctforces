@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Sum, Q, Value as V
 from django.db.models.functions import Coalesce
 from django.utils import timezone
+from rest_framework_tricks.models.fields import NestedProxyField
 from stdimage.models import StdImageField
 
 from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor, CustomFileField
@@ -57,6 +58,19 @@ class User(AbstractUser):
     last_solve = models.DateTimeField(auto_now_add=True)
 
     upsolving_annotated = UserUpsolvingAnnotatedManager()
+
+    hide_personal_info = models.BooleanField(default=False)
+
+    personal_info = NestedProxyField(
+        'first_name',
+        'last_name',
+    )
+
+    class Meta:
+        ordering = ('id',)
+        permissions = (
+            ('view_personal_info', 'Can view user\'s personal information'),
+        )
 
 
 class Post(models.Model):
