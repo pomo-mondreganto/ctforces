@@ -97,10 +97,11 @@ volumes/server_logs/*
 # !volumes/server_logs/.gitkeep
 
 volumes/socks/*
-
+volumes/celery/*
 volumes/static/*
 
 !volumes/*/.gitkeep
+!volumes/db/postgresql/.gitkeep
 
 environment.env
 .DS_Store
