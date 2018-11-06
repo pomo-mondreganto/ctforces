@@ -5,7 +5,7 @@
         <div class="pusher">
             <div id="swipe-wrap">
                 <div class="ui container">
-                    <div class="ui segment">
+                    <div class="ui vertical basic segment">
                         <nuxt/>
                     </div>
                 </div>

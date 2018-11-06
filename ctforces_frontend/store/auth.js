@@ -13,7 +13,7 @@ export const mutations = {
 export const actions = {
     async login({ commit }, { username, password }) {
         try {
-            let { data } = await this.$axios.post('login/', {
+            let { data } = await this.$axios.post('/login/', {
                 username,
                 password
             });
@@ -24,7 +24,7 @@ export const actions = {
     },
     async logout({ commit }) {
         try {
-            let { data } = await this.$axios.post('logout/');
+            let { data } = await this.$axios.post('/logout/');
             commit('set_user', null);
         } catch (e) {
             throw e;

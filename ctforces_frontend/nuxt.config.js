@@ -61,8 +61,8 @@ export default {
   ** Axios module configuration
   */
     axios: {
-        baseURL: 'http://127.0.0.1:8000/api/',
-        browserBaseURL: 'http://127.0.0.1:8000/api/',
+        baseURL: 'http://127.0.0.1:8000/api',
+        browserBaseURL: 'http://127.0.0.1:8000/api',
         credentials: true
     },
 

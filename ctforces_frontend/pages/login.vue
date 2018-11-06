@@ -1,28 +1,24 @@
 <template>
-    <div class="ui centered grid">
-        <div class="sixteen wide column">
-            <div class="ui basic segment">
-                <div>Sign In</div>
-                <div class="ui clearing divider"></div>
-                <form class="ui basic vertical segment form error warning" @submit.prevent="login">
-                    <div class="field" v-bind:class="formErrors['username']">
-                        <input type="text" name="username" placeholder="Handle" v-model="formUsername">
-                    </div>
-                    <div class="field" v-bind:class="formErrors['password']">
-                        <input type="password" name="password" placeholder="Password" v-model="formPassword"/>
-                    </div>
-                    <div v-if="formErrors['detail']" class="ui error message">
-                        {{ formErrors['detail'] }}
-                    </div>
-                    <button class="ui fluid teal button field" type="submit">Sign me in</button>
-                    <div class="field center_aligned">
-                        <div>If you have an account and forget your password, please
-                            <nuxt-link to="/">reset it</nuxt-link>.
-                        </div>
-                    </div>
-                </form>
+    <div class="ui segment">
+        <div>Sign In</div>
+        <div class="ui clearing divider"></div>
+        <form class="ui form error warning" @submit.prevent="login">
+            <div class="field">
+                <input type="text" name="username" placeholder="Handle" v-model="loginForm.username">
             </div>
-        </div>
+            <div class="field">
+                <input type="password" name="password" placeholder="Password" v-model="loginForm.password"/>
+            </div>
+            <div v-if="loginForm.errors['detail']" class="ui error message">
+                {{ loginForm.errors['detail'] }}
+            </div>
+            <button class="ui fluid teal button field" type="submit">Sign me in</button>
+            <div class="field center_aligned">
+                <div>If you have an account and forget your password, please
+                    <nuxt-link to="/">reset it</nuxt-link>.
+                </div>
+            </div>
+        </form>
     </div>
 </template>
 
@@ -31,21 +27,23 @@ export default {
     layout: 'base',
     data() {
         return {
-            formUsername: '',
-            formPassword: '',
-            formErrors: {}
+            loginForm: {
+                username: '',
+                password: '',
+                errors: {}
+            }
         };
     },
     methods: {
         async login() {
             try {
                 await this.$store.dispatch('auth/login', {
-                    username: this.formUsername,
-                    password: this.formPassword
+                    username: this.loginForm.username,
+                    password: this.loginForm.password
                 });
             } catch (e) {
                 let { data } = e.response;
-                this.formErrors = data;
+                this.loginForm.errors = data;
             }
         }
     }

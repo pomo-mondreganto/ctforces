@@ -3,7 +3,6 @@
 
 <script>
 export default {
-    layout: 'base',
-    middleware: 'auth'
+    layout: 'base'
 };
 </script>
