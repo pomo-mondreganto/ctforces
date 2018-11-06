@@ -16,7 +16,7 @@
                     </div>
                     <button class="ui fluid teal button field" type="submit">Sign me in</button>
                     <div class="field center_aligned">
-                        <div>If you have an account and forget your password, please
+                      <div>If you have an account and cannot remember your password, please
                             <nuxt-link to="/">reset it</nuxt-link>.
                         </div>
                     </div>
