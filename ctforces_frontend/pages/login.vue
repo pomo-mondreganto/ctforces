@@ -1,7 +1,7 @@
 <template>
     <div class="ui centered grid">
         <div class="sixteen wide column">
-            <div class="ui segment">
+            <div class="ui basic segment">
                 <div>Sign In</div>
                 <div class="ui clearing divider"></div>
                 <form class="ui basic vertical segment form error warning" @submit.prevent="login">
