@@ -5,7 +5,7 @@ export default {
 
     server: {
         port: 3000, // default: 3000
-      host: '127.0.0.1' // default: localhost
+        host: '127.0.0.1' // default: localhost
     },
 
     /*
@@ -43,12 +43,12 @@ export default {
   ** Global CSS
   */
 
-    css: ['~semantic/dist/semantic.min.css', '~assets/css/main.css'],
+    css: ['~/semantic/dist/semantic.min.css', '~/assets/css/main.css'],
 
     /*
   ** Plugins to load before mounting the App
   */
-    plugins: ['~plugins/sui.js', '~plugins/axios'],
+    plugins: ['~/plugins/sui.js', '~/plugins/axios'],
 
     /*
   ** Nuxt.js modules
