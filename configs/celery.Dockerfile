@@ -8,10 +8,9 @@ RUN apt-get install -y python3-dev python3-pip graphviz libgraphviz-dev pkg-conf
 ADD ./ctforces_backend/requirements.txt /
 RUN pip3 install -U pip
 RUN pip3 install -Ur /requirements.txt
-RUN pip3 install gunicorn gevent
 
-ADD ./configs/django.start.sh /entrypoint.sh
-ADD ./configs/db.check.py /db.check.py
-RUN chmod +x /entrypoint.sh
+WORKDIR /app
+RUN useradd celery
+USER celery
 
-CMD ["./entrypoint.sh"]
+CMD ["/usr/local/bin/celery", "-A", "ctforces_backend", "worker", "--concurrency", "20", "-E", "-l", "info", "--statedb=/celery/celery.state"]

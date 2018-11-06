@@ -21,6 +21,20 @@ services:
     env_file:
       - ./configs/environment.env
 
+  ctforces-celery:
+    build:
+      context: .
+      dockerfile: ./configs/celery.Dockerfile
+    volumes:
+    - ./ctforces_backend/:/app
+    - ./volumes/celery/:/celery
+    depends_on:
+    - ctforces-redis
+    links:
+    - ctforces-redis
+    env_file:
+    - ./configs/environment.env
+
   ctforces-nginx:
     image: nginx
     volumes:
@@ -38,7 +52,7 @@ services:
   ctforces-postgres:
     image: postgres
     volumes:
-    - ./volumes/db/data:/var/lib/postgresql/data
+    - ./volumes/db/postgresql/:/var/lib/postgresql/
     restart: on-failure
     container_name: ctforces-postgres-main
     ports:

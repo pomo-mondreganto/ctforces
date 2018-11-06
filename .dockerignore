@@ -187,3 +187,5 @@ fabric.properties
 
 .idea/
 .git/
+
+ctforces_venv/
