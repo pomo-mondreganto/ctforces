@@ -189,3 +189,4 @@ fabric.properties
 .git/
 
 ctforces_venv/
+ctforces_frontend/node_modules
