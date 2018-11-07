@@ -1,4 +1,4 @@
-from django.db.models import Count, Case, When, BooleanField, Value as V
+from django.db.models import Count, Exists, OuterRef
 from django.utils import timezone
 from rest_framework import mixins as rest_mixins
 from rest_framework import status as rest_status
@@ -52,13 +52,11 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
                 'solved_by',
                 distinct=True,
             ),
-            is_solved_by_user=Case(
-                When(
-                    solved_by__id=(self.request.user.id or -1),
-                    then=V(True)
-                ),
-                default=V(False),
-                output_field=BooleanField()
+            is_solved_by_user=Exists(
+                api_models.Task.objects.filter(
+                    id=OuterRef('id'),
+                    solved_by=self.request.user
+                )
             ),
         ).prefetch_related('tags', 'files')
 

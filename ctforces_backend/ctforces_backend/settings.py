@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'guardian',
     'corsheaders',
     'rest_framework_tricks',
+    'rest_framework_nested',
 ]
 
 MIDDLEWARE = [

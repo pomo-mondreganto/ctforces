@@ -231,6 +231,10 @@ class ContestTaskRelationship(models.Model):
 
     solved = models.ManyToManyField('User', related_name='contest_task_relationship', blank=True)
     cost = models.IntegerField(default=0)
+    ordering_number = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ('-ordering_number', 'cost', 'id')
 
 
 class ContestParticipantRelationship(models.Model):

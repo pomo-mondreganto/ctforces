@@ -106,7 +106,6 @@ class ContestViewSerializer(rest_serializers.ModelSerializer):
             'is_running',
             'name',
             'start_time',
-            'is_solved_by_user',
         )
 
 
@@ -132,4 +131,5 @@ class ContestTaskRelationshipSerializer(rest_serializers.ModelSerializer):
             'contest',
             'cost',
             'task',
+            'ordering_number',
         )

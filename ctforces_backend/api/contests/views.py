@@ -1,8 +1,10 @@
-from django.db.models import Count, Sum, Case, When, IntegerField, Value as V, Subquery, OuterRef
+from django.db.models import Count, Sum, Case, When, IntegerField, Value as V, Subquery, OuterRef, Exists
+from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
 from rest_framework import status
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError, Throttled
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 
@@ -11,6 +13,7 @@ from api import models as api_models
 from api import pagination as api_pagination
 from api import permissions as api_permissions
 from api.contests import serializers as api_contests_serializers
+from api.tasks import serializers as api_tasks_serializers
 
 
 class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
@@ -140,3 +143,99 @@ class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    serializer_class = api_contests_serializers.ContestTaskViewSerializer
+    lookup_field = 'task_number'
+    lookup_url_kwarg = 'task_number'
+
+    queryset = api_models.Task.objects.all()
+
+    def get_contest(self):
+        contest_id = self.kwargs.get('contest_id')
+
+        try:
+            contest_id = int(contest_id)
+        except ValueError:
+            raise ValidationError(detail='Invalid contest_id.')
+
+        contest = api_models.Contest.objects.filter(id=contest_id).first()
+        if not contest:
+            raise NotFound(detail='Contest not found.')
+
+        if not contest.is_published and not self.request.user.has_perm('view_contest', contest):
+            raise PermissionDenied('You cannot access this contest')
+
+        return contest
+
+    def get_queryset(self):
+        contest = self.get_contest()
+
+        contest_task_relationship_subquery = api_models.ContestTaskRelationship.objects.filter(
+            contest=contest
+        )
+
+        queryset = api_models.Task.objects.filter(
+            contest_task_relationship__in=contest_task_relationship_subquery
+        ).annotate(
+            is_solved_by_user=Exists(
+                api_models.ContestTaskRelationship.objects.filter(
+                    task__id=OuterRef('id'),
+                    contest=contest,
+                    solved=self.request.user,
+                ),
+            ),
+            solved_count=Count(
+                'contest_task_relationship__solved',
+                distinct=True,
+            ),
+        )
+
+        return queryset
+
+    def get_object(self):
+        task_number = self.kwargs.get('task_number')
+
+        try:
+            task_number = int(task_number)
+            if task_number < 1:
+                raise ValueError()
+        except ValueError:
+            raise ValidationError(detail='Invalid task_number.')
+        queryset = self.get_queryset()[task_number - 1:task_number]
+        task = queryset.first()
+
+        if not task:
+            raise NotFound('No such task.')
+
+        return task
+
+    @action(detail=True,
+            url_name='submit',
+            url_path='submit',
+            methods=['post'])
+    @ratelimit(key='user', rate='4/m')
+    def submit_flag(self, *_args, **_kwargs):
+        if getattr(self.request, 'limited', False):
+            raise Throttled(detail='You can submit flag 4 times per minute.')
+
+        task = self.get_object()
+        contest = self.get_contest()
+        if contest.is_running and not contest.participants.filter(id=self.request.user.id).exists():
+            raise PermissionDenied('You are not registered.')
+
+        serializer = api_tasks_serializers.TaskSubmitSerializer(data=self.request.data, instance=task)
+        if serializer.is_valid(raise_exception=True):
+            if contest.is_running:
+                contest_task_rel = api_models.ContestTaskRelationship.objects.get(
+                    contest=contest,
+                    task=task
+                )
+
+                contest_task_rel.solved.add(self.request.user)
+
+            task.solved_by.add(self.request.user)
+
+            return Response('accepted!')
