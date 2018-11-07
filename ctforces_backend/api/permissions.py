@@ -39,6 +39,16 @@ class HasPermissionOrReadOnlyMixin(permissions.BasePermission):
         return request.user.has_perm(self.permission_name)
 
 
+class HasContestTaskRelationshipPermission(HasPermissionMixin):
+    permission_name = 'change_contest'
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return request.user.has_perm(self.permission_name, obj.contest)
+
+
 class HasEditTaskPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
     permission_name = 'change_task'
 
@@ -77,3 +87,29 @@ class HasEditPostPermission(HasPermissionMixin):
 
 class HasEditPostPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
     permission_name = 'change_post'
+
+
+class HasEditContestPermission(HasPermissionMixin):
+    permission_name = 'change_contest'
+
+
+class HasCreateContestPermission(HasPermissionMixin):
+    permission_name = 'add_contest'
+
+
+class HasDeleteContestPermission(HasPermissionMixin):
+    permission_name = 'delete_contest'
+
+
+class HasViewTaskPermission(HasPermissionMixin):
+    permission_name = 'view_task'
+
+    def has_object_permission(self, request, view, obj):
+        return obj.is_published or request.user.has_perm(self.permission_name, obj)
+
+
+class HasViewContestPermission(HasPermissionMixin):
+    permission_name = 'view_contest'
+
+    def has_object_permission(self, request, view, obj):
+        return obj.is_published or request.user.has_perm(self.permission_name, obj)

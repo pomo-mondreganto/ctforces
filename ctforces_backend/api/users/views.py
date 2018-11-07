@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 
 from api import models as api_models
 from api import pagination as api_pagination
+from api.contests import serializers as api_contests_serializers
 from api.posts import serializers as api_posts_serializers
 from api.tasks import serializers as api_tasks_serializers
 from api.token_operations import serialize, deserialize
@@ -210,4 +211,27 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             return paginator.get_paginated_response(serializer.data)
 
         serializer = api_posts_serializers.PostMainSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, url_name='contests', url_path='contests', methods=['get'])
+    def get_users_contests(self, request, **_kwargs):
+        contests_type = request.query_params.get('type', 'published')
+        user = self.get_object()
+        if contests_type == 'published':
+            queryset = api_models.Contest.objects.filter(is_published=True)
+        else:
+            queryset = get_objects_for_user(request.user, 'view_contest', api_models.Contest)
+
+        queryset = queryset.filter(author=user).order_by('-id')
+        paginator = api_pagination.ContestDefaultPagination()
+        page = paginator.paginate_queryset(
+            queryset=queryset,
+            request=self.request,
+        )
+
+        if page is not None:
+            serializer = api_contests_serializers.ContestPreviewSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+        serializer = api_contests_serializers.ContestPreviewSerializer(queryset, many=True)
         return Response(serializer.data)
