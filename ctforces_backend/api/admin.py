@@ -166,6 +166,12 @@ class CustomTaskAdmin(admin.ModelAdmin):
 
     readonly_fields = ('solved_count',)
 
+    raw_id_fields = (
+        'solved_by',
+        'tags',
+        'author',
+    )
+
     @staticmethod
     def solved_count(obj):
         return obj.solved_count
@@ -241,6 +247,10 @@ class CustomPostAdmin(admin.ModelAdmin):
     readonly_fields = (
         'created_at',
         'updated_at',
+    )
+
+    raw_id_fields = (
+        'author',
     )
 
     def get_queryset(self, request):
