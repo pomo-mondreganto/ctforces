@@ -1,4 +1,4 @@
-from django.db.models import Count, Sum, Case, When, IntegerField, Value as V, Subquery, OuterRef, Exists
+from django.db.models import Count, Sum, Case, When, IntegerField, Value as V, Subquery, OuterRef, Exists, Q
 from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
 from rest_framework import status
@@ -189,6 +189,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             ),
             solved_count=Count(
                 'contest_task_relationship__solved',
+                filter=Q(contest_task_relationship__in=contest_task_relationship_subquery),
                 distinct=True,
             ),
         )

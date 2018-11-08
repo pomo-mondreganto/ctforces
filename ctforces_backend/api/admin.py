@@ -274,6 +274,129 @@ class CustomPostAdmin(admin.ModelAdmin):
     )
 
 
+class ContestTaskInlineAdmin(admin.TabularInline):
+    model = api_models.ContestTaskRelationship
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'task',
+                    'cost',
+                    'ordering_number',
+                ),
+            },
+        ),
+        (
+            'Other info',
+            {
+                'fields': (
+                    'solved',
+                )
+            }
+        )
+    )
+
+    readonly_fields = ('solved_count',)
+    raw_id_fields = (
+        'task',
+        'solved',
+    )
+
+    @staticmethod
+    def solved_count(obj):
+        return obj.solved_count
+
+    def get_queryset(self, request):
+        return super(ContestTaskInlineAdmin, self).get_queryset(request).annotate(
+            solved_count=Count(
+                'solved',
+                distinct=True,
+            ),
+        )
+
+
+class CustomContestAdmin(admin.ModelAdmin):
+    inlines = (ContestTaskInlineAdmin,)
+
+    list_display = (
+        'id',
+        'name',
+        'author',
+        'is_published',
+        'is_running',
+        'is_finished',
+        'is_registration_open',
+        'start_time',
+        'end_time',
+        'registered_count',
+    )
+
+    list_display_links = (
+        'id',
+        'name',
+    )
+
+    readonly_fields = (
+        'registered_count',
+    )
+
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'name',
+                    'description',
+                    'author',
+                ),
+            },
+        ),
+        (
+            'Access',
+            {
+                'fields': (
+                    'is_published',
+                    'is_running',
+                    'is_finished',
+                    'is_registration_open',
+                )
+            },
+        ),
+        (
+            'Dates',
+            {
+                'fields': (
+                    'start_time',
+                    'end_time',
+                    'celery_start_task_id',
+                    'celery_end_task_id',
+                ),
+            },
+        ),
+    )
+
+    raw_id_fields = (
+        'participants',
+        'author',
+    )
+
+    filter_horizontal = (
+        'tasks',
+    )
+
+    @staticmethod
+    def registered_count(obj):
+        return obj.registered_count
+
+    def get_queryset(self, request):
+        return super(CustomContestAdmin, self).get_queryset(request).annotate(
+            registered_count=Count('participants', distinct=True),
+        )
+
+
 admin.site.register(api_models.User, CustomUserAdmin)
 admin.site.register(api_models.Task, CustomTaskAdmin)
 admin.site.register(api_models.Post, CustomPostAdmin)
+admin.site.register(api_models.Contest, CustomContestAdmin)
