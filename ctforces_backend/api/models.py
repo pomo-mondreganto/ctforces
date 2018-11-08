@@ -229,7 +229,6 @@ class ContestTaskRelationship(models.Model):
     contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_task_relationship')
     task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='contest_task_relationship')
 
-    solved = models.ManyToManyField('User', related_name='contest_task_relationship', blank=True)
     cost = models.IntegerField(default=0)
     ordering_number = models.IntegerField(default=0)
 
@@ -241,4 +240,37 @@ class ContestParticipantRelationship(models.Model):
     contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_participant_relationship')
     participant = models.ForeignKey('User', on_delete=models.CASCADE, related_name='contest_participant_relationship')
 
-    last_solve = models.DateTimeField(auto_now_add=True)
+    last_solve = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = (
+            'contest',
+            'participant',
+        )
+
+
+class ContestTaskParticipantSolvedRelationship(models.Model):
+    contest = models.ForeignKey(
+        'Contest',
+        on_delete=models.CASCADE,
+        related_name='contest_task_participant_solved_relationship'
+    )
+
+    participant = models.ForeignKey(
+        'User',
+        on_delete=models.CASCADE,
+        related_name='contest_task_participant_solved_relationship'
+    )
+
+    task = models.ForeignKey(
+        'Task',
+        on_delete=models.CASCADE,
+        related_name='contest_task_participant_solved_relationship'
+    )
+
+    class Meta:
+        unique_together = (
+            'contest',
+            'participant',
+            'task',
+        )

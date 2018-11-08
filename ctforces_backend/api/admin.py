@@ -1,13 +1,23 @@
+from django import forms
 from django.contrib import admin
+from django.contrib import messages
+from django.contrib.admin.helpers import ActionForm
 from django.contrib.auth.admin import UserAdmin
-from django.db.models import Sum, Value as V, Count
+from django.db.models import Sum, Value as V, Count, OuterRef
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
+from api import database_functions as api_database_functions
 from api import models as api_models
 
 
+class UserAdminActionForm(ActionForm):
+    contest_id = forms.IntegerField(required=False)
+
+
 class CustomUserAdmin(UserAdmin):
+    action_form = UserAdminActionForm
+
     list_display = (
         'id',
         'username',
@@ -26,6 +36,8 @@ class CustomUserAdmin(UserAdmin):
         'id',
         'username',
     )
+
+    ordering = ('id',)
 
     fieldsets = (
         (
@@ -98,13 +110,53 @@ class CustomUserAdmin(UserAdmin):
     )
 
     def get_queryset(self, request):
-        return super(CustomUserAdmin, self).get_queryset(request) \
-            .prefetch_related('groups', 'user_permissions') \
-            .annotate(cost_sum=Coalesce(Sum('solved_tasks__cost'), V(0)))
+        return super(CustomUserAdmin, self).get_queryset(request).prefetch_related(
+            'groups', 'user_permissions'
+        ).annotate(
+            cost_sum=Coalesce(
+                Sum(
+                    'solved_tasks__cost'
+                ),
+                V(0),
+            )
+        )
 
     @staticmethod
     def cost_sum(obj):
         return obj.cost_sum
+
+    def register_for_contest(self, request, queryset):
+        contest_id = request.POST.get('contest_id')
+        try:
+            contest_id = int(contest_id)
+        except ValueError:
+            raise forms.ValidationError('Invalid contest_id')
+
+        contest = api_models.Contest.objects.filter(id=contest_id).first()
+        if not contest:
+            raise forms.ValidationError('Invalid contest')
+
+        api_models.ContestParticipantRelationship.objects.bulk_create([
+            api_models.ContestParticipantRelationship(
+                contest=contest,
+                participant=user,
+            ) for user in queryset.all()
+        ])
+        self.message_user(
+            request,
+            'Successfully registered {0} users for contest <{1}:{2}>'.format(
+                queryset.count(),
+                contest_id,
+                contest.name,
+            ),
+            messages.SUCCESS,
+        )
+
+    register_for_contest.short_description = 'Register selected user for contest'
+
+    actions = (
+        'register_for_contest',
+    )
 
 
 class CustomTaskAdmin(admin.ModelAdmin):
@@ -285,6 +337,7 @@ class CustomPostAdmin(admin.ModelAdmin):
 
 
 class ContestTaskInlineAdmin(admin.TabularInline):
+    classes = ('collapse',)
     model = api_models.ContestTaskRelationship
     fieldsets = (
         (
@@ -302,7 +355,7 @@ class ContestTaskInlineAdmin(admin.TabularInline):
             'Other info',
             {
                 'fields': (
-                    'solved',
+                    'solved_count',
                 )
             }
         )
@@ -311,7 +364,6 @@ class ContestTaskInlineAdmin(admin.TabularInline):
     readonly_fields = ('solved_count',)
     raw_id_fields = (
         'task',
-        'solved',
     )
 
     @staticmethod
@@ -320,15 +372,73 @@ class ContestTaskInlineAdmin(admin.TabularInline):
 
     def get_queryset(self, request):
         return super(ContestTaskInlineAdmin, self).get_queryset(request).annotate(
-            solved_count=Count(
-                'solved',
-                distinct=True,
-            ),
+            solved_count=Coalesce(
+                api_database_functions.SubqueryCount(
+                    api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+                        contest_id=OuterRef('contest_id'),
+                        task_id=OuterRef('task_id'),
+                    )
+                ),
+                V(0),
+            )
         )
 
 
+class ContestParticipantInlineAdmin(admin.TabularInline):
+    model = api_models.ContestParticipantRelationship
+    classes = ('collapse',)
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'participant',
+                    'last_solve',
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = (
+        'last_solve',
+    )
+
+    raw_id_fields = (
+        'participant',
+    )
+
+
+class ContestTaskParticipantSolvedInlineAdmin(admin.TabularInline):
+    model = api_models.ContestTaskParticipantSolvedRelationship
+    classes = ('collapse',)
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'participant',
+                    'contest',
+                    'task',
+                ),
+            },
+        ),
+    )
+
+    raw_id_fields = (
+        'participant',
+        'contest',
+        'task',
+    )
+
+
 class CustomContestAdmin(admin.ModelAdmin):
-    inlines = (ContestTaskInlineAdmin,)
+    inlines = (
+        ContestTaskInlineAdmin,
+        ContestParticipantInlineAdmin,
+        ContestTaskParticipantSolvedInlineAdmin
+    )
 
     list_display = (
         'id',
@@ -383,6 +493,7 @@ class CustomContestAdmin(admin.ModelAdmin):
                     'celery_start_task_id',
                     'celery_end_task_id',
                 ),
+                'classes': ('collapse',),
             },
         ),
     )
@@ -394,6 +505,7 @@ class CustomContestAdmin(admin.ModelAdmin):
 
     filter_horizontal = (
         'tasks',
+        'participants',
     )
 
     @staticmethod
@@ -403,7 +515,7 @@ class CustomContestAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super(CustomContestAdmin, self).get_queryset(request).annotate(
             registered_count=Count('participants', distinct=True),
-        )
+        ).prefetch_related('tasks', 'participants')
 
 
 admin.site.register(api_models.User, CustomUserAdmin)

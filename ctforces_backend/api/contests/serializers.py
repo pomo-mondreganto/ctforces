@@ -109,17 +109,43 @@ class ContestViewSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class ContestScoreboardSerializer(rest_serializers.ModelSerializer):
-    solved_tasks = api_tasks_serializers.TaskPreviewSerializer(many=True, read_only=True)
-    cost_sum = rest_serializers.IntegerField(read_only=True)
+class ContestScoreboardUserSerializer(rest_serializers.ModelSerializer):
+    cost_sum = rest_serializers.IntegerField()
+    last_contest_solve = rest_serializers.DateTimeField()
 
     class Meta:
         model = api_models.User
         fields = (
             'id',
-            'cost_sum',
-            'solved_tasks',
             'username',
+            'cost_sum',
+            'last_contest_solve',
+        )
+
+
+class ContestScoreboardUserMinimalSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.User
+        fields = ('id',)
+
+
+class ContestScoreboardTaskSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.Task
+        fields = (
+            'name',
+        )
+
+
+class ContestScoreboardSerializer(rest_serializers.ModelSerializer):
+    task_name = rest_serializers.CharField()
+
+    class Meta:
+        model = api_models.ContestTaskParticipantSolvedRelationship
+        fields = (
+            'contest_id',
+            'participant_id',
+            'task_name',
         )
 
 

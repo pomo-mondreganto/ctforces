@@ -13,7 +13,7 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
         fields = (
             'id',
             'email',
-            'password'
+            'password',
             'username',
         )
         extra_kwargs = {

@@ -48,6 +48,9 @@ class HasContestTaskRelationshipPermission(HasPermissionMixin):
 
         return request.user.has_perm(self.permission_name, obj.contest)
 
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS
+
 
 class HasEditTaskPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
     permission_name = 'change_task'
@@ -113,3 +116,6 @@ class HasViewContestPermission(HasPermissionMixin):
 
     def has_object_permission(self, request, view, obj):
         return obj.is_published or request.user.has_perm(self.permission_name, obj)
+
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS

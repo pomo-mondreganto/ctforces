@@ -40,7 +40,12 @@ class TaskPreviewSerializer(rest_serializers.ModelSerializer):
 class TaskFileUploadSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.TaskFile
-        fields = ('id', 'file_field', 'owner', 'name')
+        fields = (
+            'id',
+            'file_field',
+            'name',
+            'owner',
+        )
         extra_kwargs = {
             'owner': {
                 'required': False,
