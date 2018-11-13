@@ -107,7 +107,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
                     participant=OuterRef('id'),
                 ).values('last_solve')
             ),
-        ).order_by('-cost_sum')
+        ).order_by('-cost_sum', 'last_contest_solve')
 
         users_paginator = api_pagination.UserScoreboardPagination()
 
