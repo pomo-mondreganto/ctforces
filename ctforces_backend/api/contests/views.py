@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F
 from django.db.models.functions import Coalesce
 from django.utils import timezone
@@ -130,9 +132,23 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             many=True,
         )
 
+        solved_tasks_data = data_serializer.data
+
+        reformatted_data = defaultdict(list)
+
+        for element in solved_tasks_data:
+            reformatted_data[element['task_name']].append(element['participant_id'])
+
+        result_data = list(
+            dict(
+                task_name=key,
+                participants=value
+            ) for key, value in reformatted_data.items()
+        )
+
         return Response({
             'users': users_serializer.data,
-            'main_data': data_serializer.data,
+            'main_data': result_data,
         })
 
 
