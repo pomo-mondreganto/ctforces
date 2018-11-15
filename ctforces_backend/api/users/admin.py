@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import messages
 from django.contrib.admin.helpers import ActionForm
 from django.contrib.auth.admin import UserAdmin
-from django.db.models import Sum, Value as V
+from django.db.models import Sum, Value as V, Q
 from django.db.models.functions import Coalesce
 
 from api import models as api_models
@@ -112,7 +112,8 @@ class CustomUserAdmin(UserAdmin):
         ).annotate(
             cost_sum=Coalesce(
                 Sum(
-                    'solved_tasks__cost'
+                    'solved_tasks__cost',
+                    filter=Q(solved_tasks__is_published=True),
                 ),
                 V(0),
             )

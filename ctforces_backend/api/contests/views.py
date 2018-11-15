@@ -299,5 +299,8 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 )
 
             task.solved_by.add(self.request.user)
+            api_models.User.objects.filter(id=self.request.user.id).update(
+                last_solve=timezone.now()
+            )
 
             return Response('accepted!')
