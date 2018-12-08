@@ -241,6 +241,7 @@ class ContestParticipantRelationship(models.Model):
     participant = models.ForeignKey('User', on_delete=models.CASCADE, related_name='contest_participant_relationship')
 
     last_solve = models.DateTimeField(default=timezone.now)
+    delta = models.IntegerField(null=True, blank=True)
 
     class Meta:
         unique_together = (

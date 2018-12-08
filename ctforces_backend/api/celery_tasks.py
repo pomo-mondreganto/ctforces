@@ -80,6 +80,13 @@ def recalculate_rating(contest_id):
 
     for i, player in enumerate(participants):
         get_model('website', 'User').objects.filter(id=player[0]).update(rating=player[2] + deltas[i])
+        get_model('website', 'ContestParticipantRelationship').objects.filter(
+            user_id=player[0],
+            contest_id=contest_id
+        ).update(
+            delta=deltas[i]
+        )
+
         if player[2] + deltas[i] > player[3]:
             get_model('website', 'User').objects.filter(id=player[0]).update(max_rating=player[2] + deltas[i])
 
