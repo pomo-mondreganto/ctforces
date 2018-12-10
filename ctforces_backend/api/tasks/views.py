@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, Exists, OuterRef
 from django.utils import timezone
 from rest_framework import mixins as rest_mixins
 from rest_framework import status as rest_status
@@ -23,9 +23,10 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     pagination_class = api_pagination.TaskDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api_models.Task.objects.filter(is_published=True).order_by('-publication_time')
+    queryset = api_models.Task.objects.order_by('-publication_time')
 
     action_permission_classes = {
+        'retrieve': (api_permissions.HasViewTaskPermission,),
         'get_full_task': (api_permissions.HasEditTaskPermission,),
         'create': (api_permissions.HasCreateTaskPermission,),
         'update': (api_permissions.HasEditTaskPermission,),
@@ -42,7 +43,22 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
     def get_queryset(self):
         queryset = super(TaskViewSet, self).get_queryset()
-        return queryset.annotate(solved_count=Count('solved_by')).prefetch_related('tags', 'files')
+
+        if self.action == 'list':
+            queryset = queryset.filter(is_published=True)
+
+        return queryset.annotate(
+            solved_count=Count(
+                'solved_by',
+                distinct=True,
+            ),
+            is_solved_by_user=Exists(
+                api_models.Task.objects.filter(
+                    id=OuterRef('id'),
+                    solved_by=self.request.user
+                )
+            ),
+        ).prefetch_related('tags', 'files')
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

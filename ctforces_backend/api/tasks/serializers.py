@@ -20,24 +20,32 @@ class TaskTagSerializer(rest_serializers.ModelSerializer):
 class TaskPreviewSerializer(rest_serializers.ModelSerializer):
     solved_count = rest_serializers.IntegerField(read_only=True)
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
+    is_solved_by_user = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
         model = api_models.Task
         fields = (
             'id',
-            'name',
-            'task_tags_details',
             'author',
             'cost',
+            'is_published',
+            'is_solved_by_user',
+            'name',
             'publication_time',
             'solved_count',
+            'task_tags_details',
         )
 
 
 class TaskFileUploadSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.TaskFile
-        fields = ('id', 'file_field', 'owner', 'name')
+        fields = (
+            'id',
+            'file_field',
+            'name',
+            'owner',
+        )
         extra_kwargs = {
             'owner': {
                 'required': False,
@@ -68,55 +76,71 @@ class TaskFileBasicSerializer(rest_serializers.ModelSerializer):
         model = api_models.TaskFile
         fields = (
             'id',
+            'file_field',
             'name',
             'task_details',
-            'upload_time'
+            'upload_time',
+        )
+
+
+class TaskFileViewSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.TaskFile
+        fields = (
+            'id',
+            'file_field',
+            'name',
+            'upload_time',
         )
 
 
 class TaskViewSerializer(rest_serializers.ModelSerializer):
     solved_count = rest_serializers.IntegerField(read_only=True)
-    task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
-    task_files_details = TaskFileBasicSerializer(many=True, read_only=True, source='files')
+    tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
+    files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
     can_edit_task = rest_serializers.BooleanField(read_only=True)
+    is_solved_by_user = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
         model = api_models.Task
         fields = (
             'id',
-            'name',
-            'task_tags_details',
-            'task_files_details',
             'author',
-            'cost',
-            'publication_time',
-            'description',
-            'solved_count',
             'can_edit_task',
+            'cost',
+            'description',
+            'files_details',
+            'is_published',
+            'is_solved_by_user',
+            'name',
+            'publication_time',
+            'solved_count',
+            'tags_details',
         )
 
 
 class TaskFullSerializer(rest_serializers.ModelSerializer):
     solved_count = rest_serializers.IntegerField(read_only=True)
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
-    files_details = TaskFileBasicSerializer(many=True, read_only=True, source='files')
+    files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
+    cost = rest_serializers.IntegerField(min_value=1, max_value=9999)
 
     class Meta:
         model = api_models.Task
         fields = (
             'id',
-            'name',
-            'task_tags_details',
-            'tags',
             'author',
             'cost',
-            'publication_time',
-            'flag',
             'description',
-            'is_published',
-            'solved_count',
             'files',
             'files_details',
+            'flag',
+            'is_published',
+            'name',
+            'publication_time',
+            'solved_count',
+            'tags',
+            'task_tags_details',
         )
 
         extra_kwargs = {

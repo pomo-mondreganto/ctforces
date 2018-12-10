@@ -11,7 +11,10 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.User
         fields = (
-            'username', 'email', 'password'
+            'id',
+            'email',
+            'password',
+            'username',
         )
         extra_kwargs = {
             'password': {
@@ -70,14 +73,14 @@ class UserBasicSerializer(rest_serializers.ModelSerializer):
         model = api_models.User
         fields = (
             'id',
-            'username',
-            'rating',
-            'max_rating',
-            'cost_sum',
             'avatar_main',
             'avatar_small',
-            'personal_info',
+            'cost_sum',
             'hide_personal_info',
+            'max_rating',
+            'personal_info',
+            'rating',
+            'username',
         )
 
     def __init__(self, instance=None, data=empty, **kwargs):
@@ -100,17 +103,17 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
         model = api_models.User
         fields = (
             'id',
-            'username',
-            'email',
-            'rating',
-            'max_rating',
-            'cost_sum',
             'avatar_main',
             'avatar_small',
-            'password',
-            'old_password',
+            'cost_sum',
+            'email',
             'hide_personal_info',
+            'max_rating',
+            'old_password',
+            'password',
             'personal_info',
+            'rating',
+            'username',
         )
 
         extra_kwargs = {

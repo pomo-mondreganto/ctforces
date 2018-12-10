@@ -3,8 +3,10 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework.routers import SimpleRouter
+from rest_framework_nested.routers import NestedSimpleRouter
 
 from api import views as api_other_views
+from api.contests import views as api_contests_views
 from api.posts import views as api_posts_views
 from api.tasks import views as api_tasks_views
 from api.users import views as api_users_views
@@ -15,6 +17,11 @@ router.register('tasks', api_tasks_views.TaskViewSet)
 router.register('task_tags', api_tasks_views.TaskTagViewSet)
 router.register('task_files', api_tasks_views.TaskFileViewSet, base_name='task_files')
 router.register('posts', api_posts_views.PostViewSet)
+router.register('contests', api_contests_views.ContestViewSet)
+router.register('contest_task_relationship', api_contests_views.ContestTaskRelationshipViewSet)
+
+contests_router = NestedSimpleRouter(router, 'contests', lookup='contest')
+contests_router.register('tasks', api_contests_views.ContestTaskViewSet)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -30,6 +37,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     re_path('^$', api_other_views.test_view, name='test_view'),
     re_path('^', include(router.urls)),
+    re_path('^', include(contests_router.urls)),
 
     re_path('^register/$', api_users_views.UserCreateView.as_view(), name='registration_view'),
 

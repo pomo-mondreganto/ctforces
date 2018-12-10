@@ -1,3 +1,4 @@
+from celery import current_app
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.db import models
@@ -7,6 +8,7 @@ from django.utils import timezone
 from rest_framework_tricks.models.fields import NestedProxyField
 from stdimage.models import StdImageField
 
+from api import celery_tasks
 from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor, CustomFileField
 
 
@@ -144,3 +146,132 @@ class TaskFile(models.Model):
 
     class Meta:
         ordering = ('id',)
+
+
+class Contest(models.Model):
+    author = models.ForeignKey(
+        'User',
+        on_delete=models.SET_NULL,
+        related_name='contests_authored',
+        null=True, blank=True
+    )
+
+    name = models.CharField(max_length=100, null=False, blank=False)
+    description = models.TextField()
+
+    start_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+
+    is_published = models.BooleanField(default=False)
+    is_running = models.BooleanField(default=False)
+    is_finished = models.BooleanField(default=False)
+    is_registration_open = models.BooleanField(default=False)
+
+    celery_start_task_id = models.CharField(max_length=50, null=True, blank=True)
+    celery_end_task_id = models.CharField(max_length=50, null=True, blank=True)
+
+    tasks = models.ManyToManyField(
+        'Task',
+        related_name='contests',
+        through='ContestTaskRelationship',
+        blank=True
+    )
+
+    participants = models.ManyToManyField(
+        'User',
+        related_name='contest_participated',
+        through='ContestParticipantRelationship',
+        blank=True
+    )
+
+    def save(self, *args, **kwargs):
+        add_start_task = False
+        add_end_task = False
+
+        if self.id:
+            old = Contest.objects.only(
+                'celery_start_task_id',
+                'celery_end_task_id',
+                'start_time',
+                'end_time'
+            ).get(id=self.id)
+
+            if old.start_time != self.start_time:
+                current_app.control.revoke(old.celery_start_task_id)
+                if self.start_time is not None:
+                    add_start_task = True
+
+            if old.end_time != self.end_time:
+                current_app.control.revoke(old.celery_end_task_id)
+                if self.end_time is not None:
+                    add_end_task = True
+
+        else:
+            if self.start_time is not None:
+                add_start_task = True
+
+            if self.end_time is not None:
+                add_end_task = True
+
+        super(Contest, self).save(*args, **kwargs)
+
+        if add_start_task:
+            result = celery_tasks.start_contest.apply_async(args=(self.id,), eta=self.start_time)
+            self.celery_start_task_id = result.id
+        if add_end_task:
+            result = celery_tasks.end_contest.apply_async(args=(self.id,), eta=self.end_time)
+            self.celery_end_task_id = result.id
+
+        super(Contest, self).save()
+
+
+class ContestTaskRelationship(models.Model):
+    contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_task_relationship')
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='contest_task_relationship')
+
+    cost = models.IntegerField(default=0)
+    ordering_number = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ('-ordering_number', 'cost', 'id')
+
+
+class ContestParticipantRelationship(models.Model):
+    contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_participant_relationship')
+    participant = models.ForeignKey('User', on_delete=models.CASCADE, related_name='contest_participant_relationship')
+
+    last_solve = models.DateTimeField(default=timezone.now)
+    delta = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        unique_together = (
+            'contest',
+            'participant',
+        )
+
+
+class ContestTaskParticipantSolvedRelationship(models.Model):
+    contest = models.ForeignKey(
+        'Contest',
+        on_delete=models.CASCADE,
+        related_name='contest_task_participant_solved_relationship'
+    )
+
+    participant = models.ForeignKey(
+        'User',
+        on_delete=models.CASCADE,
+        related_name='contest_task_participant_solved_relationship'
+    )
+
+    task = models.ForeignKey(
+        'Task',
+        on_delete=models.CASCADE,
+        related_name='contest_task_participant_solved_relationship'
+    )
+
+    class Meta:
+        unique_together = (
+            'contest',
+            'participant',
+            'task',
+        )

@@ -11,13 +11,13 @@ class PostMainSerializer(rest_serializers.ModelSerializer):
         model = api_models.Post
         fields = (
             'id',
-            'title',
-            'body',
-            'is_published',
-            'created_at',
-            'updated_at',
             'author',
+            'body',
             'can_edit_post',
+            'created_at',
+            'is_published',
+            'title',
+            'updated_at',
         )
 
         extra_kwargs = {
