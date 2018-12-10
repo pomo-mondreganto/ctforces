@@ -1,7 +1,0 @@
-.ui.message {
-  border: none;
-
-  a {
-    text-decoration: underline;
-  }
-}

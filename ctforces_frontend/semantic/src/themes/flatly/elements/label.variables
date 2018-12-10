@@ -1,6 +1,0 @@
-@backgroundColor: @primaryColor;
-@labelActiveTextColor: @primaryColor;
-@verticalAlign: middle !important;
-@ribbonShadowColor: @primaryColor;
-@labelHoverBackgroundColor: darken(@backgroundColor, 5%);
-@labelHoverTextColor: @gray;

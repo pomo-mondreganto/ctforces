@@ -1,26 +1,26 @@
 {
-  "name": "ctforces_frontend",
-  "version": "1.0.0",
-  "description": "CTForces frontend",
-  "author": "Ilya",
-  "private": true,
-  "scripts": {
-    "dev": "nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate"
-  },
-  "dependencies": {
-    "@nuxtjs/axios": "^5.0.0",
-    "consola": "^2.0.2",
-    "cross-env": "^5.2.0",
-    "nuxt": "^2.0.0",
-    "semantic-ui": "^2.4.2",
-    "semantic-ui-vue": "^0.5.1"
-  },
-  "devDependencies": {
-    "nodemon": "^1.11.0",
-    "prettier": "1.14.3"
-  },
-  "optionalDependencies": {}
+    "name": "ctforces_frontend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon server/index.js",
+        "build": "next build",
+        "start": "next start"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@zeit/next-css": "^1.0.1",
+        "express": "^4.16.4",
+        "file-loader": "^2.0.0",
+        "isomorphic-unfetch": "^3.0.0",
+        "next": "^7.0.2",
+        "react": "^16.6.3",
+        "react-dom": "^16.6.3",
+        "semantic-ui-css": "^2.4.1",
+        "semantic-ui-react": "^0.84.0",
+        "url-loader": "^1.1.2"
+    }
 }
