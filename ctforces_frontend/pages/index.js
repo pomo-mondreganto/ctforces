@@ -1,21 +1,19 @@
-import Link from 'next/link';
 import Layout from '../layouts/master.js';
-import Router from 'next/router';
-import { post, get } from '../lib/api_requests';
+import withAuth from '../wrappers/withAuth';
+import React, { Component } from 'react';
 
-const Index = () => (
-    <Layout>
-        <div />
-    </Layout>
-);
+class Index extends Component {
+    constructor(props) {
+        super(props);
+    }
 
-Index.getInitialProps = async ({ req }) => {
-    let a = await post('login', {
-        username: 'kek',
-        password: 'mem'
-    });
-    console.log(a);
-    return {};
-};
+    render() {
+        return (
+            <Layout>
+                <div>kek</div>
+            </Layout>
+        );
+    }
+}
 
-export default Index;
+export default withAuth(Index);
