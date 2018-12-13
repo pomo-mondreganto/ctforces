@@ -2,10 +2,26 @@ import React, { Component } from 'react';
 import Link from 'next/link';
 import Logo from '../static/logo.png';
 import Router from 'next/router';
+import {
+    Navbar,
+    NavbarBrand,
+    NavbarToggler,
+    Collapse,
+    Nav,
+    NavItem,
+    NavLink,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem
+} from 'reactstrap';
 
 class Menu extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            isOpen: false
+        };
     }
 
     loginRedirect = () => {
@@ -16,9 +32,15 @@ class Menu extends Component {
         Router.push('/register');
     };
 
+    toggle = () => {
+        this.setState({
+            isOpen: !this.state.isOpen
+        });
+    };
+
     render() {
         return (
-            <div className="ui large nine item stackable menu">
+            /*<div className="ui large nine item stackable menu">
                 <Link href="/">
                     <a className="item">
                         <img src={Logo} alt="" />
@@ -55,6 +77,41 @@ class Menu extends Component {
                         Sign Up
                     </button>
                 </div>
+            </div>*/
+            <div>
+                <Navbar color="light" light expand="md">
+                    <div className="container">
+                        <NavbarBrand href="/">
+                            <img src={Logo} width={40} height={40} alt="" />
+                        </NavbarBrand>
+                        <NavbarToggler onClick={this.toggle} />
+                        <Collapse isOpen={this.state.isOpen} navbar>
+                            <Nav className="ml-auto" navbar>
+                                <NavItem>
+                                    <NavLink href="/components/">
+                                        Components
+                                    </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink href="https://github.com/reactstrap/reactstrap">
+                                        GitHub
+                                    </NavLink>
+                                </NavItem>
+                                <UncontrolledDropdown nav inNavbar>
+                                    <DropdownToggle nav caret>
+                                        Options
+                                    </DropdownToggle>
+                                    <DropdownMenu right>
+                                        <DropdownItem>Option 1</DropdownItem>
+                                        <DropdownItem>Option 2</DropdownItem>
+                                        <DropdownItem divider />
+                                        <DropdownItem>Reset</DropdownItem>
+                                    </DropdownMenu>
+                                </UncontrolledDropdown>
+                            </Nav>
+                        </Collapse>
+                    </div>
+                </Navbar>
             </div>
         );
     }
