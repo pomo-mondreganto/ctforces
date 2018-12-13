@@ -1,7 +1,6 @@
 import Layout from '../layouts/master.js';
-import withAuth from '../wrappers/withAuth';
-import React, { Component } from 'react';
-import { login } from '../lib/AuthService';
+import React, {Component} from 'react';
+import {login} from '../lib/AuthService';
 
 class Login extends Component {
     constructor(props) {
@@ -28,39 +27,7 @@ class Login extends Component {
     render() {
         return (
             <Layout>
-                <div className="ui segment">
-                    <div>Sign In</div>
-                    <div className="ui clearing divider" />
-                    <form
-                        onSubmit={this.handleSubmit}
-                        className="ui basic vertical segment form error warning"
-                    >
-                        <div className="field">
-                            <input
-                                type="text"
-                                name="username"
-                                placeholder="Username"
-                                value={this.username}
-                                onChange={this.handleChange}
-                            />
-                        </div>
-                        <div className="field">
-                            <input
-                                type="password"
-                                name="password"
-                                placeholder="Password"
-                                value={this.password}
-                                onChange={this.handleChange}
-                            />
-                        </div>
-                        <button
-                            className="ui fluid teal button field"
-                            type="submit"
-                        >
-                            Sign me in
-                        </button>
-                    </form>
-                </div>
+
             </Layout>
         );
     }

@@ -86,8 +86,6 @@ __pycache__
 local_settings.py
 .eslintrc.js
 db.sqlite3
-.prettierrc
-.editorconfig
 ctforces_venv
 
 volumes/db/*
