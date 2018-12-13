@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
 import Router from 'next/router';
 
-
 import {Button, Collapse, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink} from 'reactstrap';
-
 
 class Menu extends Component {
   loginRedirect = () => {
@@ -29,40 +27,58 @@ class Menu extends Component {
 
   render() {
     return (
-      <Navbar color="light" light sticky="top" expand="md" className="shadow-sm">
+      <Navbar
+        color="light"
+        light
+        sticky="top"
+        expand="md"
+        className="shadow-sm"
+      >
         <NavbarBrand href="/">CTForces</NavbarBrand>
         <NavbarToggler onClick={this.toggle}/>
         <Collapse isOpen={this.state.isOpen} navbar>
           <Nav navbar className="w-100 nav-fill mr-auto">
             <NavItem>
-              <NavLink active href="/">Home</NavLink>
+              <NavLink active href="/">
+                Home
+              </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink active href="/">Contests</NavLink>
+              <NavLink active href="/">
+                Contests
+              </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink active href="/">Tasks</NavLink>
+              <NavLink active href="/">
+                Tasks
+              </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink active href="/">Upsolving</NavLink>
+              <NavLink active href="/">
+                Upsolving
+              </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink active href="/">Rating</NavLink>
+              <NavLink active href="/">
+                Rating
+              </NavLink>
             </NavItem>
           </Nav>
         </Collapse>
 
-        <Collapse isOpen={this.state.isOpen} navbar className="justify-content-end mr-auto ml-auto w-25">
+        <Collapse
+          isOpen={this.state.isOpen}
+          navbar
+          className="justify-content-end mr-auto ml-auto w-25"
+        >
           <Nav className="nav-fill" navbar>
             <NavItem className="mx-1 my-1">
-              <Button color="danger" className="btn-block">
+              <Button color="primary" className="btn-block">
                 Sign in
               </Button>
             </NavItem>
             <NavItem className="mx-1 my-1">
-              <Button className="btn-block">
-                Sign out
-              </Button>
+              <Button className="btn-block">Sign out</Button>
             </NavItem>
           </Nav>
         </Collapse>
