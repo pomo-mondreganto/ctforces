@@ -1,6 +1,6 @@
 import Layout from '../layouts/master.js';
 import withAuth from '../wrappers/withAuth';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 class Index extends Component {
     constructor(props) {
@@ -8,11 +8,7 @@ class Index extends Component {
     }
 
     render() {
-        return (
-            <Layout>
-                <div>kek</div>
-            </Layout>
-        );
+      return <Layout/>;
     }
 }
 

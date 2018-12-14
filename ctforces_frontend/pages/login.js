@@ -1,21 +1,9 @@
 import Layout from '../layouts/master.js';
 import React, {Component} from 'react';
 import {login} from '../lib/AuthService';
+import Link from 'next/link';
 
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardLink,
-  Col,
-  Container,
-  Form,
-  FormGroup,
-  Input,
-  Label,
-  Row
-} from 'reactstrap';
+import {Button, Card, CardBody, CardHeader, CardLink, Col, Container, Form, FormGroup, Input, Row} from 'reactstrap';
 
 class Login extends Component {
     constructor(props) {
@@ -51,7 +39,6 @@ class Login extends Component {
                     <CardBody>
                       <Form className="justify-content-center">
                         <FormGroup>
-                          <Label>Username or email</Label>
                           <Input
                             type="text"
                             name="username"
@@ -62,7 +49,6 @@ class Login extends Component {
                           />
                         </FormGroup>
                         <FormGroup>
-                          <Label>Password</Label>
                           <Input
                             type="password"
                             name="password"
@@ -83,14 +69,18 @@ class Login extends Component {
                       <Container>
                         <Row>
                           <Col className="text-left">
-                            <CardLink href="/restore_password">
-                              Forgot password
-                            </CardLink>
+                            <Link href="/restore_password">
+                              <CardLink href="/restore_password">
+                                Forgot password
+                              </CardLink>
+                            </Link>
                           </Col>
                           <Col className="text-right">
-                            <CardLink href="/register">
-                              Register
-                            </CardLink>
+                            <Link href="/register">
+                              <CardLink href="/register">
+                                Sign in
+                              </CardLink>
+                            </Link>
                           </Col>
                         </Row>
                       </Container>
