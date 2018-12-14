@@ -16,4 +16,4 @@ class Index extends Component {
     }
 }
 
-export default withAuth(Index);
+export default Index;
