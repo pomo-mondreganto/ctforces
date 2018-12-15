@@ -9,10 +9,15 @@ export async function login(username, password) {
 }
 
 export async function loggedIn() {
-    try {
-        let data = await get('me');
-        return data.status === 200;
-    } catch (e) {
+    let data = await get('me');
+    return data.ok;
+}
+
+export async function getUser() {
+    let data = await get('me');
+    if (data.ok) {
+        return await data.json();
+    } else {
         return false;
     }
 }
