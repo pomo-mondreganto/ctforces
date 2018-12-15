@@ -1,10 +1,16 @@
-import { get, post } from '../lib/api_requests';
+import { get, post } from './api_requests';
+import cookies from 'next-cookies';
 
 export async function login(username, password) {
     let data = await post('login', {
         username: username,
         password: password
     });
+    return data;
+}
+
+export async function logout() {
+    let data = await post('logout');
     return data;
 }
 

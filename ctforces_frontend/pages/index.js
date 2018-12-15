@@ -1,6 +1,6 @@
 import Layout from '../layouts/master.js';
-import withAuth from '../wrappers/withAuth';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import withLayout from '../wrappers/withLayout';
 
 class Index extends Component {
     constructor(props) {
@@ -8,8 +8,10 @@ class Index extends Component {
     }
 
     render() {
-      return <Layout/>;
+        return <div>kek</div>;
     }
 }
 
-export default Index;
+export default withLayout(Index, Layout, {
+    guarded: true
+});

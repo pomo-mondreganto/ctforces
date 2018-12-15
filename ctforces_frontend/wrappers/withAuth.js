@@ -1,33 +1,45 @@
 import React, { Component } from 'react';
-import { loggedIn } from '../lib/AuthService';
-import Router from 'next/router';
+import { getUser, loggedIn } from '../lib/auth_service';
 import redirect from '../lib/redirect';
 
-export default function withAuth(AuthComponent) {
+export const AuthCtx = React.createContext(null);
+
+export default function withAuth(AuthComponent, options) {
     return class Authenticated extends Component {
+        state = { auth: { loggedIn: false, user: false } };
+
         constructor(props) {
             super(props);
         }
 
-        static getInitialProps = async ctx => {
-            let isLoggedIn = await loggedIn();
-            if (!isLoggedIn) {
-                redirect('/login', ctx);
-                return {};
+        updateAuth = user => {
+            if (user) {
+                this.setState({
+                    auth: {
+                        loggedIn: true,
+                        user: user
+                    }
+                });
             } else {
-                let props = {};
-                if (AuthComponent.getInitialProps) {
-                    props = AuthComponent.getInitialProps(ctx);
-                }
-                return props;
+                this.setState({
+                    auth: {
+                        loggedIn: false,
+                        user: false
+                    }
+                });
             }
         };
 
         render() {
             return (
-                <div>
+                <AuthCtx.Provider
+                    value={{
+                        auth: this.state.auth,
+                        updateAuth: this.updateAuth
+                    }}
+                >
                     <AuthComponent {...this.props} />
-                </div>
+                </AuthCtx.Provider>
             );
         }
     };

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import Router from 'next/router';
 import Link from 'next/link';
+import { logout } from '../lib/auth_service';
+import { AuthCtx } from '../wrappers/withAuth';
+import redirect from '../lib/redirect';
 
 import {
     Button,
@@ -13,20 +16,65 @@ import {
     NavLink
 } from 'reactstrap';
 
+function LoginButton(props) {
+    if (props.authProp.auth.loggedIn) {
+        return (
+            <Link href="profile">
+                <Button color="primary" className="btn-block">
+                    {props.authProp.auth.user.username}
+                </Button>
+            </Link>
+        );
+    } else {
+        return (
+            <Link href="login">
+                <Button color="primary" className="btn-block">
+                    Sign In
+                </Button>
+            </Link>
+        );
+    }
+}
+
+function RegisterButton(props) {
+    if (props.authProp.auth.loggedIn) {
+        return (
+            <Button className="btn-block" onClick={props.onClick}>
+                Logout
+            </Button>
+        );
+    } else {
+        return (
+            <Link href="register">
+                <Button className="btn-block">Sign Up</Button>
+            </Link>
+        );
+    }
+}
+
 class Menu extends Component {
+    static contextType = AuthCtx;
+
     constructor(props) {
         super(props);
-        this.toggle = this.toggle.bind(this);
         this.state = {
             isOpen: false
         };
     }
 
-    toggle() {
+    toggle = () => {
         this.setState({
             isOpen: !this.state.isOpen
         });
-    }
+    };
+
+    logout = async () => {
+        let data = await logout();
+        this.context.updateAuth(false);
+        if (this.props.guarded) {
+            redirect('login');
+        }
+    };
 
     render() {
         return (
@@ -78,14 +126,13 @@ class Menu extends Component {
                 >
                     <Nav className="nav-fill" navbar>
                         <NavItem className="mx-1 my-1">
-                            <Link href="login">
-                                <Button color="primary" className="btn-block">
-                                    Sign in
-                                </Button>
-                            </Link>
+                            <LoginButton authProp={this.context} />
                         </NavItem>
                         <NavItem className="mx-1 my-1">
-                            <Button className="btn-block">Sign out</Button>
+                            <RegisterButton
+                                authProp={this.context}
+                                onClick={this.logout}
+                            />
                         </NavItem>
                     </Nav>
                 </Collapse>

@@ -1,6 +1,9 @@
 import Layout from '../layouts/master.js';
 import React, { Component } from 'react';
-import { login, getUser } from '../lib/AuthService';
+import { login, getUser } from '../lib/auth_service';
+import Link from 'next/link';
+import withAuth from '../wrappers/withAuth';
+import { AuthCtx } from '../wrappers/withAuth';
 
 import {
     Button,
@@ -18,6 +21,8 @@ import {
 } from 'reactstrap';
 
 class Login extends Component {
+    static contextType = AuthCtx;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -29,6 +34,9 @@ class Login extends Component {
     handleSubmit = async event => {
         event.preventDefault();
         let data = await login(this.state.username, this.state.password);
+        if (data.ok) {
+            this.context.updateAuth(await getUser());
+        }
     };
 
     handleChange = event => {
@@ -89,9 +97,11 @@ class Login extends Component {
                                             </CardLink>
                                         </Col>
                                         <Col className="text-right">
-                                            <CardLink href="/register">
-                                                Register
-                                            </CardLink>
+                                            <Link href="register">
+                                                <CardLink href="register">
+                                                    Register
+                                                </CardLink>
+                                            </Link>
                                         </Col>
                                     </Row>
                                 </Container>

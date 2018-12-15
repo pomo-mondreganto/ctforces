@@ -1,12 +1,12 @@
 import Router from 'next/router';
 
-export default function redirect(url, { res }) {
-    if (res) {
+export default function redirect(url, ctx) {
+    if (ctx && ctx.res) {
         res.writeHead(302, {
-            Location: url
+            Location: '/' + url
         });
-        res.end();
+        ctx.res.end();
     } else {
-        Router.push(url);
+        Router.push('/' + url);
     }
 }
