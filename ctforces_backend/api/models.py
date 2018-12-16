@@ -1,15 +1,28 @@
+import re
+
 from celery import current_app
 from django.contrib.auth.models import AbstractUser, UserManager
-from django.contrib.auth.validators import ASCIIUsernameValidator
+from django.core import validators
 from django.db import models
 from django.db.models import Sum, Q, Value as V
 from django.db.models.functions import Coalesce
 from django.utils import timezone
+from django.utils.deconstruct import deconstructible
 from rest_framework_tricks.models.fields import NestedProxyField
 from stdimage.models import StdImageField
 
 from api import celery_tasks
 from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor, CustomFileField
+
+
+@deconstructible
+class CustomASCIIUsernameValidator(validators.RegexValidator):
+    regex = r'^[\w.@+-]{5,}$'
+    message = (
+        'Username needs to contain from 5 to 150 English letters, '
+        'numbers, and @/./+/-/_ characters'
+    )
+    flags = re.ASCII
 
 
 class UserUpsolvingAnnotatedManager(UserManager):
@@ -26,7 +39,7 @@ class UserUpsolvingAnnotatedManager(UserManager):
 
 
 class User(AbstractUser):
-    username_validator = ASCIIUsernameValidator()
+    username_validator = CustomASCIIUsernameValidator()
     email = models.EmailField('email address', blank=False, unique=True, null=False)
 
     rating = models.IntegerField(default=2000)
