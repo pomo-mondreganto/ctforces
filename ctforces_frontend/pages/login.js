@@ -4,6 +4,12 @@ import { login, getUser } from '../lib/auth_service';
 import Link from 'next/link';
 import withAuth from '../wrappers/withAuth';
 import { AuthCtx } from '../wrappers/withAuth';
+import validateFields, {
+    required,
+    validateOk,
+    lengthGt,
+    lengthBetween
+} from '../lib/validators';
 
 import {
     Button,
@@ -17,7 +23,8 @@ import {
     FormGroup,
     Input,
     Label,
-    Row
+    Row,
+    FormFeedback
 } from 'reactstrap';
 
 class Login extends Component {
@@ -26,23 +33,63 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: '',
-            password: ''
+            errors: {},
+            formFields: {
+                username: '',
+                password: ''
+            }
         };
     }
 
+    validateChange = () => {
+        let validateResult = validateFields(this.state.formFields, {
+            username: [lengthBetween(5, 10)]
+        });
+        return validateResult;
+    };
+
+    validateSubmit = () => {
+        let validateResult = validateFields(this.state.formFields, {
+            username: [required]
+        });
+        return validateResult;
+    };
+
+    applyServerErrors = data => {
+        let applyState = {};
+        for (let key in data) {
+            applyState[key] = [data[key]];
+        }
+        this.setState({
+            errors: applyState
+        });
+    };
+
     handleSubmit = async event => {
         event.preventDefault();
-        let data = await login(this.state.username, this.state.password);
-        if (data.ok) {
-            this.context.updateAuth(await getUser());
+
+        let validated = this.validateSubmit();
+        this.setState({
+            errors: validated.verdicts
+        });
+
+        if (validated.ok) {
+            let data = await login(this.state.username, this.state.password);
+            if (data.ok) {
+                this.context.updateAuth(await getUser());
+            } else {
+                this.applyServerErrors(await data.json());
+            }
         }
     };
 
     handleChange = event => {
-        let dispatch = {};
+        let dispatch = this.state.formFields;
         dispatch[event.target.name] = event.target.value;
         this.setState(dispatch);
+
+        let validated = this.validateChange();
+        this.setState({ errors: validated.verdicts });
     };
 
     render() {
@@ -65,10 +112,20 @@ class Login extends Component {
                                             name="username"
                                             className="form-control"
                                             placeholder="username or email"
-                                            required
                                             autoFocus
                                             onChange={this.handleChange}
+                                            invalid={
+                                                'username' in this.state.errors
+                                            }
                                         />
+                                        {'username' in this.state.errors &&
+                                            this.state.errors.username.map(
+                                                (error, i) => (
+                                                    <FormFeedback key={i}>
+                                                        {error}
+                                                    </FormFeedback>
+                                                )
+                                            )}
                                     </FormGroup>
                                     <FormGroup>
                                         <Input
@@ -76,9 +133,39 @@ class Login extends Component {
                                             name="password"
                                             className="form-control"
                                             placeholder="password"
-                                            required
                                             onChange={this.handleChange}
+                                            invalid={
+                                                'password' in this.state.errors
+                                            }
                                         />
+                                        {'password' in this.state.errors &&
+                                            this.state.errors.password.map(
+                                                (error, i) => (
+                                                    <FormFeedback key={i}>
+                                                        {error}
+                                                    </FormFeedback>
+                                                )
+                                            )}
+                                    </FormGroup>
+                                    <FormGroup>
+                                        <Input
+                                            hidden
+                                            type="text"
+                                            name="detail_error"
+                                            className="form-control"
+                                            placeholder="detail_error"
+                                            invalid={
+                                                'detail' in this.state.errors
+                                            }
+                                        />
+                                        {'detail' in this.state.errors &&
+                                            this.state.errors.detail.map(
+                                                (error, i) => (
+                                                    <FormFeedback key={i}>
+                                                        {error}
+                                                    </FormFeedback>
+                                                )
+                                            )}
                                     </FormGroup>
                                     <Button
                                         color="primary"
