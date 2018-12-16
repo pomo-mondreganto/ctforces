@@ -53,6 +53,38 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
         return user
 
 
+class UserPasswordResetSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.User
+        fields = (
+            'password',
+        )
+        extra_kwargs = {
+            'password': {
+                'write_only': True,
+            },
+        }
+
+    def validate_password(self, data):
+        password = data.get('password')
+
+        errors = dict()
+        try:
+            validate_password(password=password, user=self.instance)
+        except django_core_exceptions.ValidationError as e:
+            errors['password'] = list(e.messages)
+
+        if errors:
+            raise rest_serializers.ValidationError(errors)
+
+        return data
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password')
+        instance.set_password(password)
+        return super(UserPasswordResetSerializer, self).update(instance=instance, validated_data=validated_data)
+
+
 class UserPersonalInfoSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.User
@@ -86,8 +118,8 @@ class UserBasicSerializer(rest_serializers.ModelSerializer):
     def __init__(self, instance=None, data=empty, **kwargs):
         super(UserBasicSerializer, self).__init__(instance=instance, data=data, **kwargs)
         if isinstance(instance, list) \
-                or (instance.hide_personal_info
-                    and not self.context['request'].user.has_perm('view_personal_info', instance)):
+            or (instance.hide_personal_info
+                and not self.context['request'].user.has_perm('view_personal_info', instance)):
             self.fields.pop('personal_info')
 
 

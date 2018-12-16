@@ -55,7 +55,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
             is_solved_by_user=Exists(
                 api_models.Task.objects.filter(
                     id=OuterRef('id'),
-                    solved_by=self.request.user
+                    solved_by=self.request.user.id,
                 )
             ),
         ).prefetch_related('tags', 'files')
@@ -157,7 +157,7 @@ class TaskFileViewSet(rest_mixins.RetrieveModelMixin,
     queryset = api_models.TaskFile.objects.all()
 
     def get_queryset(self):
-        return self.queryset.filter(owner=self.request.user)
+        return self.queryset.filter(owner=self.request.user.id)
 
     def create(self, request, *_args, **_kwargs):
         serializer = api_tasks_serializers.TaskFileUploadSerializer(data=request.data,
