@@ -17,9 +17,9 @@ from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdim
 
 @deconstructible
 class CustomASCIIUsernameValidator(validators.RegexValidator):
-    regex = r'^[\w.@+-]{5,}$'
+    regex = r'^[\w.@+-]{5,50}$'
     message = (
-        'Username needs to contain from 5 to 150 English letters, '
+        'Username needs to contain from 5 to 50 English letters, '
         'numbers, and @/./+/-/_ characters'
     )
     flags = re.ASCII
