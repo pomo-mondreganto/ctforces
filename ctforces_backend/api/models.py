@@ -67,6 +67,8 @@ class User(AbstractUser):
         'last_name',
     )
 
+    last_email_resend = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         ordering = ('id',)
         permissions = (

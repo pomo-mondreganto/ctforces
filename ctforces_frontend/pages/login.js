@@ -1,24 +1,8 @@
 import Layout from '../layouts/master.js';
-import React, { Component } from 'react';
-import { login, getUser } from '../lib/auth_service';
-import Link from 'next/link';
-import withAuth from '../wrappers/withAuth';
-import { AuthCtx } from '../wrappers/withAuth';
+import React, {Component} from 'react';
+import {getUser, login} from '../lib/AuthService';
 
-import {
-    Button,
-    Card,
-    CardBody,
-    CardHeader,
-    CardLink,
-    Col,
-    Container,
-    Form,
-    FormGroup,
-    Input,
-    Label,
-    Row
-} from 'reactstrap';
+import {Button, Card, CardBody, CardHeader, CardLink, Col, Container, Form, FormGroup, Input, Row} from 'reactstrap';
 
 class Login extends Component {
     static contextType = AuthCtx;

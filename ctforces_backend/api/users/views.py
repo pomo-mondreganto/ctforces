@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
+from django.utils import timezone
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
@@ -37,7 +38,7 @@ class UserCreateView(CreateAPIView):
         context = {
             'token': token,
             'username': user_username,
-            'email_url': settings.EMAIL_URL
+            'email_url': settings.EMAIL_URL,
         }
 
         message_plain = render_to_string('email_templates/email_confirmation.txt', context)
@@ -48,8 +49,11 @@ class UserCreateView(CreateAPIView):
             message=message_plain,
             from_email='CTForces team',
             recipient_list=[user_email],
-            html_message=message_html
+            html_message=message_html,
         )
+
+        instance.last_email_resend = timezone.now()
+        instance.save()
 
 
 class EmailConfirmationEndpointView(APIView):
@@ -71,6 +75,122 @@ class EmailConfirmationEndpointView(APIView):
             raise ValidationError('No such user.')
         user.is_active = True
         user.save()
+        return Response(user_id)
+
+
+class ActivationEmailResendView(APIView):
+    permission_classes = (AllowAny,)
+
+    @staticmethod
+    def post(request):
+        email = request.data.get('email', '').lower()
+        user = api_models.User.objects.filter(email=email).first()
+        if not user:
+            raise ValidationError('User with such email is not registered')
+        if user.is_active:
+            raise ValidationError('User is already activated')
+
+        delta = timezone.now() - user.last_email_resend
+
+        if delta < timezone.timedelta(hours=1):
+            raise ValidationError(
+                'You can resend activation email in {0} minutes {1} seconds'.format(
+                    delta.seconds // 60,
+                    delta.seconds % 60,
+                )
+            )
+
+        token = serialize(user.id, 'email_confirmation')
+
+        context = {
+            'token': token,
+            'username': user.username,
+            'email_url': settings.EMAIL_URL,
+        }
+
+        message_plain = render_to_string('email_templates/email_confirmation.txt', context)
+        message_html = render_to_string('email_templates/email_confirmation.html', context)
+
+        send_mail(
+            subject='CTForces account confirmation',
+            message=message_plain,
+            from_email='CTForces team',
+            recipient_list=[email],
+            html_message=message_html,
+        )
+
+        user.last_email_resend = timezone.now()
+
+        return Response('ok')
+
+
+class PasswordResetRequestView(APIView):
+    permission_classes = (AllowAny,)
+
+    @staticmethod
+    def post(request):
+        email = request.data.get('email', '').lower()
+        user = api_models.User.objects.filter(email=email).first()
+        if not user:
+            raise ValidationError('User with such email is not registered')
+
+        delta = timezone.now() - user.last_email_resend
+
+        if delta < timezone.timedelta(hours=1):
+            raise ValidationError(
+                'You can resend password reset email in {0} minutes {1} seconds'.format(
+                    delta.seconds // 60,
+                    delta.seconds % 60,
+                )
+            )
+
+        token = serialize(user.id, 'password_reset.txt')
+
+        context = {
+            'token': token,
+            'username': user.username,
+            'email_url': settings.EMAIL_URL,
+        }
+
+        message_plain = render_to_string('email_templates/password_reset.txt', context)
+        message_html = render_to_string('email_templates/password_reset.html', context)
+
+        send_mail(
+            subject='CTForces password reset',
+            message=message_plain,
+            from_email='CTForces team',
+            recipient_list=[email],
+            html_message=message_html,
+        )
+
+        user.last_email_resend = timezone.now()
+
+        return Response('ok')
+
+
+class PasswordResetEndpointView(APIView):
+    permission_classes = (AllowAny,)
+
+    @staticmethod
+    def post(request):
+        token = request.data.get('token')
+        new_password = request.data.get('password')
+        user_id = deserialize(token, token_type='password_reset', max_age=86400)
+        try:
+            user_id = int(user_id)
+            if not user_id:
+                raise TypeError
+        except TypeError:
+            raise ValidationError('Token is invalid or has expired.')
+
+        user = api_models.User.objects.filter(id=user_id).first()
+        if not user:
+            raise ValidationError('No such user.')
+
+        serializer = api_users_serializers.UserPasswordResetSerializer(data={'password': new_password}, instance=user)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
         return Response(user_id)
 
 
@@ -117,7 +237,6 @@ class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
         obj = self.get_object()
         serializer = self.get_serializer(instance=obj)
         return Response(serializer.data)
-        
 
 
 class AvatarUploadView(APIView):

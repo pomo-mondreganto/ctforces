@@ -45,6 +45,18 @@ urlpatterns = [
             api_users_views.EmailConfirmationEndpointView.as_view(),
             name='email_confirmation_view'),
 
+    re_path('^resend_confirmation/$',
+            api_users_views.ActivationEmailResendView.as_view(),
+            name='email_confirmation_resend_view'),
+
+    re_path('^request_password_reset/$',
+            api_users_views.PasswordResetRequestView.as_view(),
+            name='password_reset_request_view'),
+
+    re_path('^reset_password/$',
+            api_users_views.PasswordResetEndpointView.as_view(),
+            name='password_reset_view'),
+
     re_path('^login/$', api_users_views.LoginView.as_view(), name='login_view'),
     re_path('^logout/$', api_users_views.LogoutView.as_view(), name='logout_view'),
 

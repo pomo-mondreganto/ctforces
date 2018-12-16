@@ -221,7 +221,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
                     task_id=OuterRef('id'),
                     contest=contest,
-                    participant=self.request.user,
+                    participant=self.request.user.id,
                 ),
             ),
             solved_count=Coalesce(
@@ -279,7 +279,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
                 contest=contest,
                 task=task,
-                participant=self.request.user,
+            participant=self.request.user.id,
         ).exists():
             raise PermissionDenied('Task already solved.')
 
@@ -289,11 +289,11 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 api_models.ContestTaskParticipantSolvedRelationship.objects.create(
                     contest=contest,
                     task=task,
-                    participant=self.request.user,
+                    participant=self.request.user.id,
                 )
 
                 contest.contest_participant_relationship.filter(
-                    participant=self.request.user,
+                    participant=self.request.user.id,
                 ).update(
                     last_solve=timezone.now(),
                 )
