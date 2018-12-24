@@ -1,5 +1,4 @@
-import { get, post } from './api_requests';
-import cookies from 'next-cookies';
+import {get, post} from './api_requests';
 
 export async function login(username, password) {
     let data = await post('login', {
