@@ -182,6 +182,8 @@ class Contest(models.Model):
     is_finished = models.BooleanField(default=False)
     is_registration_open = models.BooleanField(default=False)
 
+    publish_tasks_after_finished = models.BooleanField(default=True)
+
     celery_start_task_id = models.CharField(max_length=50, null=True, blank=True)
     celery_end_task_id = models.CharField(max_length=50, null=True, blank=True)
 
