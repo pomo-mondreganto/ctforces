@@ -1,4 +1,4 @@
-import Layout from '../layouts/master.js';
+import sidebarLayout from '../layouts/sidebarLayout';
 import React, { Component } from 'react';
 import withLayout from '../wrappers/withLayout';
 
@@ -8,10 +8,10 @@ class Index extends Component {
     }
 
     render() {
-        return <div>kek</div>;
+        return <div />;
     }
 }
 
-export default withLayout(Index, Layout, {
-    guarded: true
+export default withLayout(Index, sidebarLayout, {
+    guarded: false
 });

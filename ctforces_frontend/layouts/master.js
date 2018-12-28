@@ -11,7 +11,7 @@ class Layout extends Component {
         return (
             <div>
                 <Menu guarded={this.props.guarded} />
-                <div className="container">{this.props.children}</div>
+                <div className="container-fluid">{this.props.children}</div>
             </div>
         );
     }

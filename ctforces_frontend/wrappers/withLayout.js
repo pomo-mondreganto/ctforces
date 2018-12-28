@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { getUser } from '../lib/auth_service';
 import redirect from '../lib/redirect';
-import { AuthCtx } from '../wrappers/withAuth';
+import { AuthCtx } from './withAuth';
 
-export default function withLayout(ChildComponent, Layout, options) {
+export default function withLayout(ChildComponent, LayoutComponent, options) {
     return class ComponentWithLayout extends Component {
         static contextType = AuthCtx;
         state = { guarded: options && options.guarded };
@@ -25,11 +25,11 @@ export default function withLayout(ChildComponent, Layout, options) {
         };
 
         render() {
-            if (this.context.auth.loggedIn) {
+            if (!this.state.guarded || this.context.auth.loggedIn) {
                 return (
-                    <Layout guarded={this.state.guarded}>
-                        <ChildComponent {...this.props} />;
-                    </Layout>
+                    <LayoutComponent guarded={this.state.guarded}>
+                        <ChildComponent {...this.props} />
+                    </LayoutComponent>
                 );
             } else {
                 return <div />;
