@@ -37,13 +37,19 @@ def end_contest(contest_id):
         print('Contest not ending, no such contest')
         return
 
+    if contest.is_finished:
+        print('Contest has already ended')
+        return
+
     contest.is_running = False
     contest.is_finished = True
     contest.is_registration_open = False
     contest.save()
 
     recalculate_rating.delay(contest_id)
-    publish_tasks.delay(contest_id)
+
+    if contest.publish_tasks_after_finished:
+        publish_tasks.delay(contest_id)
 
 
 @shared_task
@@ -87,7 +93,7 @@ def recalculate_rating(contest_id):
             delta=deltas[i]
         )
 
-        if player[2] + deltas[i] > player[3]:
+        if player[2] + deltas[i] > player[3] or player.contest_participant_relationship.count() == 1:
             get_model('website', 'User').objects.filter(id=player[0]).update(max_rating=player[2] + deltas[i])
 
 

@@ -42,6 +42,7 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
             'name',
             'registered_count',
             'start_time',
+            'publish_tasks_after_finished',
         )
 
         extra_kwargs = {

@@ -1,20 +1,10 @@
-import React, { Component } from 'react';
-import Router from 'next/router';
+import React, {Component} from 'react';
 import Link from 'next/link';
-import { logout } from '../lib/auth_service';
-import { AuthCtx } from '../wrappers/withAuth';
+import {logout} from '../lib/auth_service';
+import {AuthCtx} from '../wrappers/withAuth';
 import redirect from '../lib/redirect';
 
-import {
-    Button,
-    Collapse,
-    Nav,
-    Navbar,
-    NavbarBrand,
-    NavbarToggler,
-    NavItem,
-    NavLink
-} from 'reactstrap';
+import {Button, Collapse, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink} from 'reactstrap';
 
 function LoginButton(props) {
     if (props.authProp.auth.loggedIn) {
@@ -86,7 +76,12 @@ class Menu extends Component {
                 className="shadow-sm"
             >
                 <Link href="/">
-                    <NavbarBrand href="/">CTForces</NavbarBrand>
+                  <NavbarBrand
+                    href="/"
+                    className="d-xs-none d-sm-none d-md-inline-block d-lg-inline-block d-xl-inline-block navbar-brand"
+                  >
+                    CTForces
+                  </NavbarBrand>
                 </Link>
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={this.state.isOpen} navbar>
