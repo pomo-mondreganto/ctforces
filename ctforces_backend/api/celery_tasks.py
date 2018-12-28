@@ -93,7 +93,7 @@ def recalculate_rating(contest_id):
             delta=deltas[i]
         )
 
-        if player[2] + deltas[i] > player[3]:
+        if player[2] + deltas[i] > player[3] or player.contest_participant_relationship.count() == 1:
             get_model('website', 'User').objects.filter(id=player[0]).update(max_rating=player[2] + deltas[i])
 
 
