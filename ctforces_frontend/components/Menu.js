@@ -1,19 +1,13 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Link from 'next/link';
-import { logout } from '../lib/auth_service';
-import { GlobalCtx } from '../wrappers/withGlobal';
+import {logout} from '../lib/auth_service';
+import {GlobalCtx} from '../wrappers/withGlobal';
 import redirect from '../lib/redirect';
 
-import {
-    Button,
-    Collapse,
-    Nav,
-    Navbar,
-    NavbarBrand,
-    NavbarToggler,
-    NavItem,
-    NavLink
-} from 'reactstrap';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faBars} from '@fortawesome/free-solid-svg-icons'
+
+import {Button, Collapse, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink} from 'reactstrap';
 
 function LoginButton(props) {
     if (props.authProp.auth.loggedIn) {
@@ -87,20 +81,23 @@ class Menu extends Component {
                 color="light"
                 light
                 sticky="top"
-                expand="md"
+                expand="lg"
                 className="shadow-sm"
             >
-                <NavbarToggler onClick={this.toggle} />
+                <NavbarToggler onClick={this.toggle} className="border-0"><FontAwesomeIcon icon={faBars}
+                                                                                           size="lg"/> Menu</NavbarToggler>
+                <Link href="/">
+                    <NavbarBrand
+                        href="/"
+                        className="d-xs-none d-sm-inline-block d-md-inline-block d-lg-inline-block d-xl-inline-block navbar-brand"
+                    >
+                        CTForces
+                    </NavbarBrand>
+                </Link>
+                <NavbarToggler onClick={this.hideSidebar} className="border-0"><FontAwesomeIcon icon={faBars}
+                                                                                                size="lg"/></NavbarToggler>
                 <Collapse isOpen={this.state.isOpen} navbar>
-                    <Link href="/">
-                        <NavbarBrand
-                            href="/"
-                            className="d-xs-none d-sm-none d-md-inline-block d-lg-inline-block d-xl-inline-block navbar-brand"
-                        >
-                            CTForces
-                        </NavbarBrand>
-                    </Link>
-                    <Nav navbar className="w-100 nav-fill mr-auto">
+                    <Nav navbar className="w-100 pull-left nav-fill mr-auto">
                         <NavItem>
                             <Link href="/">
                                 <NavLink href="/">Home</NavLink>
@@ -136,16 +133,7 @@ class Menu extends Component {
                 >
                     <Nav className="nav-fill" navbar>
                         <NavItem className="mx-1 my-1">
-                            <Button
-                                onClick={this.hideSidebar}
-                                color="primary"
-                                className="btn-block"
-                            >
-                                Toggle sidebar
-                            </Button>
-                        </NavItem>
-                        <NavItem className="mx-1 my-1">
-                            <LoginButton authProp={this.context} />
+                            <LoginButton authProp={this.context}/>
                         </NavItem>
                         <NavItem className="mx-1 my-1">
                             <RegisterButton
