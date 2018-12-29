@@ -1,6 +1,6 @@
 import React from 'react';
 import App, { Container } from 'next/app';
-import withAuth from '../wrappers/withAuth';
+import withGlobal from '../wrappers/withGlobal';
 
 class MyApp extends App {
     static async getInitialProps({ Component, router, ctx }) {
@@ -24,4 +24,4 @@ class MyApp extends App {
     }
 }
 
-export default withAuth(MyApp);
+export default withGlobal(MyApp);

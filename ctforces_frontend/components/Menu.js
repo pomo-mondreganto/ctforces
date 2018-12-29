@@ -1,10 +1,19 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Link from 'next/link';
-import {logout} from '../lib/auth_service';
-import {AuthCtx} from '../wrappers/withAuth';
+import { logout } from '../lib/auth_service';
+import { GlobalCtx } from '../wrappers/withGlobal';
 import redirect from '../lib/redirect';
 
-import {Button, Collapse, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink} from 'reactstrap';
+import {
+    Button,
+    Collapse,
+    Nav,
+    Navbar,
+    NavbarBrand,
+    NavbarToggler,
+    NavItem,
+    NavLink
+} from 'reactstrap';
 
 function LoginButton(props) {
     if (props.authProp.auth.loggedIn) {
@@ -43,7 +52,7 @@ function RegisterButton(props) {
 }
 
 class Menu extends Component {
-    static contextType = AuthCtx;
+    static contextType = GlobalCtx;
 
     constructor(props) {
         super(props);
@@ -51,6 +60,12 @@ class Menu extends Component {
             isOpen: false
         };
     }
+
+    hideSidebar = () => {
+        this.context.updateSidebars({
+            rightSidebar: !this.context.sidebars.rightSidebar
+        });
+    };
 
     toggle = () => {
         this.setState({
@@ -75,16 +90,16 @@ class Menu extends Component {
                 expand="md"
                 className="shadow-sm"
             >
-                <Link href="/">
-                  <NavbarBrand
-                    href="/"
-                    className="d-xs-none d-sm-none d-md-inline-block d-lg-inline-block d-xl-inline-block navbar-brand"
-                  >
-                    CTForces
-                  </NavbarBrand>
-                </Link>
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={this.state.isOpen} navbar>
+                    <Link href="/">
+                        <NavbarBrand
+                            href="/"
+                            className="d-xs-none d-sm-none d-md-inline-block d-lg-inline-block d-xl-inline-block navbar-brand"
+                        >
+                            CTForces
+                        </NavbarBrand>
+                    </Link>
                     <Nav navbar className="w-100 nav-fill mr-auto">
                         <NavItem>
                             <Link href="/">
@@ -120,6 +135,15 @@ class Menu extends Component {
                     className="justify-content-end mr-auto ml-auto w-25"
                 >
                     <Nav className="nav-fill" navbar>
+                        <NavItem className="mx-1 my-1">
+                            <Button
+                                onClick={this.hideSidebar}
+                                color="primary"
+                                className="btn-block"
+                            >
+                                Toggle sidebar
+                            </Button>
+                        </NavItem>
                         <NavItem className="mx-1 my-1">
                             <LoginButton authProp={this.context} />
                         </NavItem>

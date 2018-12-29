@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { getUser } from '../lib/auth_service';
 import redirect from '../lib/redirect';
-import { AuthCtx } from './withAuth';
+import { GlobalCtx } from './withGlobal';
 
 export default function withLayout(ChildComponent, LayoutComponent, options) {
     return class ComponentWithLayout extends Component {
-        static contextType = AuthCtx;
+        static contextType = GlobalCtx;
         state = { guarded: options && options.guarded };
 
         constructor(props) {
