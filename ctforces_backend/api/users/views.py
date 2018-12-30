@@ -205,6 +205,9 @@ class LoginView(APIView):
         if not user:
             raise AuthenticationFailed('Invalid credentials.')
 
+        if not user.is_active:
+            raise AuthenticationFailed('User is not activated')
+
         login(request, user)
         response_data = api_users_serializers.UserBasicSerializer(user).data
         return Response(response_data)
