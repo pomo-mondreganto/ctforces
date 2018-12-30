@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Menu from '../components/Menu';
+import MenuComponent from '../components/Menu';
 import React, { Component } from 'react';
 
 class Layout extends Component {
@@ -10,7 +10,7 @@ class Layout extends Component {
     render() {
         return (
             <div>
-                <Menu guarded={this.props.guarded} />
+                <MenuComponent guarded={this.props.guarded} />
                 <div className="container-fluid">{this.props.children}</div>
             </div>
         );

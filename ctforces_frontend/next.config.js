@@ -12,5 +12,6 @@ module.exports = withCSS({
         });
 
         return config;
-    }
+    },
+    useFileSystemPublicRoutes: false
 });

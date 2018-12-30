@@ -1,11 +1,12 @@
 import Layout from '../layouts/master.js';
 import React, { Component } from 'react';
-import { getUser, login } from '../lib/auth_service';
+import { getUser, register } from '../lib/auth_service';
 import Link from 'next/link';
 import { GlobalCtx } from '../wrappers/withGlobal';
-import { lengthBetween, required } from '../lib/validators';
+import { lengthBetween, required, equalTo } from '../lib/validators';
 import withLayout from '../wrappers/withLayout';
 import FormComponent from '../components/Form';
+import redirect from '../lib/redirect';
 
 import {
     Button,
@@ -22,17 +23,17 @@ import {
     Row
 } from 'reactstrap';
 
-class Login extends Component {
+class Register extends Component {
     static contextType = GlobalCtx;
 
     constructor(props) {
         super(props);
     }
 
-    onOkSubmit = async ({ username, password }) => {
-        let data = await login(username, password);
+    onOkSubmit = async ({ username, email, password }) => {
+        let data = await register(username, email, password);
         if (data.ok) {
-            this.context.updateAuth(await getUser());
+            redirect('login');
             return { ok: true, errors: {} };
         } else {
             return { ok: false, errors: await data.json() };
@@ -44,7 +45,7 @@ class Login extends Component {
             <Row className="justify-content-center">
                 <Col className="col-xl-6 col-lg-6 col-md-8 col-sm-10 col-10 my-4">
                     <Card>
-                        <CardHeader className="text-center">Sign in</CardHeader>
+                        <CardHeader className="text-center">Sign up</CardHeader>
                         <CardBody>
                             <FormComponent
                                 onOkSubmit={this.onOkSubmit}
@@ -56,10 +57,25 @@ class Login extends Component {
                                         validators: [required]
                                     },
                                     {
+                                        name: 'email',
+                                        type: 'text',
+                                        placeholder: 'email',
+                                        validators: [required]
+                                    },
+                                    {
                                         name: 'password',
                                         type: 'password',
                                         placeholder: 'password',
                                         validators: [required]
+                                    },
+                                    {
+                                        name: 'password2',
+                                        type: 'password',
+                                        placeholder: 'repeat password',
+                                        validators: [
+                                            required,
+                                            equalTo('password')
+                                        ]
                                     }
                                 ]}
                             />
@@ -72,8 +88,8 @@ class Login extends Component {
                                         </Link>
                                     </Col>
                                     <Col className="text-right">
-                                        <Link href="/register" passHref>
-                                            <CardLink>Register</CardLink>
+                                        <Link href="/login" passHref>
+                                            <CardLink>Login</CardLink>
                                         </Link>
                                     </Col>
                                 </Row>
@@ -86,4 +102,4 @@ class Login extends Component {
     }
 }
 
-export default withLayout(Login, Layout);
+export default withLayout(Register, Layout);

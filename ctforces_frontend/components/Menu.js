@@ -1,13 +1,22 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Link from 'next/link';
-import {logout} from '../lib/auth_service';
-import {GlobalCtx} from '../wrappers/withGlobal';
+import { logout } from '../lib/auth_service';
+import { GlobalCtx } from '../wrappers/withGlobal';
 import redirect from '../lib/redirect';
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faBars} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
-import {Button, Collapse, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink} from 'reactstrap';
+import {
+    Button,
+    Collapse,
+    Nav,
+    Navbar,
+    NavbarBrand,
+    NavbarToggler,
+    NavItem,
+    NavLink
+} from 'reactstrap';
 
 function LoginButton(props) {
     if (props.authProp.auth.loggedIn) {
@@ -45,7 +54,7 @@ function RegisterButton(props) {
     }
 }
 
-class Menu extends Component {
+class MenuComponent extends Component {
     static contextType = GlobalCtx;
 
     constructor(props) {
@@ -84,8 +93,9 @@ class Menu extends Component {
                 expand="lg"
                 className="shadow-sm"
             >
-                <NavbarToggler onClick={this.toggle} className="border-0"><FontAwesomeIcon icon={faBars}
-                                                                                           size="lg"/> Menu</NavbarToggler>
+                <NavbarToggler onClick={this.toggle} className="border-0">
+                    <FontAwesomeIcon icon={faBars} size="lg" /> Menu
+                </NavbarToggler>
                 <Link href="/">
                     <NavbarBrand
                         href="/"
@@ -94,33 +104,34 @@ class Menu extends Component {
                         CTForces
                     </NavbarBrand>
                 </Link>
-                <NavbarToggler onClick={this.hideSidebar} className="border-0"><FontAwesomeIcon icon={faBars}
-                                                                                                size="lg"/></NavbarToggler>
+                <NavbarToggler onClick={this.hideSidebar} className="border-0">
+                    <FontAwesomeIcon icon={faBars} size="lg" />
+                </NavbarToggler>
                 <Collapse isOpen={this.state.isOpen} navbar>
                     <Nav navbar className="w-100 pull-left nav-fill mr-auto">
                         <NavItem>
-                            <Link href="/">
-                                <NavLink href="/">Home</NavLink>
+                            <Link href="/" passHref>
+                                <NavLink>Home</NavLink>
                             </Link>
                         </NavItem>
                         <NavItem>
-                            <Link href="/">
-                                <NavLink href="/">Contests</NavLink>
+                            <Link href="/" passHref>
+                                <NavLink>Contests</NavLink>
                             </Link>
                         </NavItem>
                         <NavItem>
-                            <Link href="/">
-                                <NavLink href="/">Tasks</NavLink>
+                            <Link href="/" passHref>
+                                <NavLink>Tasks</NavLink>
                             </Link>
                         </NavItem>
                         <NavItem>
-                            <Link href="/">
-                                <NavLink href="/">Upsolving</NavLink>
+                            <Link href="/" passHref>
+                                <NavLink>Upsolving</NavLink>
                             </Link>
                         </NavItem>
                         <NavItem>
-                            <Link href="/">
-                                <NavLink href="/">Rating</NavLink>
+                            <Link href="/" passHref>
+                                <NavLink>Rating</NavLink>
                             </Link>
                         </NavItem>
                     </Nav>
@@ -133,7 +144,7 @@ class Menu extends Component {
                 >
                     <Nav className="nav-fill" navbar>
                         <NavItem className="mx-1 my-1">
-                            <LoginButton authProp={this.context}/>
+                            <LoginButton authProp={this.context} />
                         </NavItem>
                         <NavItem className="mx-1 my-1">
                             <RegisterButton
@@ -148,4 +159,4 @@ class Menu extends Component {
     }
 }
 
-export default Menu;
+export default MenuComponent;

@@ -1,7 +1,7 @@
-export function validate(data, validators) {
+export default function validate(data, validators, fieldValues) {
     let errors = [];
     validators.forEach(validator => {
-        let result = validator(data);
+        let result = validator(data, fieldValues);
         if (result) {
             errors.push(result);
         }
@@ -11,30 +11,6 @@ export function validate(data, validators) {
     } else {
         return false;
     }
-}
-
-export default function validateFields(fields, validators) {
-    let verdicts = {};
-    let ok = true;
-    for (let fieldName in validators) {
-        let bad = false;
-        let errors = [];
-        validators[fieldName].forEach(validator => {
-            let result = validator(fields[fieldName]);
-            if (result) {
-                bad = true;
-                errors.push(result);
-            }
-        });
-        if (bad) {
-            verdicts[fieldName] = errors;
-            ok = false;
-        }
-    }
-    return {
-        ok: ok,
-        verdicts: verdicts
-    };
 }
 
 export function validateOk() {
@@ -96,6 +72,16 @@ export function lengthBetween(lnmn, lnmx) {
     return function(data) {
         if (data.length < lnmn || data.length > lnmx) {
             return `Length must be between ${lnmn} and ${lnmx}`;
+        } else {
+            return false;
+        }
+    };
+}
+
+export function equalTo(fieldName) {
+    return function(data, fieldValues) {
+        if (data !== fieldValues[fieldName]) {
+            return `Must be equal to ${fieldName}`;
         } else {
             return false;
         }

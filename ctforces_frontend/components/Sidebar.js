@@ -3,7 +3,7 @@ import { CSSTransition } from 'react-transition-group';
 import { smallWidth } from '../config';
 import { GlobalCtx } from '../wrappers/withGlobal';
 
-class Sidebar extends Component {
+class SidebarComponent extends Component {
     static contextType = GlobalCtx;
 
     constructor(props) {
@@ -65,4 +65,4 @@ class Sidebar extends Component {
     }
 }
 
-export default Sidebar;
+export default SidebarComponent;

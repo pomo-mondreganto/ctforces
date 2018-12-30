@@ -1,10 +1,10 @@
 import Layout from './master';
-import React, {Component} from 'react';
-import {GlobalCtx} from '../wrappers/withGlobal';
-import Sidebar from '../components/Sidebar';
+import React, { Component } from 'react';
+import { GlobalCtx } from '../wrappers/withGlobal';
+import SidebarComponent from '../components/Sidebar';
 import 'bootstrap/dist/css/bootstrap.css';
 
-import {Col, Row} from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 
 class sidebarLayout extends Component {
     static contextType = GlobalCtx;
@@ -19,7 +19,7 @@ class sidebarLayout extends Component {
                 <Row>
                     <Col>{this.props.children}</Col>
                     <Col xs={3} className="overflow-hidden">
-                        <Sidebar/>
+                        <SidebarComponent />
                     </Col>
                 </Row>
             </Layout>
