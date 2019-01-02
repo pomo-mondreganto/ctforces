@@ -37,6 +37,9 @@ class PostViewSet(api_mixins.CustomPermissionsQuerysetViewSetMixin,
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
+        if not instance.is_published and not request.user.has_perm('view_post', instance):
+            self.permission_denied(request, 'You cannot view this post')
+
         instance.can_edit_post = request.user.has_perm('change_post')
         serializer = self.get_serializer(instance)
         return Response(serializer.data)

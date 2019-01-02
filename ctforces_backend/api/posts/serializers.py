@@ -6,12 +6,14 @@ from api import models as api_models
 
 class PostMainSerializer(rest_serializers.ModelSerializer):
     can_edit_post = rest_serializers.BooleanField(required=False, read_only=True)
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username')
 
     class Meta:
         model = api_models.Post
         fields = (
             'id',
             'author',
+            'author_username',
             'body',
             'can_edit_post',
             'created_at',
@@ -26,6 +28,9 @@ class PostMainSerializer(rest_serializers.ModelSerializer):
             },
             'updated_at': {
                 'read_only': True,
+            },
+            'author': {
+                'write_only': True,
             },
         }
 
