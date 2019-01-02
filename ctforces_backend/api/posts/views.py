@@ -37,7 +37,7 @@ class PostViewSet(api_mixins.CustomPermissionsViewSetMixin,
     }
 
     action_permission_classes = {
-        'retrieve': api_permissions.HasViewPostPermission,
+        'retrieve': (api_permissions.HasViewPostPermission,),
     }
 
     def retrieve(self, request, *args, **kwargs):
