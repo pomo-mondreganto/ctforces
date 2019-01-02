@@ -20,7 +20,6 @@ class ViewPost extends Component {
             ctx: ctx
         });
         data = await data.json();
-        console.log(data);
         return {
             title: data.title,
             body: data.body,

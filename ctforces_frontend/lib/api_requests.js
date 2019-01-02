@@ -21,12 +21,16 @@ export async function get(path, options) {
         if (query !== '') {
             query = '?' + query;
         }
+        let headers = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        };
+        if (options.ctx !== undefined && options.ctx.req !== undefined) {
+            headers['cookie'] = options.ctx.req.headers.cookie;
+        }
         let result = await fetch(`${api_url}/${path}/${query}`, {
             method: 'get',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
             credentials: 'include',
             qs: options.data
         });
@@ -36,11 +40,14 @@ export async function get(path, options) {
             return result;
         }
     } catch (e) {
-        redirect('oops', options.ctx);
+        //redirect('oops', options.ctx);
     }
 }
 
 export async function post(path, options) {
+    if (options === undefined) {
+        options = {};
+    }
     try {
         let result = await fetch(`${api_url}/${path}/`, {
             method: 'post',
