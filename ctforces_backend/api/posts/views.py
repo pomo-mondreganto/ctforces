@@ -22,7 +22,10 @@ class PostViewSet(api_mixins.CustomPermissionsQuerysetViewSetMixin,
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
 
-    queryset = api_models.Post.objects.filter(show_on_main_page=True)
+    def get_queryset(self):
+        if self.action == 'list':
+            return api_models.Post.objects.filter(show_on_main_page=True)
+        return api_models.Post.objects.all()
 
     klass = api_models.Post
     action_permissions_querysets = {
