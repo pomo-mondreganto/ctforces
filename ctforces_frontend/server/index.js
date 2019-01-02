@@ -22,6 +22,16 @@ app.prepare().then(() => {
         return app.render(req, res, '/register', req.query);
     });
 
+    server.get('/profile', (req, res) => {
+        return app.render(req, res, '/profile', req.query);
+    });
+
+    server.get('/users/:username', (req, res) => {
+        const actualPage = '/user';
+        const queryParams = { username: req.params.username };
+        app.render(req, res, actualPage, queryParams);
+    });
+
     server.get('*', (req, res) => {
         return handle(req, res);
     });

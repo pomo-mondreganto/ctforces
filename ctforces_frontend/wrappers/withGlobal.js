@@ -15,6 +15,16 @@ export default function withGlobal(GlobalComponent, options) {
             super(props);
         }
 
+        static async getInitialProps({ Component, router, ctx }) {
+            let pageProps = {};
+
+            if (Component.getInitialProps) {
+                pageProps = await Component.getInitialProps(ctx);
+            }
+
+            return { pageProps };
+        }
+
         updateAuth = user => {
             if (user) {
                 this.setState({

@@ -3,7 +3,7 @@ import { api_url } from '../config';
 import redirect from '../lib/redirect';
 import getCookie from './get_cookie';
 
-export async function get(path, data) {
+export async function get(path, data, ctx) {
     try {
         let query = data
             ? Object.keys(data)
@@ -18,7 +18,7 @@ export async function get(path, data) {
         if (query !== '') {
             query = '?' + query;
         }
-        return await fetch(`${api_url}/${path}/${query}`, {
+        let result = await fetch(`${api_url}/${path}/${query}`, {
             method: 'get',
             headers: {
                 Accept: 'application/json',
@@ -27,14 +27,19 @@ export async function get(path, data) {
             credentials: 'include',
             qs: data
         });
+        if (result.status == 404) {
+            redirect('404', ctx);
+        } else {
+            return result;
+        }
     } catch (e) {
-        redirect('oops');
+        redirect('oops', ctx);
     }
 }
 
-export async function post(path, data) {
+export async function post(path, data, ctx) {
     try {
-        return await fetch(`${api_url}/${path}/`, {
+        let result = await fetch(`${api_url}/${path}/`, {
             method: 'post',
             headers: {
                 Accept: 'application/json',
@@ -44,7 +49,12 @@ export async function post(path, data) {
             credentials: 'include',
             body: JSON.stringify(data)
         });
+        if (result.status == 404) {
+            redirect('404', ctx);
+        } else {
+            return result;
+        }
     } catch (e) {
-        redirect('oops');
+        redirect('oops', ctx);
     }
 }

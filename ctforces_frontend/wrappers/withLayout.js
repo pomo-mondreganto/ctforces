@@ -12,6 +12,16 @@ export default function withLayout(ChildComponent, LayoutComponent, options) {
             super(props);
         }
 
+        static async getInitialProps(ctx) {
+            let pageProps = {};
+
+            if (ChildComponent.getInitialProps) {
+                pageProps = await ChildComponent.getInitialProps(ctx);
+            }
+
+            return pageProps;
+        }
+
         componentDidMount = async () => {
             let data = await getUser();
             if (data) {
