@@ -21,11 +21,13 @@ class PostViewSet(api_mixins.CustomPermissionsQuerysetViewSetMixin,
     serializer_class = api_posts_serializers.PostMainSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
+    queryset = api_models.Post.objects.all()
 
     def get_queryset(self):
+        qs = super(PostViewSet, self).get_queryset()
         if self.action == 'list':
-            return api_models.Post.objects.filter(show_on_main_page=True)
-        return api_models.Post.objects.all()
+            return qs.filter(show_on_main_page=True)
+        return qs
 
     klass = api_models.Post
     action_permissions_querysets = {

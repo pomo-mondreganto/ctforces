@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Link from 'next/link';
 
-import { Card, Nav, NavItem, NavLink } from 'reactstrap';
+import {Col, Container, Nav, NavItem, NavLink, Row} from 'reactstrap';
 
 class CardWithTabsComponent extends Component {
     constructor(props) {
@@ -10,22 +10,30 @@ class CardWithTabsComponent extends Component {
 
     render() {
         return (
-            <div>
-                <Nav className="nav-pills nav-fill">
-                    {this.props.tabs.map((obj, i) => {
-                        return (
-                            <NavItem key={i}>
-                                <Link href={obj.href} passHref>
-                                    <NavLink className="border">
-                                        {obj.text}
-                                    </NavLink>
-                                </Link>
-                            </NavItem>
-                        );
-                    })}
-                </Nav>
-                <Card className="p-2">{this.props.children}</Card>
-            </div>
+            <Container>
+                <Row>
+                    <Col>
+                        <Nav className="nav-tabs nav-fill">
+                            {this.props.tabs.map((obj, i) => {
+                                return (
+                                    <NavItem key={i}>
+                                        <Link href={obj.href} passHref>
+                                            <NavLink active={i === 0}>
+                                                {obj.text}
+                                            </NavLink>
+                                        </Link>
+                                    </NavItem>
+                                );
+                            })}
+                        </Nav>
+                    </Col>
+                </Row>
+                <Row className="p-2">
+                    <Col>
+                        {this.props.children}
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }
