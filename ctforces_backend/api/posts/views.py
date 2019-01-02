@@ -10,8 +10,7 @@ from api import permissions as api_permissions
 from api.posts import serializers as api_posts_serializers
 
 
-class PostViewSet(api_mixins.CustomPermissionsViewSetMixin,
-                  api_mixins.CustomPermissionsQuerysetViewSetMixin,
+class PostViewSet(api_mixins.CustomPermissionsQuerysetViewSetMixin,
                   rest_mixins.RetrieveModelMixin,
                   rest_mixins.ListModelMixin,
                   rest_mixins.CreateModelMixin,
