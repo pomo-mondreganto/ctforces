@@ -32,6 +32,16 @@ app.prepare().then(() => {
         app.render(req, res, actualPage, queryParams);
     });
 
+    server.get('/post/create', (req, res) => {
+        return app.render(req, res, '/post/create', req.query);
+    });
+
+    server.get('/post/:id', (req, res) => {
+        const actualPage = '/post';
+        const queryParams = { id: req.params.id };
+        app.render(req, res, actualPage, queryParams);
+    });
+
     server.get('*', (req, res) => {
         return handle(req, res);
     });

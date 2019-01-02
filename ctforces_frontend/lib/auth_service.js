@@ -2,17 +2,14 @@ import { get, post } from './api_requests';
 
 export async function login(username, password) {
     let data = await post('login', {
-        username: username,
-        password: password
+        data: { username: username, password: password }
     });
     return data;
 }
 
 export async function register(username, email, password) {
     let data = await post('register', {
-        username: username,
-        email: email,
-        password: password
+        data: { username: username, email: email, password: password }
     });
     return data;
 }

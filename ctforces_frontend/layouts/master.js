@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'simplemde/dist/simplemde.min.css';
 import MenuComponent from '../components/Menu';
 import React, { Component } from 'react';
 

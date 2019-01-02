@@ -8,6 +8,26 @@ class InputComponent extends Component {
     }
 
     render() {
+        if (this.props.source) {
+            const CustomInput = this.props.source;
+            return (
+                <FormGroup>
+                    <CustomInput
+                        name={this.props.name}
+                        handleChange={this.props.handleChange}
+                        {...this.props.pass_props}
+                    />
+                    <Input
+                        invalid={this.props.name in this.props.errors}
+                        hidden
+                    />
+                    {this.props.name in this.props.errors &&
+                        this.props.errors[this.props.name].map((error, i) => (
+                            <FormFeedback key={i}>{error}</FormFeedback>
+                        ))}
+                </FormGroup>
+            );
+        }
         return (
             <FormGroup>
                 <Input
@@ -132,6 +152,8 @@ class FormComponent extends Component {
                 {this.state.formFields.map((obj, i) => {
                     return (
                         <InputComponent
+                            pass_props={obj.pass_props}
+                            source={obj.source}
                             type={obj.type}
                             name={obj.name}
                             hidden={obj.hidden}

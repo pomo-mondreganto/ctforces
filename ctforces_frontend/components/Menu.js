@@ -21,7 +21,7 @@ import {
 function LoginButton(props) {
     if (props.authProp.auth.loggedIn) {
         return (
-            <Link href="profile">
+            <Link href="/profile">
                 <Button color="primary" className="btn-block">
                     {props.authProp.auth.user.username}
                 </Button>
@@ -29,7 +29,7 @@ function LoginButton(props) {
         );
     } else {
         return (
-            <Link href="login">
+            <Link href="/login">
                 <Button color="primary" className="btn-block">
                     Sign In
                 </Button>
@@ -47,7 +47,7 @@ function RegisterButton(props) {
         );
     } else {
         return (
-            <Link href="register">
+            <Link href="/register">
                 <Button className="btn-block">Sign Up</Button>
             </Link>
         );

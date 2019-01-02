@@ -4,10 +4,11 @@ import withLayout from '../wrappers/withLayout';
 import CardWithTabsComponent from '../components/CardWithTabs';
 import { GlobalCtx } from '../wrappers/withGlobal';
 import { media_url } from '../config';
+import Link from 'next/link';
 
 import { Card, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faMarker } from '@fortawesome/free-solid-svg-icons';
 
 class Profile extends Component {
     static contextType = GlobalCtx;
@@ -27,8 +28,8 @@ class Profile extends Component {
                         },
                         { text: 'Blog', href: '#' },
                         { text: 'Tasks', href: '#' },
-                        { text: 'General', href: 'settings/general' },
-                        { text: 'Social', href: 'settings/social' }
+                        { text: 'General', href: '/settings/general' },
+                        { text: 'Social', href: '/settings/social' }
                     ]}
                 >
                     <Row>
@@ -60,6 +61,10 @@ class Profile extends Component {
                                 <FontAwesomeIcon icon={faChartLine} size="lg" />{' '}
                                 Maximum rating:{' '}
                                 {this.context.auth.user.max_rating}
+                            </div>
+                            <div className="py-2">
+                                <FontAwesomeIcon icon={faMarker} size="lg" />{' '}
+                                <Link href="/post/create">Write post</Link>
                             </div>
                         </Col>
                         <Col>

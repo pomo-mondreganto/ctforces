@@ -3,15 +3,18 @@ import { api_url } from '../config';
 import redirect from '../lib/redirect';
 import getCookie from './get_cookie';
 
-export async function get(path, data, ctx) {
+export async function get(path, options) {
+    if (options == undefined) {
+        options = {};
+    }
     try {
-        let query = data
-            ? Object.keys(data)
+        let query = options.data
+            ? Object.keys(options.data)
                   .map(
                       k =>
                           encodeURIComponent(k) +
                           '=' +
-                          encodeURIComponent(data[k])
+                          encodeURIComponent(options.data[k])
                   )
                   .join('&')
             : '';
@@ -25,19 +28,19 @@ export async function get(path, data, ctx) {
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            qs: data
+            qs: options.data
         });
         if (result.status == 404) {
-            redirect('404', ctx);
+            redirect('404', options.ctx);
         } else {
             return result;
         }
     } catch (e) {
-        redirect('oops', ctx);
+        redirect('oops', options.ctx);
     }
 }
 
-export async function post(path, data, ctx) {
+export async function post(path, options) {
     try {
         let result = await fetch(`${api_url}/${path}/`, {
             method: 'post',
@@ -47,14 +50,14 @@ export async function post(path, data, ctx) {
                 'X-CSRFToken': getCookie('csrftoken')
             },
             credentials: 'include',
-            body: JSON.stringify(data)
+            body: JSON.stringify(options.data)
         });
         if (result.status == 404) {
-            redirect('404', ctx);
+            redirect('404', options.ctx);
         } else {
             return result;
         }
     } catch (e) {
-        redirect('oops', ctx);
+        redirect('oops', options.ctx);
     }
 }

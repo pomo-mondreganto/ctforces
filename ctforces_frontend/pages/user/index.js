@@ -5,10 +5,11 @@ import { get } from '../../lib/api_requests';
 import { withRouter } from 'next/router';
 import CardWithTabsComponent from '../../components/CardWithTabs';
 import { media_url } from '../../config';
+import Link from 'next/link';
 
 import { Card, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faMarker } from '@fortawesome/free-solid-svg-icons';
 
 class UserProfile extends Component {
     constructor(props) {
@@ -16,7 +17,9 @@ class UserProfile extends Component {
     }
 
     static async getInitialProps(ctx) {
-        let data = await get(`users/${ctx.query.username}`, {}, ctx);
+        let data = await get(`users/${ctx.query.username}`, {
+            ctx: ctx
+        });
         return {
             user: await data.json()
         };
@@ -59,6 +62,10 @@ class UserProfile extends Component {
                             <div className="py-2">
                                 <FontAwesomeIcon icon={faChartLine} size="lg" />{' '}
                                 Maximum rating: {this.props.user.max_rating}
+                            </div>
+                            <div className="py-2">
+                                <FontAwesomeIcon icon={faMarker} size="lg" />{' '}
+                                <Link href="/post/create">Write post</Link>
                             </div>
                         </Col>
                         <Col>
