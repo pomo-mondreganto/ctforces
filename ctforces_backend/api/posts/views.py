@@ -10,7 +10,8 @@ from api import permissions as api_permissions
 from api.posts import serializers as api_posts_serializers
 
 
-class PostViewSet(api_mixins.CustomPermissionsQuerysetViewSetMixin,
+class PostViewSet(api_mixins.CustomPermissionsViewSetMixin,
+                  api_mixins.CustomPermissionsQuerysetViewSetMixin,
                   rest_mixins.RetrieveModelMixin,
                   rest_mixins.ListModelMixin,
                   rest_mixins.CreateModelMixin,
@@ -35,11 +36,12 @@ class PostViewSet(api_mixins.CustomPermissionsQuerysetViewSetMixin,
         'partial_update': 'change_post',
     }
 
+    action_permission_classes = {
+        'retrieve': api_permissions.HasViewPostPermission,
+    }
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if not instance.is_published and not request.user.has_perm('view_post', instance):
-            self.permission_denied(request, 'You cannot view this post')
-
         instance.can_edit_post = request.user.has_perm('change_post')
         serializer = self.get_serializer(instance)
         return Response(serializer.data)

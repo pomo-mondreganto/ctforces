@@ -111,6 +111,13 @@ class HasViewTaskPermission(HasPermissionMixin):
         return obj.is_published or request.user.has_perm(self.permission_name, obj)
 
 
+class HasViewPostPermission(HasPermissionMixin):
+    permission_name = 'view_post'
+
+    def has_object_permission(self, request, view, obj):
+        return obj.is_published or request.user.has_perm(self.permission_name, obj)
+
+
 class HasViewContestPermission(HasPermissionMixin):
     permission_name = 'view_contest'
 
