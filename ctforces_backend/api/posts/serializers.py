@@ -6,7 +6,7 @@ from api import models as api_models
 
 class PostMainSerializer(rest_serializers.ModelSerializer):
     can_edit_post = rest_serializers.BooleanField(required=False, read_only=True)
-    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username')
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
 
     class Meta:
         model = api_models.Post

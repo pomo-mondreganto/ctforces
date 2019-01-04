@@ -236,11 +236,6 @@ class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
         obj = get_object_or_404(queryset, id=self.request.user.id)
         return obj
 
-    def retrieve(self, request, *args, **kwargs):
-        obj = self.get_object()
-        serializer = self.get_serializer(instance=obj)
-        return Response(serializer.data)
-
 
 class AvatarUploadView(APIView):
     parser_classes = (MultiPartParser,)
