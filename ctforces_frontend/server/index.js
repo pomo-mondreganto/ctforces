@@ -48,6 +48,14 @@ app.prepare().then(() => {
         app.render(req, res, actualPage, queryParams);
     });
 
+    server.get('/settings/general', (req, res) => {
+        return app.render(req, res, '/settings/general', req.query);
+    });
+
+    server.get('/settings/social', (req, res) => {
+        return app.render(req, res, '/settings/social', req.query);
+    });
+
     server.get('*', (req, res) => {
         return handle(req, res);
     });

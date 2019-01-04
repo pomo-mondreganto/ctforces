@@ -21,9 +21,16 @@ export async function get(path, options) {
         if (query !== '') {
             query = '?' + query;
         }
+        let content_type = 'application/json';
+        let body_data = options.data;
+        if (options.content_type !== undefined) {
+            content_type = options.content_type;
+        } else {
+            body_data = JSON.stringify(options.data);
+        }
         let headers = {
             Accept: 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': content_type
         };
         if (options.ctx !== undefined && options.ctx.req !== undefined) {
             headers['cookie'] = options.ctx.req.headers.cookie;
@@ -32,7 +39,7 @@ export async function get(path, options) {
             method: 'get',
             headers: headers,
             credentials: 'include',
-            qs: options.data
+            qs: body_data
         });
         if (result.status == 404) {
             redirect('404', options.ctx);
@@ -40,7 +47,7 @@ export async function get(path, options) {
             return result;
         }
     } catch (e) {
-        //redirect('oops', options.ctx);
+        redirect('oops', options.ctx);
     }
 }
 
@@ -49,15 +56,22 @@ export async function post(path, options) {
         options = {};
     }
     try {
+        let content_type = 'application/json';
+        let body_data = options.data;
+        if (options.content_type !== undefined) {
+            content_type = options.content_type;
+        } else {
+            body_data = JSON.stringify(options.data);
+        }
         let result = await fetch(`${api_url}/${path}/`, {
             method: 'post',
             headers: {
                 Accept: 'application/json',
-                'Content-Type': 'application/json',
+                'Content-Type': content_type,
                 'X-CSRFToken': getCookie('csrftoken')
             },
             credentials: 'include',
-            body: JSON.stringify(options.data)
+            body: body_data
         });
         if (result.status == 404) {
             redirect('404', options.ctx);

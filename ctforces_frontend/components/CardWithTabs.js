@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Link from 'next/link';
 
-import {Col, Container, Nav, NavItem, NavLink, Row} from 'reactstrap';
+import { Col, Container, Nav, NavItem, NavLink, Row } from 'reactstrap';
 
 class CardWithTabsComponent extends Component {
     constructor(props) {
@@ -17,7 +17,7 @@ class CardWithTabsComponent extends Component {
                             {this.props.tabs.map((obj, i) => {
                                 return (
                                     <NavItem key={i}>
-                                        <Link href={obj.href} passHref>
+                                        <Link href={obj.href} href>
                                             <NavLink active={i === 0}>
                                                 {obj.text}
                                             </NavLink>
@@ -29,9 +29,7 @@ class CardWithTabsComponent extends Component {
                     </Col>
                 </Row>
                 <Row className="p-2">
-                    <Col>
-                        {this.props.children}
-                    </Col>
+                    <Col>{this.props.children}</Col>
                 </Row>
             </Container>
         );

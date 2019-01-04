@@ -32,7 +32,7 @@ class UserProfile extends Component {
                     tabs={[
                         {
                             text: this.props.user.username,
-                            href: '/user/' + this.props.user.username
+                            href: '/users/' + this.props.user.username
                         },
                         { text: 'Blog', href: '#' },
                         { text: 'Tasks', href: '#' },
@@ -65,7 +65,9 @@ class UserProfile extends Component {
                             </div>
                             <div className="py-2">
                                 <FontAwesomeIcon icon={faMarker} size="lg" />{' '}
-                                <Link href="/post/create">Write post</Link>
+                                <Link href="/post/create">
+                                    <div>Write post</div>
+                                </Link>
                             </div>
                         </Col>
                         <Col>
