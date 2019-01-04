@@ -24,7 +24,7 @@ class Profile extends Component {
                     tabs={[
                         {
                             text: this.context.auth.user.username,
-                            href: '/users/' + this.context.auth.user.username
+                            href: `/users/${this.context.auth.user.username}`
                         },
                         { text: 'Blog', href: '#' },
                         { text: 'Tasks', href: '#' },

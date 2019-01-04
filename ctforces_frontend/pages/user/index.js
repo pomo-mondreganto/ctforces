@@ -32,12 +32,12 @@ class UserProfile extends Component {
                     tabs={[
                         {
                             text: this.props.user.username,
-                            href: '/users/' + this.props.user.username
+                            href: `/users/${this.props.user.username}`
                         },
                         { text: 'Blog', href: '#' },
                         { text: 'Tasks', href: '#' },
-                        { text: 'General', href: 'settings/general' },
-                        { text: 'Social', href: 'settings/social' }
+                        { text: 'General', href: '/settings/general' },
+                        { text: 'Social', href: '/settings/social' }
                     ]}
                 >
                     <Row>
