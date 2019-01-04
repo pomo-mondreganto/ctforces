@@ -1,20 +1,32 @@
 import React, { Component } from 'react';
 import { Form, FormGroup, Input, Button, FormFeedback } from 'reactstrap';
 import validate from '../lib/validators';
+import TextInputComponent from './TextInput';
 
 class InputComponent extends Component {
     constructor(props) {
         super(props);
+        let initial_value = '';
+        if (this.props.initial_value !== undefined) {
+            initial_value = this.props.initial_value;
+        }
+        this.props.handleChange({
+            target: {
+                name: this.props.name,
+                value: initial_value
+            }
+        });
     }
 
     render() {
-        if (this.props.source) {
+        if (this.props.source !== undefined) {
             const CustomInput = this.props.source;
             return (
                 <FormGroup>
                     <CustomInput
                         name={this.props.name}
                         handleChange={this.props.handleChange}
+                        initial_value={this.props.initial_value}
                         {...this.props.pass_props}
                     />
                     <Input
@@ -30,25 +42,17 @@ class InputComponent extends Component {
         }
         return (
             <FormGroup>
-                <Input
-                    type={
-                        this.props.type === undefined ? 'text' : this.props.type
-                    }
-                    name={
-                        this.props.name === undefined
-                            ? 'default'
-                            : this.props.name
-                    }
-                    hidden={
-                        this.props.hidden == undefined
-                            ? false
-                            : this.props.hidden
-                    }
-                    className="form-control"
+                <TextInputComponent
+                    initial_value={this.props.initial_value}
+                    type={this.props.type}
+                    name={this.props.name}
+                    hidden={this.props.hidden}
                     placeholder={this.props.placeholder}
-                    onChange={this.props.handleChange}
+                    handleChange={this.props.handleChange}
                     invalid={this.props.name in this.props.errors}
+                    errors={this.props.errors}
                 />
+
                 {this.props.name in this.props.errors &&
                     this.props.errors[this.props.name].map((error, i) => (
                         <FormFeedback key={i}>{error}</FormFeedback>
@@ -152,6 +156,7 @@ class FormComponent extends Component {
                 {this.state.formFields.map((obj, i) => {
                     return (
                         <InputComponent
+                            initial_value={obj.initial_value}
                             pass_props={obj.pass_props}
                             source={obj.source}
                             type={obj.type}

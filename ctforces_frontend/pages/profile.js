@@ -64,7 +64,9 @@ class Profile extends Component {
                             </div>
                             <div className="py-2">
                                 <FontAwesomeIcon icon={faMarker} size="lg" />{' '}
-                                <Link href="/post/create">Write post</Link>
+                                <Link href="/post/create">
+                                    <a>Write post</a>
+                                </Link>
                             </div>
                         </Col>
                         <Col>

@@ -3,7 +3,7 @@ import sidebarLayout from '../../layouts/sidebarLayout';
 import withLayout from '../../wrappers/withLayout';
 import FormComponent from '../../components/Form';
 import { required } from '../../lib/validators';
-import { post } from '../../lib/api_requests';
+import { post, get } from '../../lib/api_requests';
 import { api_url } from '../../config';
 import redirect from '../../lib/redirect';
 
@@ -11,9 +11,21 @@ import { Card } from 'reactstrap';
 import SimpleMDEComponent from '../../components/SimpleMDEInput';
 import CheckBoxComponent from '../../components/CheckBoxInput';
 
-class CreatePost extends Component {
+class EditPost extends Component {
     constructor(props) {
         super(props);
+    }
+
+    static async getInitialProps(ctx) {
+        let data = await get(`posts/${ctx.query.id}`, { ctx: ctx });
+        data = await data.json();
+        return {
+            id: data.id,
+            title: data.title,
+            body: data.body,
+            author_username: data.author_username,
+            is_published: data.is_published
+        };
     }
 
     onOkSubmit = async ({ title, body, is_published }) => {
@@ -37,25 +49,28 @@ class CreatePost extends Component {
         return (
             <Card className="p-2">
                 <div style={{ fontSize: '2rem' }} className="py-2">
-                    Write post
+                    Edit post
                 </div>
                 <hr />
                 <FormComponent
                     onOkSubmit={this.onOkSubmit}
                     fields={[
                         {
+                            initial_value: this.props.title,
                             name: 'title',
                             type: 'text',
                             placeholder: 'Title',
                             validators: [required]
                         },
                         {
+                            initial_value: this.props.body,
                             source: SimpleMDEComponent,
                             name: 'body',
                             pass_props: { id: 'post_textarea' },
                             validators: [required]
                         },
                         {
+                            initial_value: this.props.is_published,
                             source: CheckBoxComponent,
                             name: 'is_published',
                             pass_props: {
@@ -69,4 +84,4 @@ class CreatePost extends Component {
     }
 }
 
-export default withLayout(CreatePost, sidebarLayout);
+export default withLayout(EditPost, sidebarLayout);

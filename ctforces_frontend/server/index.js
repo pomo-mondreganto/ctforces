@@ -42,6 +42,12 @@ app.prepare().then(() => {
         app.render(req, res, actualPage, queryParams);
     });
 
+    server.get('/post/:id/edit', (req, res) => {
+        const actualPage = '/post/edit';
+        const queryParams = { id: req.params.id };
+        app.render(req, res, actualPage, queryParams);
+    });
+
     server.get('*', (req, res) => {
         return handle(req, res);
     });
