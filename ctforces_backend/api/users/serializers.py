@@ -155,6 +155,15 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
             'email': {
                 'read_only': True,
             },
+            'rating': {
+                'read_only': True,
+            },
+            'max_rating': {
+                'read_only': True,
+            },
+            'username': {
+                'read_only': True,
+            },
         }
 
     def validate(self, data):
