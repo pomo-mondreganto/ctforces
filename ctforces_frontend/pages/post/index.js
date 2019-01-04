@@ -41,7 +41,10 @@ class ViewPost extends Component {
                 {this.props.is_published && (
                     <div className="py-2">
                         <FontAwesomeIcon icon={faMarker} size="lg" />{' '}
-                        <Link href={`/post/${this.props.id}/edit`}>
+                        <Link
+                            as={`/post/${this.props.id}/edit`}
+                            href={`/post/edit?id=${this.props.id}`}
+                        >
                             <a>Edit post</a>
                         </Link>
                     </div>

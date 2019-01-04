@@ -6,12 +6,15 @@ import { withRouter } from 'next/router';
 import CardWithTabsComponent from '../../components/CardWithTabs';
 import { media_url } from '../../config';
 import Link from 'next/link';
+import { GlobalCtx } from '../../wrappers/withGlobal';
 
 import { Card, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faMarker } from '@fortawesome/free-solid-svg-icons';
 
 class UserProfile extends Component {
+    static contextType = GlobalCtx;
+
     constructor(props) {
         super(props);
     }
@@ -32,7 +35,8 @@ class UserProfile extends Component {
                     tabs={[
                         {
                             text: this.props.user.username,
-                            href: `/users/${this.props.user.username}`
+                            as: `/user/${this.props.user.username}`,
+                            href: `/user?username=${this.props.user.username}`
                         },
                         { text: 'Blog', href: '#' },
                         { text: 'Tasks', href: '#' },
@@ -63,12 +67,19 @@ class UserProfile extends Component {
                                 <FontAwesomeIcon icon={faChartLine} size="lg" />{' '}
                                 Maximum rating: {this.props.user.max_rating}
                             </div>
-                            <div className="py-2">
-                                <FontAwesomeIcon icon={faMarker} size="lg" />{' '}
-                                <Link href="/post/create">
-                                    <div>Write post</div>
-                                </Link>
-                            </div>
+                            {this.context.auth.loggedIn &&
+                                this.context.auth.user.username ==
+                                    this.props.user.username && (
+                                    <div className="py-2">
+                                        <FontAwesomeIcon
+                                            icon={faMarker}
+                                            size="lg"
+                                        />{' '}
+                                        <Link href="/post/create">
+                                            <a>Write post</a>
+                                        </Link>
+                                    </div>
+                                )}
                         </Col>
                         <Col>
                             <img
@@ -83,4 +94,4 @@ class UserProfile extends Component {
     }
 }
 
-export default withLayout(withRouter(UserProfile), sidebarLayout);
+export default withLayout(UserProfile, sidebarLayout);

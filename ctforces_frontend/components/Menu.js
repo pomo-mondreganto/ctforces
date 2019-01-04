@@ -21,7 +21,10 @@ import {
 function LoginButton(props) {
     if (props.authProp.auth.loggedIn) {
         return (
-            <Link href="/profile">
+            <Link
+                href={`/user?username=${props.authProp.auth.user.username}`}
+                as={`/user/${props.authProp.auth.user.username}`}
+            >
                 <Button color="primary" className="btn-block">
                     {props.authProp.auth.user.username}
                 </Button>

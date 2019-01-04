@@ -15,13 +15,21 @@ class PostComponent extends Component {
             <Row className="border rounded">
                 <Col className="m-3">
                     <p className="h2">
-                        <Link href={`/post/${this.props.id}`}>
+                        <Link
+                            as={`/post/${this.props.id}`}
+                            href={`/post?id=${this.props.id}`}
+                        >
                             <a>{this.props.title}</a>
                         </Link>
                     </p>
                     <p className="lead">
                         By{' '}
-                        <Link href={`/user/${this.props.author}`}>
+                        <Link
+                            as={`/user/${this.props.author_username}`}
+                            href={`/user?username=${
+                                this.props.author_username
+                            }`}
+                        >
                             <a>{this.props.author_username},</a>
                         </Link>{' '}
                         {this.props.created_at}

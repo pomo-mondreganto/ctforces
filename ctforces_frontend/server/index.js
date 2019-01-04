@@ -22,11 +22,7 @@ app.prepare().then(() => {
         return app.render(req, res, '/register', req.query);
     });
 
-    server.get('/profile', (req, res) => {
-        return app.render(req, res, '/profile', req.query);
-    });
-
-    server.get('/users/:username', (req, res) => {
+    server.get('/user/:username', (req, res) => {
         const actualPage = '/user';
         const queryParams = { username: req.params.username };
         app.render(req, res, actualPage, queryParams);
