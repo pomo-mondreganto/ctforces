@@ -438,3 +438,5 @@ ctforces_backend/media/files/*
 !ctforces_backend/media/avatars/default_avatar.small.png
 !ctforces_backend/media/avatars/default_avatar.main.png
 
+ctforces_backend/ctforces_backend/config.json
+
