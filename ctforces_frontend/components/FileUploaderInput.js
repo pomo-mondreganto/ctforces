@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { post } from '../lib/api_requests';
 import { api_url } from '../config';
+import getCookie from '../lib/get_cookie';
 
 import { Input, Button } from 'reactstrap';
 
@@ -32,7 +33,7 @@ class FileUploaderComponent extends Component {
         xhr.withCredentials = true;
 
         xhr.upload.onprogress = event => {
-            console.log(event.loaded);
+            console.log(event.loaded + ' ' + event.total);
         };
 
         xhr.onload = xhr.onerror = function() {
@@ -45,6 +46,8 @@ class FileUploaderComponent extends Component {
         };
 
         xhr.open('POST', `${api_url}/avatar_upload/`);
+        xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        xhr.setRequestHeader('Accept', 'application/json');
         xhr.send(data);
     };
 
