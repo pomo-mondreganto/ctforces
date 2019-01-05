@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { post } from '../lib/api_requests';
+import { api_url } from '../config';
 
 import { Input, Button } from 'reactstrap';
 
@@ -26,11 +27,25 @@ class FileUploaderComponent extends Component {
             this.state.selectedFile,
             this.state.selectedFile.name
         );
-        let result = await post('avatar_upload', {
-            data: data,
-            content_type: 'multipart/form-data'
-        });
-        result = await result.json();
+        let xhr = new XMLHttpRequest();
+
+        xhr.withCredentials = true;
+
+        xhr.upload.onprogress = event => {
+            console.log(event.loaded);
+        };
+
+        xhr.onload = xhr.onerror = function() {
+            console.log(this);
+            if (this.status == 200) {
+                console.log('success');
+            } else {
+                console.log('error ' + this.status);
+            }
+        };
+
+        xhr.open('POST', `${api_url}/avatar_upload/`);
+        xhr.send(data);
     };
 
     render() {
