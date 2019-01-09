@@ -46,7 +46,8 @@ def end_contest(contest_id):
     contest.is_registration_open = False
     contest.save()
 
-    recalculate_rating.delay(contest_id)
+    if contest.is_rated:
+        recalculate_rating.delay(contest_id)
 
     if contest.publish_tasks_after_finished:
         publish_tasks.delay(contest_id)
