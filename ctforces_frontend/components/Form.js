@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Form, FormGroup, Input, Button, FormFeedback } from 'reactstrap';
+import React, {Component} from 'react';
+import {Button, Form, FormFeedback, Input} from 'reactstrap';
 import validate from '../lib/validators';
 import TextInputComponent from './TextInput';
 
@@ -22,7 +22,7 @@ class InputComponent extends Component {
         if (this.props.source !== undefined) {
             const CustomInput = this.props.source;
             return (
-                <FormGroup>
+                <div>
                     <CustomInput
                         name={this.props.name}
                         handleChange={this.props.handleChange}
@@ -37,11 +37,11 @@ class InputComponent extends Component {
                         this.props.errors[this.props.name].map((error, i) => (
                             <FormFeedback key={i}>{error}</FormFeedback>
                         ))}
-                </FormGroup>
+                </div>
             );
         }
         return (
-            <FormGroup>
+            <div>
                 <TextInputComponent
                     initial_value={this.props.initial_value}
                     type={this.props.type}
@@ -57,7 +57,7 @@ class InputComponent extends Component {
                     this.props.errors[this.props.name].map((error, i) => (
                         <FormFeedback key={i}>{error}</FormFeedback>
                     ))}
-            </FormGroup>
+            </div>
         );
     }
 }

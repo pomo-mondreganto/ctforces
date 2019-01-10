@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
-import { Input, Label } from 'reactstrap';
+import {FormGroup, Input, Label} from 'reactstrap';
 
 class CheckBoxComponent extends Component {
     constructor(props) {
@@ -9,7 +9,7 @@ class CheckBoxComponent extends Component {
         if (this.props.initial_value !== undefined) {
             initial_value = this.props.initial_value;
         }
-        this.state = { value: initial_value };
+        this.state = {value: initial_value};
         this.props.handleChange({
             target: {
                 name: this.props.name,
@@ -33,16 +33,17 @@ class CheckBoxComponent extends Component {
 
     render() {
         return (
-            <div>
-                <Input
-                    className="form-check"
-                    type="checkbox"
-                    name={this.props.name}
-                    onChange={this.handleChange}
-                    checked={this.state.value}
-                />
-                <Label> {this.props.label} </Label>
-            </div>
+            <FormGroup check>
+                <Label check>
+                    <Input
+                        type="checkbox"
+                        name={this.props.name}
+                        onChange={this.handleChange}
+                        checked={this.state.value}
+                    />{' '}
+                    Publish
+                </Label>
+            </FormGroup>
         );
     }
 }

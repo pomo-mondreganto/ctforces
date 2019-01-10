@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
-import { post } from '../lib/api_requests';
-import { api_url } from '../config';
+import React, {Component} from 'react';
+import {api_url} from '../config';
 import getCookie from '../lib/get_cookie';
 
-import { Input, Button } from 'reactstrap';
+import {Button, CustomInput, FormGroup} from 'reactstrap';
 
 class FileUploaderComponent extends Component {
     constructor(props) {
@@ -36,9 +35,9 @@ class FileUploaderComponent extends Component {
             console.log(event.loaded + ' ' + event.total);
         };
 
-        xhr.onload = xhr.onerror = function() {
+        xhr.onload = xhr.onerror = function () {
             console.log(this);
-            if (this.status == 200) {
+            if (this.status === 200) {
                 console.log('success');
             } else {
                 console.log('error ' + this.status);
@@ -53,15 +52,16 @@ class FileUploaderComponent extends Component {
 
     render() {
         return (
-            <div>
-                <Input
+            <FormGroup>
+
+                <CustomInput
                     type="file"
                     name="avatar"
                     onChange={this.handleSelectedFile}
                 />
                 <Button onClick={this.handleUpload}>Upload</Button>
                 <div> {Math.round(this.state.loaded, 2)} %</div>
-            </div>
+            </FormGroup>
         );
     }
 }
