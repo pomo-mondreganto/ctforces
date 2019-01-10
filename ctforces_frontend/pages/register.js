@@ -1,27 +1,15 @@
 import Layout from '../layouts/master.js';
-import React, { Component } from 'react';
-import { getUser, register } from '../lib/auth_service';
+import React, {Component} from 'react';
+import {register} from '../lib/auth_service';
 import Link from 'next/link';
-import { GlobalCtx } from '../wrappers/withGlobal';
-import { lengthBetween, required, equalTo } from '../lib/validators';
+import {GlobalCtx} from '../wrappers/withGlobal';
+import {equalTo, required} from '../lib/validators';
 import withLayout from '../wrappers/withLayout';
 import FormComponent from '../components/Form';
 import redirect from '../lib/redirect';
 
-import {
-    Button,
-    Card,
-    CardBody,
-    CardHeader,
-    CardLink,
-    Col,
-    Container,
-    Form,
-    FormFeedback,
-    FormGroup,
-    Input,
-    Row
-} from 'reactstrap';
+import {Card, CardBody, CardHeader, CardLink, Col, Container, Row} from 'reactstrap';
+import TextInputComponent from '../../components/TextInput';
 
 class Register extends Component {
     static contextType = GlobalCtx;
@@ -51,24 +39,28 @@ class Register extends Component {
                                 onOkSubmit={this.onOkSubmit}
                                 fields={[
                                     {
+                                        source: TextInputComponent,
                                         name: 'username',
                                         type: 'text',
                                         placeholder: 'username',
                                         validators: [required]
                                     },
                                     {
+                                        source: TextInputComponent,
                                         name: 'email',
                                         type: 'text',
                                         placeholder: 'email',
                                         validators: [required]
                                     },
                                     {
+                                        source: TextInputComponent,
                                         name: 'password',
                                         type: 'password',
                                         placeholder: 'password',
                                         validators: [required]
                                     },
                                     {
+                                        source: TextInputComponent,
                                         name: 'password2',
                                         type: 'password',
                                         placeholder: 'repeat password',

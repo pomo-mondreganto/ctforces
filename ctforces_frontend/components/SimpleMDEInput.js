@@ -1,6 +1,5 @@
 import SimpleMDE from 'react-simplemde-editor';
 import React, {Component} from 'react';
-import {FormGroup} from 'reactstrap';
 
 class SimpleMDEComponent extends Component {
     constructor(props) {
@@ -32,16 +31,14 @@ class SimpleMDEComponent extends Component {
 
     render() {
         return (
-            <FormGroup>
-                <SimpleMDE
-                    id={this.props.id}
-                    onChange={this.handleMDEChange}
-                    value={this.state.textarea_value}
-                    options={{
-                        spellChecker: false
-                    }}
-                />
-            </FormGroup>
+            <SimpleMDE
+                id={this.props.id}
+                onChange={this.handleMDEChange}
+                value={this.state.textarea_value}
+                options={{
+                    spellChecker: false
+                }}
+            />
         );
     }
 }

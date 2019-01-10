@@ -1,26 +1,14 @@
 import Layout from '../layouts/master.js';
-import React, { Component } from 'react';
-import { getUser, login } from '../lib/auth_service';
+import React, {Component} from 'react';
+import {getUser, login} from '../lib/auth_service';
 import Link from 'next/link';
-import { GlobalCtx } from '../wrappers/withGlobal';
-import { lengthBetween, required } from '../lib/validators';
+import {GlobalCtx} from '../wrappers/withGlobal';
+import {required} from '../lib/validators';
 import withLayout from '../wrappers/withLayout';
 import FormComponent from '../components/Form';
+import TextInputComponent from '../components/TextInput';
 
-import {
-    Button,
-    Card,
-    CardBody,
-    CardHeader,
-    CardLink,
-    Col,
-    Container,
-    Form,
-    FormFeedback,
-    FormGroup,
-    Input,
-    Row
-} from 'reactstrap';
+import {Card, CardBody, CardHeader, CardLink, Col, Container, Row} from 'reactstrap';
 
 class Login extends Component {
     static contextType = GlobalCtx;
@@ -50,12 +38,14 @@ class Login extends Component {
                                 onOkSubmit={this.onOkSubmit}
                                 fields={[
                                     {
+                                        source: TextInputComponent,
                                         name: 'username',
                                         type: 'text',
                                         placeholder: 'username',
                                         validators: [required]
                                     },
                                     {
+                                        source: TextInputComponent,
                                         name: 'password',
                                         type: 'password',
                                         placeholder: 'password',

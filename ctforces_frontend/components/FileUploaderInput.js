@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {api_url} from '../config';
 import getCookie from '../lib/get_cookie';
 
-import {Button, CustomInput, FormGroup} from 'reactstrap';
+import {Button, CustomInput} from 'reactstrap';
 
 class FileUploaderComponent extends Component {
     constructor(props) {
@@ -52,16 +52,16 @@ class FileUploaderComponent extends Component {
 
     render() {
         return (
-            <FormGroup>
-
+            <div>
                 <CustomInput
                     type="file"
                     name="avatar"
+                    id="avatar-input"
                     onChange={this.handleSelectedFile}
                 />
                 <Button onClick={this.handleUpload}>Upload</Button>
                 <div> {Math.round(this.state.loaded, 2)} %</div>
-            </FormGroup>
+            </div>
         );
     }
 }

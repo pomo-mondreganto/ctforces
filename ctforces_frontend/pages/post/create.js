@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import sidebarLayout from '../../layouts/sidebarLayout';
 import withLayout from '../../wrappers/withLayout';
 import FormComponent from '../../components/Form';
-import { required } from '../../lib/validators';
-import { post } from '../../lib/api_requests';
-import { api_url } from '../../config';
+import {required} from '../../lib/validators';
+import {post} from '../../lib/api_requests';
 import redirect from '../../lib/redirect';
 
-import { Card } from 'reactstrap';
+import {Card} from 'reactstrap';
 import SimpleMDEComponent from '../../components/SimpleMDEInput';
 import CheckBoxComponent from '../../components/CheckBoxInput';
+import TextInputComponent from '../../components/TextInput';
 
 class CreatePost extends Component {
     constructor(props) {
@@ -44,6 +44,7 @@ class CreatePost extends Component {
                     onOkSubmit={this.onOkSubmit}
                     fields={[
                         {
+                            source: TextInputComponent,
                             name: 'title',
                             type: 'text',
                             placeholder: 'Title',

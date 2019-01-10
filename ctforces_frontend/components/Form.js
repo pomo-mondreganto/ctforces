@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Button, Form, FormFeedback, Input} from 'reactstrap';
+import {Button, Form, FormFeedback, FormGroup, Input} from 'reactstrap';
 import validate from '../lib/validators';
-import TextInputComponent from './TextInput';
+import CheckBoxComponent from './CheckBoxInput';
+import TextInputComponent from "./TextInput";
 
 class InputComponent extends Component {
     constructor(props) {
@@ -19,45 +20,25 @@ class InputComponent extends Component {
     }
 
     render() {
-        if (this.props.source !== undefined) {
-            const CustomInput = this.props.source;
-            return (
-                <div>
-                    <CustomInput
-                        name={this.props.name}
-                        handleChange={this.props.handleChange}
-                        initial_value={this.props.initial_value}
-                        {...this.props.pass_props}
-                    />
-                    <Input
-                        invalid={this.props.name in this.props.errors}
-                        hidden
-                    />
-                    {this.props.name in this.props.errors &&
-                        this.props.errors[this.props.name].map((error, i) => (
-                            <FormFeedback key={i}>{error}</FormFeedback>
-                        ))}
-                </div>
-            );
-        }
+        const CustomInputComponent = this.props.source;
         return (
-            <div>
-                <TextInputComponent
-                    initial_value={this.props.initial_value}
-                    type={this.props.type}
+            <FormGroup check={CustomInputComponent === CheckBoxComponent}>
+                <CustomInputComponent
                     name={this.props.name}
-                    hidden={this.props.hidden}
-                    placeholder={this.props.placeholder}
                     handleChange={this.props.handleChange}
+                    initial_value={this.props.initial_value}
+                    hidden={this.props.hidden}
+                    type={this.props.type}
+                    {...this.props.pass_props}
                     invalid={this.props.name in this.props.errors}
-                    errors={this.props.errors}
+                    placeholder={this.props.placeholder}
                 />
-
+                <Input hidden invalid={this.props.name in this.props.errors}/>
                 {this.props.name in this.props.errors &&
-                    this.props.errors[this.props.name].map((error, i) => (
-                        <FormFeedback key={i}>{error}</FormFeedback>
-                    ))}
-            </div>
+                this.props.errors[this.props.name].map((error, i) => (
+                    <FormFeedback key={i}>{error}</FormFeedback>
+                ))}
+            </FormGroup>
         );
     }
 }
@@ -75,7 +56,7 @@ class FormComponent extends Component {
             formFields.push(field);
         }
 
-        formFields.push({ name: 'detail', hidden: true });
+        formFields.push({name: 'detail', hidden: true, source: TextInputComponent});
 
         this.state = {
             errors: {},
@@ -144,7 +125,7 @@ class FormComponent extends Component {
         this.setState(dispatch);
 
         let validated = this.validate(false);
-        this.setState({ errors: validated.verdicts });
+        this.setState({errors: validated.verdicts});
     };
 
     render() {

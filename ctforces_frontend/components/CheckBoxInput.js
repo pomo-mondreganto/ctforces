@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {FormGroup, Input, Label} from 'reactstrap';
+import {Input, Label} from 'reactstrap';
 
 class CheckBoxComponent extends Component {
     constructor(props) {
@@ -33,17 +33,15 @@ class CheckBoxComponent extends Component {
 
     render() {
         return (
-            <FormGroup check>
-                <Label check>
-                    <Input
-                        type="checkbox"
-                        name={this.props.name}
-                        onChange={this.handleChange}
-                        checked={this.state.value}
-                    />{' '}
-                    Publish
-                </Label>
-            </FormGroup>
+            <Label check>
+                <Input
+                    type="checkbox"
+                    name={this.props.name}
+                    onChange={this.handleChange}
+                    checked={this.state.value}
+                />{' '}
+                {this.props.label}
+            </Label>
         );
     }
 }

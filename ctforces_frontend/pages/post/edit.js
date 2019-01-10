@@ -1,13 +1,12 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import sidebarLayout from '../../layouts/sidebarLayout';
 import withLayout from '../../wrappers/withLayout';
 import FormComponent from '../../components/Form';
-import { required } from '../../lib/validators';
-import { post, get } from '../../lib/api_requests';
-import { api_url } from '../../config';
+import {required} from '../../lib/validators';
+import {get, post} from '../../lib/api_requests';
 import redirect from '../../lib/redirect';
 
-import { Card } from 'reactstrap';
+import {Card} from 'reactstrap';
 import SimpleMDEComponent from '../../components/SimpleMDEInput';
 import CheckBoxComponent from '../../components/CheckBoxInput';
 
@@ -56,6 +55,7 @@ class EditPost extends Component {
                     onOkSubmit={this.onOkSubmit}
                     fields={[
                         {
+                            source: TextInputComponent,
                             initial_value: this.props.title,
                             name: 'title',
                             type: 'text',

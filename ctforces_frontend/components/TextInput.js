@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {FormGroup, Input} from 'reactstrap';
+import {Input} from 'reactstrap';
 
 class TextInputComponent extends Component {
     constructor(props) {
@@ -27,22 +27,20 @@ class TextInputComponent extends Component {
 
     render() {
         return (
-            <FormGroup>
-                <Input
-                    type={this.props.type === undefined ? 'text' : this.props.type}
-                    name={
-                        this.props.name === undefined ? 'default' : this.props.name
-                    }
-                    hidden={
-                        this.props.hidden === undefined ? false : this.props.hidden
-                    }
-                    value={this.state.value}
-                    className="form-control"
-                    placeholder={this.props.placeholder}
-                    onChange={this.handleChange}
-                    invalid={this.props.name in this.props.errors}
-                />
-            </FormGroup>
+            <Input
+                type={this.props.type === undefined ? 'text' : this.props.type}
+                name={
+                    this.props.name === undefined ? 'default' : this.props.name
+                }
+                hidden={
+                    this.props.hidden === undefined ? false : this.props.hidden
+                }
+                value={this.state.value}
+                className="form-control"
+                placeholder={this.props.placeholder}
+                onChange={this.handleChange}
+                invalid={this.props.invalid}
+            />
         );
     }
 }
