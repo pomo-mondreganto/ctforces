@@ -243,13 +243,6 @@ class AvatarUploadView(APIView):
 
     @staticmethod
     def post(request):
-        print(request.data)
-        print(request.FILES)
-        print(request.parsers)
-        print(request.accepted_renderer)
-        print(request.content_type)
-        print(request.META)
-
         serializer = api_users_serializers.AvatarUploadSerializer(data=request.data,
                                                                   instance=request.user,
                                                                   context={'request': request})
