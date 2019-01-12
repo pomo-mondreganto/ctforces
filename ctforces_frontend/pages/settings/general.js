@@ -58,6 +58,4 @@ class SettingsSocial extends Component {
     }
 }
 
-export default withLayout(SettingsSocial, sidebarLayout, {
-    guarded: true
-});
+export default withLayout(SettingsSocial, sidebarLayout);

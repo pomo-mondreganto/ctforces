@@ -1,6 +1,7 @@
 import sidebarLayout from '../layouts/sidebarLayout';
 import React, { Component } from 'react';
 import withLayout from '../wrappers/withLayout';
+import withGuard from '../wrappers/withGuard';
 import Link from 'next/link';
 import { Col, Container, Row } from 'reactstrap';
 import { get } from '../lib/api_requests';
@@ -72,4 +73,4 @@ class Index extends Component {
     }
 }
 
-export default withLayout(Index, sidebarLayout);
+export default withGuard(withLayout(Index, sidebarLayout));

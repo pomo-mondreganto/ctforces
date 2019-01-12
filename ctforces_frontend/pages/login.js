@@ -1,14 +1,24 @@
 import Layout from '../layouts/master.js';
-import React, {Component} from 'react';
-import {getUser, login} from '../lib/auth_service';
+import React, { Component } from 'react';
+import { getUser, login } from '../lib/auth_service';
 import Link from 'next/link';
-import {GlobalCtx} from '../wrappers/withGlobal';
-import {required} from '../lib/validators';
+import { GlobalCtx } from '../wrappers/withGlobal';
+import { required } from '../lib/validators';
 import withLayout from '../wrappers/withLayout';
 import FormComponent from '../components/Form';
 import TextInputComponent from '../components/TextInput';
+import redirect from '../lib/redirect';
+import { withRouter } from 'next/router';
 
-import {Card, CardBody, CardHeader, CardLink, Col, Container, Row} from 'reactstrap';
+import {
+    Card,
+    CardBody,
+    CardHeader,
+    CardLink,
+    Col,
+    Container,
+    Row
+} from 'reactstrap';
 
 class Login extends Component {
     static contextType = GlobalCtx;
@@ -21,6 +31,10 @@ class Login extends Component {
         let data = await login(username, password);
         if (data.ok) {
             this.context.updateAuth(await getUser());
+            const { router } = this.props;
+            const { query } = router;
+            const next = query.next || '/';
+            redirect(next);
             return { ok: true, errors: {} };
         } else {
             return { ok: false, errors: await data.json() };
@@ -76,4 +90,4 @@ class Login extends Component {
     }
 }
 
-export default withLayout(Login, Layout);
+export default withRouter(withLayout(Login, Layout));

@@ -15,7 +15,7 @@ class sidebarLayout extends Component {
 
     render() {
         return (
-            <Layout guarded={this.props.guarded}>
+            <Layout>
                 <Row>
                     <Col>{this.props.children}</Col>
                     <Col className="overflow-hidden col-4">

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Link from 'next/link';
 import { logout } from '../lib/auth_service';
 import { GlobalCtx } from '../wrappers/withGlobal';
+import withAuth from '../wrappers/withAuth';
 import redirect from '../lib/redirect';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -81,7 +82,7 @@ class MenuComponent extends Component {
 
     logout = async () => {
         let data = await logout();
-        this.context.updateAuth(false);
+        this.props.updateAuth(false);
         if (this.props.guarded) {
             redirect('login');
         }
@@ -147,11 +148,11 @@ class MenuComponent extends Component {
                 >
                     <Nav className="nav-fill" navbar>
                         <NavItem className="mx-1 my-1">
-                            <LoginButton authProp={this.context} />
+                            <LoginButton authProp={this.props} />
                         </NavItem>
                         <NavItem className="mx-1 my-1">
                             <RegisterButton
-                                authProp={this.context}
+                                authProp={this.props}
                                 onClick={this.logout}
                             />
                         </NavItem>
@@ -162,4 +163,4 @@ class MenuComponent extends Component {
     }
 }
 
-export default MenuComponent;
+export default withAuth(MenuComponent);
