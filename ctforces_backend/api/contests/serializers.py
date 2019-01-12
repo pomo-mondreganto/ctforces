@@ -1,8 +1,52 @@
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
 
+from api import fields as api_fields
 from api import models as api_models
 from api.tasks import serializers as api_tasks_serializers
+
+
+class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
+    solved_count = rest_serializers.IntegerField(read_only=True)
+    is_solved_by_user = rest_serializers.BooleanField(read_only=True)
+    task_name = rest_serializers.SlugRelatedField(read_only=True, slug_field='name', source='task')
+
+    contest = api_fields.CurrentUserPermissionsFilteredPKRF(
+        read_only=False,
+        write_only=True,
+        queryset=api_models.Contest.objects.all(),
+        perms='change_contest',
+    )
+
+    task = api_fields.CurrentUserPermissionsFilteredPKRF(
+        read_only=False,
+        write_only=True,
+        queryset=api_models.Task.objects.all(),
+        perms='change_task',
+    )
+
+    class Meta:
+        model = api_models.ContestTaskRelationship
+        fields = (
+            'id',
+            'contest',
+            'cost',
+            'is_solved_by_user',
+            'task',
+            'task_name',
+            'ordering_number',
+            'solved_count',
+        )
+
+
+class ContestTaskRelationshipUpdateSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = api_models.ContestTaskRelationship
+        fields = (
+            'id',
+            'cost',
+            'ordering_number',
+        )
 
 
 class ContestTaskViewSerializer(rest_serializers.ModelSerializer):
@@ -25,14 +69,21 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer):
 
 
 class ContestFullSerializer(rest_serializers.ModelSerializer):
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     registered_count = rest_serializers.IntegerField(read_only=True)
+    contest_task_relationship_details = ContestTaskRelationshipMainSerializer(
+        many=True,
+        read_only=True,
+        source='contest_task_relationship',
+    )
 
     class Meta:
         model = api_models.Contest
         fields = (
             'id',
             'author',
-            'contest_task_relationship',
+            'author_username',
+            'contest_task_relationship_details',
             'description',
             'end_time',
             'is_finished',
@@ -48,9 +99,6 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
 
         extra_kwargs = {
             'author': {
-                'read_only': True,
-            },
-            'contest_task_relationship': {
                 'write_only': True,
             },
         }
@@ -69,12 +117,13 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
 
 class ContestPreviewSerializer(rest_serializers.ModelSerializer):
     registered_count = rest_serializers.IntegerField(read_only=True)
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
 
     class Meta:
         model = api_models.Contest
         fields = (
             'id',
-            'author',
+            'author_username',
             'end_time',
             'is_finished',
             'is_published',
@@ -86,22 +135,24 @@ class ContestPreviewSerializer(rest_serializers.ModelSerializer):
             'start_time',
         )
 
-        extra_kwargs = {
-            'author': {
-                'read_only': True,
-            },
-        }
-
 
 class ContestViewSerializer(rest_serializers.ModelSerializer):
     can_edit_contest = rest_serializers.BooleanField(read_only=True)
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
+    contest_task_relationship_details = ContestTaskRelationshipMainSerializer(
+        many=True,
+        read_only=True,
+        source='contest_task_relationship',
+    )
 
     class Meta:
         model = api_models.Contest
         fields = (
             'id',
             'author',
+            'author_username',
             'can_edit_contest',
+            'contest_task_relationship_details',
             'end_time',
             'is_finished',
             'is_published',
@@ -111,6 +162,12 @@ class ContestViewSerializer(rest_serializers.ModelSerializer):
             'name',
             'start_time',
         )
+
+        extra_kwargs = {
+            'author': {
+                'write_only': True,
+            },
+        }
 
 
 class ContestScoreboardUserSerializer(rest_serializers.ModelSerializer):
@@ -130,14 +187,9 @@ class ContestScoreboardUserSerializer(rest_serializers.ModelSerializer):
 class ContestScoreboardUserMinimalSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.User
-        fields = ('id',)
-
-
-class ContestScoreboardTaskSerializer(rest_serializers.ModelSerializer):
-    class Meta:
-        model = api_models.Task
         fields = (
-            'name',
+            'id',
+            'username',
         )
 
 
@@ -147,19 +199,6 @@ class ContestScoreboardSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.ContestTaskParticipantSolvedRelationship
         fields = (
-            'contest_id',
             'participant_id',
             'task_name',
-        )
-
-
-class ContestTaskRelationshipSerializer(rest_serializers.ModelSerializer):
-    class Meta:
-        model = api_models.ContestTaskRelationship
-        fields = (
-            'id',
-            'contest',
-            'cost',
-            'task',
-            'ordering_number',
         )

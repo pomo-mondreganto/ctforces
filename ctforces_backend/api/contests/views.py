@@ -1,11 +1,10 @@
 from collections import defaultdict
 
-from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F
+from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F, Prefetch
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
-from rest_framework import status
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError, Throttled
@@ -52,6 +51,31 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         if self.action == 'list':
             queryset = queryset.filter(is_published=True)
 
+        if self.action == 'retrieve' or self.action == 'get_full_contest':
+            solved_count_subquery = api_database_functions.SubqueryCount(
+                api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+                    contest=OuterRef('contest_id'),
+                    task=OuterRef('task_id'),
+                ).only('id')
+            )
+
+            is_solved_by_user_subquery = Exists(
+                api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+                    contest=OuterRef('contest_id'),
+                    task=OuterRef('task_id'),
+                    participant=self.request.user,
+                ).only('id')
+            )
+
+            prefetch = Prefetch(
+                'contest_task_relationship',
+                queryset=api_models.ContestTaskRelationship.objects.annotate(
+                    solved_count=solved_count_subquery,
+                    is_solved_by_user=is_solved_by_user_subquery,
+                ).select_related('task'),
+            )
+            queryset = queryset.prefetch_related(prefetch)
+
         return queryset.annotate(
             registered_count=Count('participants', distinct=True),
         )
@@ -65,7 +89,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.can_edit_task = request.user.has_perm('change_contest')
+        instance.can_edit_contest = request.user.has_perm('change_contest')
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
@@ -124,7 +148,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
         data_serializer = api_contests_serializers.ContestScoreboardSerializer(
             instance=list(relationship_queryset),
-            many=True
+            many=True,
         )
 
         users_serializer = api_contests_serializers.ContestScoreboardUserSerializer(
@@ -142,7 +166,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         result_data = list(
             dict(
                 task_name=key,
-                participants=value
+                solved_participants=value
             ) for key, value in reformatted_data.items()
         )
 
@@ -161,7 +185,7 @@ class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
     queryset = api_models.ContestTaskRelationship.objects.all()
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    serializer_class = api_contests_serializers.ContestTaskRelationshipSerializer
+    serializer_class = api_contests_serializers.ContestTaskRelationshipMainSerializer
 
     action_permission_classes = {
         'create': (api_permissions.HasCreateContestPermission,),
@@ -170,12 +194,15 @@ class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
         'destroy': (api_permissions.HasContestTaskRelationshipPermission,),
     }
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    def get_serializer_class(self):
+        if self.action == 'update' or self.action == 'partial_update':
+            return api_contests_serializers.ContestTaskRelationshipUpdateSerializer
+        return super(ContestTaskRelationshipViewSet, self).get_serializer_class()
+
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'create':
+            kwargs['many'] = isinstance(self.request.data, list)
+        return super(ContestTaskRelationshipViewSet, self).get_serializer(*args, **kwargs)
 
 
 class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
@@ -203,7 +230,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             raise NotFound(detail='Contest not found.')
 
         if not contest.is_published and not self.request.user.has_perm('view_contest', contest):
-            raise PermissionDenied('You cannot access this contest')
+            raise PermissionDenied(detail='You cannot access this contest')
 
         return contest
 
@@ -277,8 +304,8 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             raise PermissionDenied('You are not registered.')
 
         if api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                contest=contest,
-                task=task,
+            contest=contest,
+            task=task,
             participant=self.request.user.id,
         ).exists():
             raise PermissionDenied('Task already solved.')

@@ -115,7 +115,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
     cost = rest_serializers.IntegerField(min_value=1, max_value=9999)
-    files = api_fields.CurrentUserFilteredPrimaryKeyRelatedField(
+    files = api_fields.CurrentUserFilteredPKRF(
         filter_field_name='owner',
         many=True,
         read_only=False,
