@@ -39,6 +39,7 @@ export default function withAuth(ChildComponent) {
                     }
                     updateAuth={this.context.updateAuth}
                     guarded={this.context.guarded}
+                    {...this.props}
                 />
             );
         }

@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
-import {Input} from 'reactstrap';
+import { Input } from 'reactstrap';
 
 class TextInputComponent extends Component {
     constructor(props) {
@@ -9,7 +9,7 @@ class TextInputComponent extends Component {
         if (this.props.initial_value !== undefined) {
             initial_value = this.props.initial_value;
         }
-        this.state = {value: initial_value};
+        this.state = { value: initial_value };
         this.props.handleChange({
             target: {
                 name: this.props.name,

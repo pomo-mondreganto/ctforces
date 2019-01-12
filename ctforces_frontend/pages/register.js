@@ -1,19 +1,25 @@
 import Layout from '../layouts/master.js';
-import React, {Component} from 'react';
-import {register} from '../lib/auth_service';
-import Link from 'next/link';
-import {GlobalCtx} from '../wrappers/withGlobal';
-import {equalTo, required} from '../lib/validators';
+import React, { Component } from 'react';
+import { register } from '../lib/auth_service';
+import { Link } from '../server/routes';
+import { GlobalCtx } from '../wrappers/withGlobal';
+import { equalTo, required } from '../lib/validators';
 import withLayout from '../wrappers/withLayout';
 import FormComponent from '../components/Form';
 import redirect from '../lib/redirect';
 
-import {Card, CardBody, CardHeader, CardLink, Col, Container, Row} from 'reactstrap';
+import {
+    Card,
+    CardBody,
+    CardHeader,
+    CardLink,
+    Col,
+    Container,
+    Row
+} from 'reactstrap';
 import TextInputComponent from '../../components/TextInput';
 
 class Register extends Component {
-    static contextType = GlobalCtx;
-
     constructor(props) {
         super(props);
     }
@@ -75,12 +81,15 @@ class Register extends Component {
                             <Container>
                                 <Row>
                                     <Col className="text-left">
-                                        <Link href="/restore_password" passHref>
+                                        <Link
+                                            route="/restore_password"
+                                            passHref
+                                        >
                                             <CardLink>Forgot password</CardLink>
                                         </Link>
                                     </Col>
                                     <Col className="text-right">
-                                        <Link href="/login" passHref>
+                                        <Link route="/login" passHref>
                                             <CardLink>Login</CardLink>
                                         </Link>
                                     </Col>

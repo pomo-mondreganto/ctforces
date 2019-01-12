@@ -1,7 +1,7 @@
 import Layout from '../layouts/master.js';
 import React, { Component } from 'react';
 import { getUser, login } from '../lib/auth_service';
-import Link from 'next/link';
+import { Link } from '../server/routes';
 import { GlobalCtx } from '../wrappers/withGlobal';
 import { required } from '../lib/validators';
 import withLayout from '../wrappers/withLayout';
@@ -9,6 +9,7 @@ import FormComponent from '../components/Form';
 import TextInputComponent from '../components/TextInput';
 import redirect from '../lib/redirect';
 import { withRouter } from 'next/router';
+import withAuth from '../wrappers/withAuth';
 
 import {
     Card,
@@ -21,8 +22,6 @@ import {
 } from 'reactstrap';
 
 class Login extends Component {
-    static contextType = GlobalCtx;
-
     constructor(props) {
         super(props);
     }
@@ -30,7 +29,7 @@ class Login extends Component {
     onOkSubmit = async ({ username, password }) => {
         let data = await login(username, password);
         if (data.ok) {
-            this.context.updateAuth(await getUser());
+            this.props.updateAuth(await getUser());
             const { router } = this.props;
             const { query } = router;
             const next = query.next || '/';
@@ -71,12 +70,15 @@ class Login extends Component {
                             <Container>
                                 <Row>
                                     <Col className="text-left">
-                                        <Link href="/restore_password" passHref>
+                                        <Link
+                                            route="/restore_password"
+                                            passHref
+                                        >
                                             <CardLink>Forgot password</CardLink>
                                         </Link>
                                     </Col>
                                     <Col className="text-right">
-                                        <Link href="/register" passHref>
+                                        <Link route="/register" passHref>
                                             <CardLink>Register</CardLink>
                                         </Link>
                                     </Col>
@@ -90,4 +92,4 @@ class Login extends Component {
     }
 }
 
-export default withRouter(withLayout(Login, Layout));
+export default withAuth(withRouter(withLayout(Login, Layout)));

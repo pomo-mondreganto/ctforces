@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Link from 'next/link';
+import { Link } from '../server/routes';
 
 import { Col, Container, Nav, NavItem, NavLink, Row } from 'reactstrap';
 
@@ -17,11 +17,7 @@ class CardWithTabsComponent extends Component {
                             {this.props.tabs.map((obj, i) => {
                                 return (
                                     <NavItem key={i}>
-                                        <Link
-                                            href={obj.href}
-                                            as={obj.as}
-                                            passHref
-                                        >
+                                        <Link route={obj.href} passHref>
                                             <NavLink active={i === 0}>
                                                 {obj.text}
                                             </NavLink>

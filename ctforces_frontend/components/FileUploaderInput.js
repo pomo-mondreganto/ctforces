@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {api_url} from '../config';
+import React, { Component } from 'react';
+import { api_url } from '../config';
 import getCookie from '../lib/get_cookie';
 
-import {Button, CustomInput} from 'reactstrap';
+import { Button, CustomInput } from 'reactstrap';
 
 class FileUploaderComponent extends Component {
     constructor(props) {
@@ -35,7 +35,7 @@ class FileUploaderComponent extends Component {
             console.log(event.loaded + ' ' + event.total);
         };
 
-        xhr.onload = xhr.onerror = function () {
+        xhr.onload = xhr.onerror = function() {
             console.log(this);
             if (this.status === 200) {
                 console.log('success');

@@ -1,4 +1,4 @@
-import Router from 'next/router';
+import { Router } from '../server/routes';
 
 export default function redirect(url, ctx) {
     if (ctx && ctx.res) {
@@ -7,6 +7,6 @@ export default function redirect(url, ctx) {
         });
         ctx.res.end();
     } else {
-        Router.push('/' + (url === '/' ? '' : url));
+        Router.pushRoute('/' + (url === '/' ? '' : url));
     }
 }

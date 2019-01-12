@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {Button, Form, FormFeedback, FormGroup, Input} from 'reactstrap';
+import React, { Component } from 'react';
+import { Button, Form, FormFeedback, FormGroup, Input } from 'reactstrap';
 import validate from '../lib/validators';
 import CheckBoxComponent from './CheckBoxInput';
-import TextInputComponent from "./TextInput";
+import TextInputComponent from './TextInput';
 
 class InputComponent extends Component {
     constructor(props) {
@@ -17,7 +17,14 @@ class InputComponent extends Component {
                 value: initial_value
             }
         });
+        this.InputRef = React.createRef();
     }
+
+    beforeSubmit = () => {
+        if (this.InputRef.current.beforeSubmit !== undefined) {
+            this.InputRef.current.beforeSubmit();
+        }
+    };
 
     render() {
         const CustomInputComponent = this.props.source;
@@ -32,12 +39,13 @@ class InputComponent extends Component {
                     {...this.props.pass_props}
                     invalid={this.props.name in this.props.errors}
                     placeholder={this.props.placeholder}
+                    ref={this.InputRef}
                 />
-                <Input hidden invalid={this.props.name in this.props.errors}/>
+                <Input hidden invalid={this.props.name in this.props.errors} />
                 {this.props.name in this.props.errors &&
-                this.props.errors[this.props.name].map((error, i) => (
-                    <FormFeedback key={i}>{error}</FormFeedback>
-                ))}
+                    this.props.errors[this.props.name].map((error, i) => (
+                        <FormFeedback key={i}>{error}</FormFeedback>
+                    ))}
             </FormGroup>
         );
     }
@@ -53,10 +61,15 @@ class FormComponent extends Component {
         for (let key in this.props.fields) {
             let field = this.props.fields[key];
             formFieldsValues[field.name] = '';
+            field['react_ref'] = React.createRef();
             formFields.push(field);
         }
 
-        formFields.push({name: 'detail', hidden: true, source: TextInputComponent});
+        formFields.push({
+            name: 'detail',
+            hidden: true,
+            source: TextInputComponent
+        });
 
         this.state = {
             errors: {},
@@ -110,11 +123,16 @@ class FormComponent extends Component {
             errors: validated.verdicts
         });
         if (validated.ok) {
-            let result = await this.props.onOkSubmit(
-                this.state.formFieldsValues
-            );
-            if (!result.ok) {
-                this.applyServerErrors(result.errors);
+            for (let key in this.props.fields) {
+                this.state.formFields[key].react_ref.current.beforeSubmit();
+            }
+            if (this.props.onOkSubmit !== undefined) {
+                let result = await this.props.onOkSubmit(
+                    this.state.formFieldsValues
+                );
+                if (!result.ok) {
+                    this.applyServerErrors(result.errors);
+                }
             }
         }
     };
@@ -125,7 +143,7 @@ class FormComponent extends Component {
         this.setState(dispatch);
 
         let validated = this.validate(false);
-        this.setState({errors: validated.verdicts});
+        this.setState({ errors: validated.verdicts });
     };
 
     render() {
@@ -147,6 +165,7 @@ class FormComponent extends Component {
                             handleChange={this.handleChange}
                             errors={this.state.errors}
                             key={i}
+                            ref={obj.react_ref}
                         />
                     );
                 })}
