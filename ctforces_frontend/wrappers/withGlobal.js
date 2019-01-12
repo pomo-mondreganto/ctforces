@@ -6,40 +6,56 @@ export const GlobalCtx = React.createContext(null);
 
 export default function withGlobal(GlobalComponent, options) {
     return class Authenticated extends Component {
-        state = {
-            auth: { loggedIn: false, user: false },
-            sidebars: { leftSidebar: false, rightSidebar: false }
-        };
-
         constructor(props) {
             super(props);
+            this.state = {
+                auth: { loggedIn: false, user: false },
+                sidebars: { leftSidebar: false, rightSidebar: false }
+            };
+        }
+
+        static redirectToLogin(ctx) {
+            if (ctx && ctx.res) {
+                ctx.res.writeHead(302, {
+                    Location: `login?next=${ctx.req.originalUrl}`
+                });
+                ctx.res.end();
+            } else {
+                Router.push(`login?next=${ctx.asPath}`);
+            }
         }
 
         static async getInitialProps({ Component, router, ctx }) {
+            let { isGuarded } = Component;
+
+            let data = await getUser({ ctx: ctx });
+
+            let user = false;
+
+            if (data) {
+                user = { loggedIn: true, user: data };
+            } else {
+                user = { loggedIn: false, user: false };
+            }
+
+            if (isGuarded && user.user === false) {
+                this.redirectToLogin(ctx);
+            }
+
             let pageProps = {};
 
             if (Component.getInitialProps) {
                 pageProps = await Component.getInitialProps(ctx);
             }
 
-            return { pageProps };
+            return { pageProps, initial_user: user, guarded: isGuarded };
         }
 
         updateAuth = user => {
             if (user) {
-                this.setState({
-                    auth: {
-                        loggedIn: true,
-                        user: user
-                    }
-                });
+                this.setState({ auth: { loggedIn: true, user: user } });
             } else {
-                this.setState({
-                    auth: {
-                        loggedIn: false,
-                        user: false
-                    }
-                });
+                this.setState({ auth: { loggedIn: false, user: false } });
             }
         };
 
@@ -69,7 +85,9 @@ export default function withGlobal(GlobalComponent, options) {
                         auth: this.state.auth,
                         updateAuth: this.updateAuth,
                         sidebars: this.state.sidebars,
-                        updateSidebars: this.updateSidebars
+                        updateSidebars: this.updateSidebars,
+                        initial_user: this.props.initial_user,
+                        guarded: this.props.guarded
                     }}
                 >
                     <GlobalComponent {...this.props} />

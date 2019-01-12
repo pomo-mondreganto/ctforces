@@ -1,7 +1,8 @@
 import sidebarLayout from '../layouts/sidebarLayout';
 import React, { Component } from 'react';
 import withLayout from '../wrappers/withLayout';
-import Link from 'next/link';
+import withGuard from '../wrappers/withGuard';
+import { Link } from '../server/routes';
 import { Col, Container, Row } from 'reactstrap';
 import { get } from '../lib/api_requests';
 
@@ -15,21 +16,13 @@ class PostComponent extends Component {
             <Row className="border rounded">
                 <Col className="m-3">
                     <p className="h2">
-                        <Link
-                            as={`/post/${this.props.id}`}
-                            href={`/post?id=${this.props.id}`}
-                        >
+                        <Link route={`/post/${this.props.id}`}>
                             <a>{this.props.title}</a>
                         </Link>
                     </p>
                     <p className="lead">
                         By{' '}
-                        <Link
-                            as={`/user/${this.props.author_username}`}
-                            href={`/user?username=${
-                                this.props.author_username
-                            }`}
-                        >
+                        <Link route={`/user/${this.props.author_username}`}>
                             <a>{this.props.author_username},</a>
                         </Link>{' '}
                         {this.props.created_at}
@@ -72,4 +65,4 @@ class Index extends Component {
     }
 }
 
-export default withLayout(Index, sidebarLayout);
+export default withGuard(withLayout(Index, sidebarLayout));

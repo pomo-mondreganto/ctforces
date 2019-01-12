@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import sidebarLayout from '../../layouts/sidebarLayout';
 import withLayout from '../../wrappers/withLayout';
 import FormComponent from '../../components/Form';
-import {required} from '../../lib/validators';
-import {post} from '../../lib/api_requests';
+import { required } from '../../lib/validators';
+import { post } from '../../lib/api_requests';
 import redirect from '../../lib/redirect';
 
-import {Card} from 'reactstrap';
+import { Card } from 'reactstrap';
 import SimpleMDEComponent from '../../components/SimpleMDEInput';
 import CheckBoxComponent from '../../components/CheckBoxInput';
 import TextInputComponent from '../../components/TextInput';

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import Link from 'next/link';
+import { Link } from '../server/routes';
 import { logout } from '../lib/auth_service';
 import { GlobalCtx } from '../wrappers/withGlobal';
+import withAuth from '../wrappers/withAuth';
 import redirect from '../lib/redirect';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,10 +22,7 @@ import {
 function LoginButton(props) {
     if (props.authProp.auth.loggedIn) {
         return (
-            <Link
-                href={`/user?username=${props.authProp.auth.user.username}`}
-                as={`/user/${props.authProp.auth.user.username}`}
-            >
+            <Link route={`/user/${props.authProp.auth.user.username}`}>
                 <Button color="primary" className="btn-block">
                     {props.authProp.auth.user.username}
                 </Button>
@@ -32,7 +30,7 @@ function LoginButton(props) {
         );
     } else {
         return (
-            <Link href="/login">
+            <Link route="/login">
                 <Button color="primary" className="btn-block">
                     Sign In
                 </Button>
@@ -50,7 +48,7 @@ function RegisterButton(props) {
         );
     } else {
         return (
-            <Link href="/register">
+            <Link route="/register">
                 <Button className="btn-block">Sign Up</Button>
             </Link>
         );
@@ -81,7 +79,7 @@ class MenuComponent extends Component {
 
     logout = async () => {
         let data = await logout();
-        this.context.updateAuth(false);
+        this.props.updateAuth(false);
         if (this.props.guarded) {
             redirect('login');
         }
@@ -99,7 +97,7 @@ class MenuComponent extends Component {
                 <NavbarToggler onClick={this.toggle} className="border-0">
                     <FontAwesomeIcon icon={faBars} size="lg" /> Menu
                 </NavbarToggler>
-                <Link href="/">
+                <Link route="/">
                     <NavbarBrand
                         href="/"
                         className="d-xs-none d-sm-inline-block d-md-inline-block d-lg-inline-block d-xl-inline-block navbar-brand"
@@ -113,27 +111,27 @@ class MenuComponent extends Component {
                 <Collapse isOpen={this.state.isOpen} navbar>
                     <Nav navbar className="w-100 pull-left nav-fill mr-auto">
                         <NavItem>
-                            <Link href="/" passHref>
+                            <Link route="/" passHref>
                                 <NavLink>Home</NavLink>
                             </Link>
                         </NavItem>
                         <NavItem>
-                            <Link href="/" passHref>
+                            <Link route="/" passHref>
                                 <NavLink>Contests</NavLink>
                             </Link>
                         </NavItem>
                         <NavItem>
-                            <Link href="/" passHref>
+                            <Link route="/" passHref>
                                 <NavLink>Tasks</NavLink>
                             </Link>
                         </NavItem>
                         <NavItem>
-                            <Link href="/" passHref>
+                            <Link route="/" passHref>
                                 <NavLink>Upsolving</NavLink>
                             </Link>
                         </NavItem>
                         <NavItem>
-                            <Link href="/" passHref>
+                            <Link route="/" passHref>
                                 <NavLink>Rating</NavLink>
                             </Link>
                         </NavItem>
@@ -147,11 +145,11 @@ class MenuComponent extends Component {
                 >
                     <Nav className="nav-fill" navbar>
                         <NavItem className="mx-1 my-1">
-                            <LoginButton authProp={this.context} />
+                            <LoginButton authProp={this.props} />
                         </NavItem>
                         <NavItem className="mx-1 my-1">
                             <RegisterButton
-                                authProp={this.context}
+                                authProp={this.props}
                                 onClick={this.logout}
                             />
                         </NavItem>
@@ -162,4 +160,4 @@ class MenuComponent extends Component {
     }
 }
 
-export default MenuComponent;
+export default withAuth(MenuComponent);

@@ -5,16 +5,15 @@ import { get } from '../../lib/api_requests';
 import { withRouter } from 'next/router';
 import CardWithTabsComponent from '../../components/CardWithTabs';
 import { media_url } from '../../config';
-import Link from 'next/link';
+import { Link } from '../../server/routes';
 import { GlobalCtx } from '../../wrappers/withGlobal';
+import withAuth from '../../wrappers/withAuth';
 
 import { Card, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faMarker } from '@fortawesome/free-solid-svg-icons';
 
 class UserProfile extends Component {
-    static contextType = GlobalCtx;
-
     constructor(props) {
         super(props);
     }
@@ -35,8 +34,7 @@ class UserProfile extends Component {
                     tabs={[
                         {
                             text: this.props.user.username,
-                            as: `/user/${this.props.user.username}`,
-                            href: `/user?username=${this.props.user.username}`
+                            href: `/user/${this.props.user.username}`
                         },
                         { text: 'Blog', href: '#' },
                         { text: 'Tasks', href: '#' },
@@ -67,15 +65,15 @@ class UserProfile extends Component {
                                 <FontAwesomeIcon icon={faChartLine} size="lg" />{' '}
                                 Maximum rating: {this.props.user.max_rating}
                             </div>
-                            {this.context.auth.loggedIn &&
-                                this.context.auth.user.username ==
+                            {this.props.auth.loggedIn &&
+                                this.props.auth.user.username ==
                                     this.props.user.username && (
                                     <div className="py-2">
                                         <FontAwesomeIcon
                                             icon={faMarker}
                                             size="lg"
                                         />{' '}
-                                        <Link href="/post/create">
+                                        <Link route="/post/create">
                                             <a>Write post</a>
                                         </Link>
                                     </div>
@@ -94,4 +92,4 @@ class UserProfile extends Component {
     }
 }
 
-export default withLayout(UserProfile, sidebarLayout);
+export default withAuth(withLayout(UserProfile, sidebarLayout));

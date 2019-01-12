@@ -8,7 +8,7 @@ import { api_url } from '../../config';
 import redirect from '../../lib/redirect';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faMarker } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
+import { Link } from '../../server/routes';
 
 import { Card } from 'reactstrap';
 import SimpleMDEComponent from '../../components/SimpleMDEInput';
@@ -41,10 +41,7 @@ class ViewPost extends Component {
                 {this.props.is_published && (
                     <div className="py-2">
                         <FontAwesomeIcon icon={faMarker} size="lg" />{' '}
-                        <Link
-                            as={`/post/${this.props.id}/edit`}
-                            href={`/post/edit?id=${this.props.id}`}
-                        >
+                        <Link route={`/post/${this.props.id}/edit`}>
                             <a>Edit post</a>
                         </Link>
                     </div>

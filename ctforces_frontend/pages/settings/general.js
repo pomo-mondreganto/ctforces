@@ -4,8 +4,8 @@ import withLayout from '../../wrappers/withLayout';
 import CardWithTabsComponent from '../../components/CardWithTabs';
 import { GlobalCtx } from '../../wrappers/withGlobal';
 import { media_url } from '../../config';
-import Link from 'next/link';
 import FormComponent from '../../components/Form';
+import withAuth from '../wrappers/withAuth';
 
 import { Card, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,8 +13,6 @@ import { faChartLine, faMarker } from '@fortawesome/free-solid-svg-icons';
 import FileUploaderComponent from '../../components/FileUploaderInput';
 
 class SettingsSocial extends Component {
-    static contextType = GlobalCtx;
-
     constructor(props) {
         super(props);
     }
@@ -27,11 +25,8 @@ class SettingsSocial extends Component {
                 <CardWithTabsComponent
                     tabs={[
                         {
-                            text: this.context.auth.user.username,
-                            as: `/user/${this.context.auth.user.username}`,
-                            href: `/user?username=${
-                                this.context.auth.user.username
-                            }`
+                            text: this.props.auth.user.username,
+                            href: `/user/${this.props.auth.user.username}`
                         },
                         { text: 'Blog', href: '#' },
                         { text: 'Tasks', href: '#' },
@@ -58,6 +53,4 @@ class SettingsSocial extends Component {
     }
 }
 
-export default withLayout(SettingsSocial, sidebarLayout, {
-    guarded: true
-});
+export default withAuth(withLayout(SettingsSocial, sidebarLayout));
