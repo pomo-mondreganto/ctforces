@@ -3,51 +3,109 @@ import { api_url } from '../config';
 import getCookie from '../lib/get_cookie';
 
 import { Button, CustomInput } from 'reactstrap';
+import { resolve } from 'url';
+import { rejects } from 'assert';
 
 class FileUploaderComponent extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            selectedFile: null,
-            loaded: 0
-        };
     }
 
-    handleSelectedFile = event => {
-        this.setState({
-            selectedFile: event.target.files[0],
-            loaded: 0
+    handleSelectedFiles = event => {
+        let files = event.target.files;
+        let selectedFiles = this.props.getStorage(
+            `${this.props.file_upload_name}-list`
+        );
+        if (selectedFiles === undefined) {
+            selectedFiles = [];
+        }
+        for (let i = 0; i < files.length; ++i) {
+            selectedFiles.push(files[i]);
+        }
+        this.props.putStorage(
+            `${this.props.file_upload_name}-list`,
+            selectedFiles
+        );
+    };
+
+    uploadFile = (
+        i,
+        data,
+        file_upload_name,
+        file_name,
+        upload_url,
+        putStorage
+    ) => {
+        return new Promise(function(resolve, reject) {
+            let xhr = new XMLHttpRequest();
+
+            xhr.withCredentials = true;
+            xhr.responseType = 'json';
+
+            xhr.upload.onprogress = event => {
+                putStorage(
+                    `${file_upload_name}-${i}-progress`,
+                    event.loaded / event.total
+                );
+            };
+
+            xhr.onload = xhr.onerror = function() {
+                putStorage(`${file_upload_name}-${i}-progress`, undefined);
+                if (this.status === 200) {
+                    resolve(this.response);
+                } else {
+                    reject(this.status);
+                }
+            };
+
+            xhr.open('POST', `${api_url}/${upload_url}/`);
+            xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.send(data);
         });
     };
 
-    handleUpload = async () => {
-        let data = new FormData();
-        data.append(
-            'avatar',
-            this.state.selectedFile,
-            this.state.selectedFile.name
+    beforeSubmit = async () => {
+        let uploaded_files = [];
+        let extract_field = this.props.field;
+        let promises = [];
+        let files = this.props.getStorage(
+            `${this.props.file_upload_name}-list`
         );
-        let xhr = new XMLHttpRequest();
 
-        xhr.withCredentials = true;
+        for (let i = 0; i < files.length; ++i) {
+            let file = files[i];
+            let data = new FormData();
+            data.append(this.props.file_upload_name, file, file.name);
+            promises.push(
+                this.uploadFile(
+                    i,
+                    data,
+                    this.props.file_upload_name,
+                    file.name,
+                    this.props.upload_url,
+                    this.props.putStorage
+                )
+            );
+        }
 
-        xhr.upload.onprogress = event => {
-            console.log(event.loaded + ' ' + event.total);
-        };
+        let data = await Promise.all(promises);
 
-        xhr.onload = xhr.onerror = function() {
-            console.log(this);
-            if (this.status === 200) {
-                console.log('success');
-            } else {
-                console.log('error ' + this.status);
-            }
-        };
-
-        xhr.open('POST', `${api_url}/avatar_upload/`);
-        xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-        xhr.setRequestHeader('Accept', 'application/json');
-        xhr.send(data);
+        if (this.props.multiple) {
+            this.props.handleChange({
+                target: {
+                    name: this.props.name,
+                    value: uploaded_files
+                }
+            });
+        } else {
+            this.props.handleChange({
+                target: {
+                    name: this.props.name,
+                    value: uploaded_files[0]
+                }
+            });
+        }
     };
 
     render() {
@@ -57,10 +115,9 @@ class FileUploaderComponent extends Component {
                     type="file"
                     name="avatar"
                     id="avatar-input"
-                    onChange={this.handleSelectedFile}
+                    onChange={this.handleSelectedFiles}
+                    multiple={this.props.multiple}
                 />
-                <Button onClick={this.handleUpload}>Upload</Button>
-                <div> {Math.round(this.state.loaded, 2)} %</div>
             </div>
         );
     }
