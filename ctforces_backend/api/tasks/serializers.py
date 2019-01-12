@@ -169,8 +169,6 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
     def validate_files(data):
         if len(data) > 5:
             raise rest_serializers.ValidationError('You are allowed to include 5 files or less.')
-        for file in data:
-            print(file)
         return data
 
     def validate(self, attrs):
