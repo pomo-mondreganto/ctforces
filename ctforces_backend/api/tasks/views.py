@@ -150,7 +150,7 @@ class TaskFileViewSet(rest_mixins.RetrieveModelMixin,
                       rest_viewsets.GenericViewSet):
     parser_classes = (MultiPartParser,)
     permission_classes = (IsAuthenticated, api_permissions.HasCreateTaskFilePermissionOrReadOnly)
-    serializer_class = api_tasks_serializers.TaskFileBasicSerializer
+    serializer_class = api_tasks_serializers.TaskFileMainSerializer
     pagination_class = api_pagination.TaskFileDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
@@ -158,10 +158,3 @@ class TaskFileViewSet(rest_mixins.RetrieveModelMixin,
 
     def get_queryset(self):
         return self.queryset.filter(owner=self.request.user.id)
-
-    def create(self, request, *_args, **_kwargs):
-        serializer = api_tasks_serializers.TaskFileUploadSerializer(data=request.data,
-                                                                    context={'request': self.request})
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)

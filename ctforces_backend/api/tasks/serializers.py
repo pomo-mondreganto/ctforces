@@ -37,13 +37,17 @@ class TaskPreviewSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class TaskFileUploadSerializer(rest_serializers.ModelSerializer):
+class TaskFileMainSerializer(rest_serializers.ModelSerializer):
+    task_details = TaskPreviewSerializer(read_only=True, source='task')
+
     class Meta:
         model = api_models.TaskFile
         fields = (
             'id',
             'file_field',
             'name',
+            'task_details',
+            'upload_time',
             'owner',
         )
         extra_kwargs = {
@@ -57,7 +61,7 @@ class TaskFileUploadSerializer(rest_serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         self.filename = None
-        super(TaskFileUploadSerializer, self).__init__(*args, **kwargs)
+        super(TaskFileMainSerializer, self).__init__(*args, **kwargs)
 
     def validate_file_field(self, data):
         self.filename = data.name
@@ -67,20 +71,6 @@ class TaskFileUploadSerializer(rest_serializers.ModelSerializer):
         attrs['name'] = self.filename
         attrs['owner'] = self.context['request'].user
         return attrs
-
-
-class TaskFileBasicSerializer(rest_serializers.ModelSerializer):
-    task_details = TaskPreviewSerializer(read_only=True, source='task')
-
-    class Meta:
-        model = api_models.TaskFile
-        fields = (
-            'id',
-            'file_field',
-            'name',
-            'task_details',
-            'upload_time',
-        )
 
 
 class TaskFileViewSerializer(rest_serializers.ModelSerializer):
@@ -166,6 +156,14 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
                 cur_tags.add(tag.id)
             if len(cur_tags) > 5:
                 raise rest_serializers.ValidationError('You are allowed to use 5 tags or less.')
+        return data
+
+    @staticmethod
+    def validate_files(data):
+        if len(data) > 5:
+            raise rest_serializers.ValidationError('You are allowed to include 5 files or less.')
+        for file in data:
+            print(file)
         return data
 
     def validate(self, attrs):
