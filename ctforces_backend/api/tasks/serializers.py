@@ -1,6 +1,7 @@
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
 
+from api import fields as api_fields
 from api import models as api_models
 
 
@@ -114,6 +115,12 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
     cost = rest_serializers.IntegerField(min_value=1, max_value=9999)
+    files = api_fields.CurrentUserFilteredPrimaryKeyRelatedField(
+        filter_field_name='owner',
+        many=True,
+        read_only=False,
+        queryset=api_models.TaskFile.objects.all(),
+    )
 
     class Meta:
         model = api_models.Task
