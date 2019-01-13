@@ -67,11 +67,11 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
             return api_tasks_serializers.TaskPreviewSerializer
         return api_tasks_serializers.TaskFullSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.can_edit_task = request.user.has_perm('change_task')
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+    def get_object(self):
+        obj = super(TaskViewSet, self).get_object()
+        if self.action == 'retrieve':
+            obj.can_edit_task = self.request.user.has_perm('change_task', obj)
+        return obj
 
     @action(
         detail=True,

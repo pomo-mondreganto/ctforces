@@ -87,11 +87,11 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             return api_contests_serializers.ContestPreviewSerializer
         return api_contests_serializers.ContestFullSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.can_edit_contest = request.user.has_perm('change_contest')
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+    def get_object(self):
+        obj = super(ContestViewSet, self).get_object()
+        if self.action == 'retrieve':
+            obj.can_edit_task = self.request.user.has_perm('change_contest', obj)
+        return obj
 
     @action(
         detail=True,
