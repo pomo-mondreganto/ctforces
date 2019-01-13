@@ -20,9 +20,9 @@ class InputComponent extends Component {
         this.InputRef = React.createRef();
     }
 
-    beforeSubmit = () => {
+    beforeSubmit = async () => {
         if (this.InputRef.current.beforeSubmit !== undefined) {
-            this.InputRef.current.beforeSubmit();
+            await this.InputRef.current.beforeSubmit();
         }
     };
 
@@ -39,6 +39,8 @@ class InputComponent extends Component {
                     {...this.props.pass_props}
                     invalid={this.props.name in this.props.errors}
                     placeholder={this.props.placeholder}
+                    getStorage={this.props.getStorage}
+                    putStorage={this.props.putStorage}
                     ref={this.InputRef}
                 />
                 <Input hidden invalid={this.props.name in this.props.errors} />
@@ -74,9 +76,20 @@ class FormComponent extends Component {
         this.state = {
             errors: {},
             formFieldsValues: formFieldsValues,
-            formFields: formFields
+            formFields: formFields,
+            formStorage: {}
         };
     }
+
+    putStorage = (key, value) => {
+        let storage = this.state.formStorage;
+        storage[key] = value;
+        this.setState({ formStorage: storage });
+    };
+
+    getStorage = key => {
+        return this.state.formStorage[key];
+    };
 
     validate = validate_empty => {
         let validateResultAll = {};
@@ -124,7 +137,9 @@ class FormComponent extends Component {
         });
         if (validated.ok) {
             for (let key in this.props.fields) {
-                this.state.formFields[key].react_ref.current.beforeSubmit();
+                await this.state.formFields[
+                    key
+                ].react_ref.current.beforeSubmit();
             }
             if (this.props.onOkSubmit !== undefined) {
                 let result = await this.props.onOkSubmit(
@@ -140,7 +155,7 @@ class FormComponent extends Component {
     handleChange = event => {
         let dispatch = this.state.formFieldsValues;
         dispatch[event.target.name] = event.target.value;
-        this.setState(dispatch);
+        this.setState({ formFieldsValues: dispatch });
 
         let validated = this.validate(false);
         this.setState({ errors: validated.verdicts });
@@ -164,6 +179,8 @@ class FormComponent extends Component {
                             placeholder={obj.placeholder}
                             handleChange={this.handleChange}
                             errors={this.state.errors}
+                            getStorage={this.getStorage}
+                            putStorage={this.putStorage}
                             key={i}
                             ref={obj.react_ref}
                         />
