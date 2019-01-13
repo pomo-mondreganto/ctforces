@@ -251,7 +251,16 @@ class ContestTaskRelationship(models.Model):
     ordering_number = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ('-ordering_number', 'cost', 'id')
+        ordering = (
+            '-ordering_number',
+            'cost',
+            'id',
+        )
+
+        unique_together = (
+            'contest',
+            'task',
+        )
 
 
 class ContestParticipantRelationship(models.Model):
