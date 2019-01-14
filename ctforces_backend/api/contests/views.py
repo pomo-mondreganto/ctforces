@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F, Prefetch, IntegerField
+from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F, Q, Prefetch, IntegerField
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
@@ -270,16 +270,10 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                     participant=self.request.user.id,
                 ),
             ),
-            solved_count=Coalesce(
-                api_database_functions.SubqueryCount(
-                    api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                        contest_id=contest.id,
-                        task_id=OuterRef('id'),
-                    ).values('id').annotate(
-                        user_count=Count('id')
-                    ).values('user_count')
-                ),
-                V(0),
+            solved_count=Count(
+                'contest_task_participant_solved_relationship',
+                filter=Q(contest_id=contest.id),
+                distinct=True,
             ),
             contest_cost=Subquery(
                 api_models.ContestTaskRelationship.objects.filter(
