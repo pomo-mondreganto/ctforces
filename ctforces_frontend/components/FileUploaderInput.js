@@ -22,20 +22,10 @@ class FileUploaderComponent extends Component {
         for (let i = 0; i < files.length; ++i) {
             selectedFiles.push(files[i]);
         }
-        this.props.putStorage(
-            `${this.props.file_upload_name}-list`,
-            selectedFiles
-        );
+        this.props.putStorage(`${this.props.name}-list`, selectedFiles);
     };
 
-    uploadFile = (
-        i,
-        data,
-        file_upload_name,
-        file_name,
-        upload_url,
-        putStorage
-    ) => {
+    uploadFile = (i, data, name, file_name, upload_url, putStorage) => {
         return new Promise(function(resolve, reject) {
             let xhr = new XMLHttpRequest();
 
@@ -43,15 +33,12 @@ class FileUploaderComponent extends Component {
             xhr.responseType = 'json';
 
             xhr.upload.onprogress = event => {
-                putStorage(
-                    `${file_upload_name}-${i}-progress`,
-                    event.loaded / event.total
-                );
+                putStorage(`${name}-${i}-progress`, event.loaded / event.total);
             };
 
             xhr.onload = xhr.onerror = function() {
-                putStorage(`${file_upload_name}-${i}-progress`, undefined);
-                if (this.status === 200) {
+                putStorage(`${name}-${i}-progress`, undefined);
+                if (this.status >= 200 && this.status < 300) {
                     resolve(this.response);
                 } else {
                     reject(this.status);
@@ -67,42 +54,41 @@ class FileUploaderComponent extends Component {
 
     beforeSubmit = async () => {
         let uploaded_files = [];
-        let extract_field = this.props.field;
         let promises = [];
-        let files = this.props.getStorage(
-            `${this.props.file_upload_name}-list`
-        );
+        let files = this.props.getStorage(`${this.props.name}-list`);
 
-        for (let i = 0; i < files.length; ++i) {
-            let file = files[i];
-            let data = new FormData();
-            data.append(this.props.file_upload_name, file, file.name);
-            promises.push(
-                this.uploadFile(
-                    i,
-                    data,
-                    this.props.file_upload_name,
-                    file.name,
-                    this.props.upload_url,
-                    this.props.putStorage
-                )
-            );
-        }
+        if (files !== undefined) {
+            for (let i = 0; i < files.length; ++i) {
+                let file = files[i];
+                let data = new FormData();
+                data.append(this.props.file_upload_name, file, file.name);
+                promises.push(
+                    this.uploadFile(
+                        i,
+                        data,
+                        this.props.name,
+                        file.name,
+                        this.props.upload_url,
+                        this.props.putStorage
+                    )
+                );
+            }
 
-        let data = await Promise.all(promises);
+            let data = await Promise.all(promises);
 
-        if (this.props.multiple) {
+            for (let i = 0; i < data.length; ++i) {
+                let file = data[i];
+                console.log(file);
+                console.log(this.props.extract_field);
+                uploaded_files.push(file[this.props.extract_field]);
+            }
+
+            console.log(uploaded_files);
+
             this.props.handleChange({
                 target: {
                     name: this.props.name,
                     value: uploaded_files
-                }
-            });
-        } else {
-            this.props.handleChange({
-                target: {
-                    name: this.props.name,
-                    value: uploaded_files[0]
                 }
             });
         }
@@ -110,7 +96,7 @@ class FileUploaderComponent extends Component {
 
     render() {
         return (
-            <div>
+            <React.Fragment>
                 <CustomInput
                     type="file"
                     name="avatar"
@@ -118,7 +104,7 @@ class FileUploaderComponent extends Component {
                     onChange={this.handleSelectedFiles}
                     multiple={this.props.multiple}
                 />
-            </div>
+            </React.Fragment>
         );
     }
 }

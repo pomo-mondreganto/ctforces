@@ -29,6 +29,7 @@
         "react-dom": "^16.6.3",
         "react-popper": "^1.3.0",
         "react-simplemde-editor": "^3.6.22",
+        "react-tag-input": "^5.2.3",
         "react-transition-group": "^2.5.2",
         "reactstrap": "^6.5.0",
         "url-loader": "^1.1.2"

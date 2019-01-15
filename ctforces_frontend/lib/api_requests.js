@@ -22,11 +22,9 @@ export async function get(path, options) {
             query = '?' + query;
         }
         let content_type = 'application/json';
-        let body_data = options.data;
         if (options.content_type !== undefined) {
             content_type = options.content_type;
         } else {
-            body_data = JSON.stringify(options.data);
         }
         let headers = {
             Accept: 'application/json',
@@ -38,8 +36,7 @@ export async function get(path, options) {
         let result = await fetch(`${api_url}/${path}/${query}`, {
             method: 'get',
             headers: headers,
-            credentials: 'include',
-            qs: body_data
+            credentials: 'include'
         });
         if (result.status == 404) {
             redirect('404', options.ctx);

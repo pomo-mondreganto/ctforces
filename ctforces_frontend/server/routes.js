@@ -9,4 +9,7 @@ module.exports = routes()
     .add('post_index', '/post/:id', 'post/index')
     .add('post_edit', '/post/:id/edit', 'post/edit')
     .add('settings_general', '/settings/general', 'settings/general')
-    .add('settings_social', '/settings/social', 'settings/social');
+    .add('settings_social', '/settings/social', 'settings/social')
+    .add('task_create', '/task/create', 'task/create')
+    .add('task_index', '/task/index', 'task/index')
+    .add('task_edit', '/task/edit', 'task/edit');

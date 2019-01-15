@@ -2,7 +2,6 @@ import Layout from './master';
 import React, { Component } from 'react';
 import { GlobalCtx } from '../wrappers/withGlobal';
 import SidebarComponent from '../components/Sidebar';
-import 'bootstrap/dist/css/bootstrap.css';
 
 import { Col, Row } from 'reactstrap';
 

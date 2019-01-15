@@ -49,7 +49,7 @@ class SettingsSocial extends Component {
                                         pass_props: {
                                             upload_url: 'avatar_upload',
                                             file_upload_name: 'avatar',
-                                            field: 'avatar'
+                                            extract_field: 'avatar'
                                         },
                                         name: 'avatar'
                                     }
