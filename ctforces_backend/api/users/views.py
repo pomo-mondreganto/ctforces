@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -14,6 +13,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api import celery_tasks as api_tasks
 from api import models as api_models
 from api import pagination as api_pagination
 from api.contests import serializers as api_contests_serializers
@@ -44,7 +44,7 @@ class UserCreateView(CreateAPIView):
         message_plain = render_to_string('email_templates/email_confirmation.txt', context)
         message_html = render_to_string('email_templates/email_confirmation.html', context)
 
-        send_mail(
+        api_tasks.send_users_mail.delay(
             subject='CTForces account confirmation',
             message=message_plain,
             from_email='CTForces team',
@@ -111,7 +111,7 @@ class ActivationEmailResendView(APIView):
         message_plain = render_to_string('email_templates/email_confirmation.txt', context)
         message_html = render_to_string('email_templates/email_confirmation.html', context)
 
-        send_mail(
+        api_tasks.send_users_mail.delay(
             subject='CTForces account confirmation',
             message=message_plain,
             from_email='CTForces team',
@@ -155,7 +155,7 @@ class PasswordResetRequestView(APIView):
         message_plain = render_to_string('email_templates/password_reset.txt', context)
         message_html = render_to_string('email_templates/password_reset.html', context)
 
-        send_mail(
+        api_tasks.send_users_mail.delay(
             subject='CTForces password reset',
             message=message_plain,
             from_email='CTForces team',
