@@ -104,7 +104,16 @@ class Post(models.Model):
 
 
 class TaskTag(models.Model):
-    name = models.CharField(max_length=15, unique=True)
+    name = models.CharField(
+        max_length=15,
+        unique=True,
+        validators=[
+            validators.RegexValidator(
+                regex='^[a-z0-9]+(-[a-z0-9]+)*[a-z0-9]+$',
+                message='Name must consist of words (lowercase letters and digits), divided my single dash',
+            ),
+        ],
+    )
 
     def __str__(self):
         return "Tag object ({}:{})".format(self.id, self.name)
