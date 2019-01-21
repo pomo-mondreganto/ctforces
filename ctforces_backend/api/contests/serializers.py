@@ -10,6 +10,7 @@ class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
     solved_count = rest_serializers.IntegerField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     task_name = rest_serializers.SlugRelatedField(read_only=True, slug_field='name', source='task')
+    main_tag_name = rest_serializers.SlugRelatedField(read_only=True, slug_field='name', source='main_tag')
 
     contest = api_fields.CurrentUserPermissionsFilteredPKRF(
         read_only=False,
@@ -32,11 +33,19 @@ class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
             'contest',
             'cost',
             'is_solved_by_user',
+            'main_tag',
+            'main_tag_name',
             'task',
             'task_name',
             'ordering_number',
             'solved_count',
         )
+
+        extra_kwargs = {
+            'main_tag': {
+                'write_only': True,
+            },
+        }
 
 
 class ContestTaskRelationshipUpdateSerializer(rest_serializers.ModelSerializer):
@@ -46,6 +55,7 @@ class ContestTaskRelationshipUpdateSerializer(rest_serializers.ModelSerializer):
             'id',
             'cost',
             'ordering_number',
+            'main_tag',
         )
 
 

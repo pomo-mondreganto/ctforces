@@ -258,6 +258,13 @@ class Contest(models.Model):
 class ContestTaskRelationship(models.Model):
     contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_task_relationship')
     task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='contest_task_relationship')
+    main_tag = models.ForeignKey(
+        'TaskTag',
+        on_delete=models.SET_NULL,
+        related_name='contest_task_relationship_main',
+        null=True,
+        blank=False,
+    )
 
     cost = models.IntegerField(default=0)
     ordering_number = models.IntegerField(default=0)
