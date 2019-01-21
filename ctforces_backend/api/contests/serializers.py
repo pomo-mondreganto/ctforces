@@ -103,11 +103,8 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
             },
         }
 
-    def validate(self, attrs):
-        attrs['author'] = self.context['request'].user
-        return attrs
-
     def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
         instance = super(ContestFullSerializer, self).create(validated_data)
         assign_perm('view_contest', instance.author, instance)
         assign_perm('change_contest', instance.author, instance)

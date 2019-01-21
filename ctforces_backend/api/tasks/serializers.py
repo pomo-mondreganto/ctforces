@@ -171,11 +171,8 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
             raise rest_serializers.ValidationError('You are allowed to include 5 files or less.')
         return data
 
-    def validate(self, attrs):
-        attrs['author'] = self.context['request'].user
-        return attrs
-
     def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
         instance = super(TaskFullSerializer, self).create(validated_data)
         assign_perm('view_task', instance.author, instance)
         assign_perm('change_task', instance.author, instance)
