@@ -11,11 +11,18 @@ class FileUploaderComponent extends Component {
         super(props);
     }
 
+    componentDidMount() {
+        let files = this.props.initial_value;
+        for (let i = 0; i < files.length; ++i) {
+            this.props.putStorage(`${this.props.name}-${i}-uploaded`, true);
+        }
+        this.props.putStorage(`${this.props.name}-list`, files);
+    }
+
     handleSelectedFiles = event => {
+        console.log(this.props.getStorage(`${this.props.name}-list`));
         let files = event.target.files;
-        let selectedFiles = this.props.getStorage(
-            `${this.props.file_upload_name}-list`
-        );
+        let selectedFiles = this.props.getStorage(`${this.props.name}-list`);
         if (selectedFiles === undefined) {
             selectedFiles = [];
         }
@@ -25,7 +32,7 @@ class FileUploaderComponent extends Component {
         this.props.putStorage(`${this.props.name}-list`, selectedFiles);
     };
 
-    uploadFile = (i, data, name, file_name, upload_url, putStorage) => {
+    uploadFile = (i, data, name, upload_url, putStorage) => {
         return new Promise(function(resolve, reject) {
             let xhr = new XMLHttpRequest();
 
@@ -59,6 +66,9 @@ class FileUploaderComponent extends Component {
 
         if (files !== undefined) {
             for (let i = 0; i < files.length; ++i) {
+                if (this.props.getStorage(`${this.props.name}-${i}-uploaded`)) {
+                    continue;
+                }
                 let file = files[i];
                 let data = new FormData();
                 data.append(this.props.file_upload_name, file, file.name);
@@ -67,7 +77,6 @@ class FileUploaderComponent extends Component {
                         i,
                         data,
                         this.props.name,
-                        file.name,
                         this.props.upload_url,
                         this.props.putStorage
                     )
@@ -78,12 +87,14 @@ class FileUploaderComponent extends Component {
 
             for (let i = 0; i < data.length; ++i) {
                 let file = data[i];
-                console.log(file);
-                console.log(this.props.extract_field);
                 uploaded_files.push(file[this.props.extract_field]);
             }
 
-            console.log(uploaded_files);
+            for (let i = 0; i < files.length; ++i) {
+                if (this.props.getStorage(`${this.props.name}-${i}-uploaded`)) {
+                    uploaded_files.push(files[i][this.props.extract_field]);
+                }
+            }
 
             this.props.handleChange({
                 target: {

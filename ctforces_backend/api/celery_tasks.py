@@ -1,5 +1,6 @@
 from celery import shared_task
 from django.apps import apps
+from django.core.mail import send_mail
 from django.db.models import Sum, Case, When, IntegerField, Value as V
 from django.utils import timezone
 from stdimage.utils import render_variations
@@ -107,3 +108,14 @@ def publish_tasks(contest_id):
         return
 
     contest.tasks.update(is_published=True, publication_time=timezone.now())
+
+
+@shared_task
+def send_users_mail(subject, message_plain, html_message, from_email, recipient_list):
+    send_mail(
+        subject=subject,
+        message=message_plain,
+        from_email=from_email,
+        recipient_list=recipient_list,
+        html_message=html_message,
+    )

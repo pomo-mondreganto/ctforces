@@ -1,7 +1,6 @@
 from django.db.models import Count, Exists, OuterRef
 from django.utils import timezone
 from rest_framework import mixins as rest_mixins
-from rest_framework import status as rest_status
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
@@ -67,11 +66,11 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
             return api_tasks_serializers.TaskPreviewSerializer
         return api_tasks_serializers.TaskFullSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.can_edit_task = request.user.has_perm('change_task')
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+    def get_object(self):
+        obj = super(TaskViewSet, self).get_object()
+        if self.action == 'retrieve':
+            obj.can_edit_task = self.request.user.has_perm('change_task', obj)
+        return obj
 
     @action(
         detail=True,
@@ -129,12 +128,10 @@ class TaskTagViewSet(rest_mixins.CreateModelMixin,
     serializer_class = api_tasks_serializers.TaskTagSerializer
     queryset = api_models.TaskTag.objects.all()
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=rest_status.HTTP_201_CREATED, headers=headers)
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'create':
+            kwargs['many'] = isinstance(self.request.data, list)
+        return super(TaskTagViewSet, self).get_serializer(*args, **kwargs)
 
     @action(detail=False, url_name='search', url_path='search')
     def search_tags(self, request):

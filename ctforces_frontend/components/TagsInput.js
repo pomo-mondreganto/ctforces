@@ -11,71 +11,69 @@ class TagsComponent extends Component {
     constructor(props) {
         super(props);
         let initial_value = [];
-        let external_value = [];
-        if (this.props.initial_value !== undefined) {
-            for (let tag in this.props.initial_value) {
-                initial_value.push({ id: tag.name, text: tag.name });
-                external_value.push(tag.id);
-            }
-        }
-        this.state = {
-            value: initial_value,
-            external_value: external_value,
-            suggestions: []
-        };
-        this.props.handleChange({
-            target: {
-                name: this.props.name,
-                value: initial_value
-            }
-        });
+        this.state = { value: [], suggestions: [] };
     }
 
-    handleDelete = i => {
+    async componentDidMount() {
+        if (this.props.initial_value !== undefined) {
+            for (let i = 0; i < this.props.initial_value.length; ++i) {
+                let tag = this.props.initial_value[i];
+                tag = { id: tag.name, text: tag.name };
+                await this.handleAddition(tag);
+            }
+        }
+    }
+
+    getTagId = async tag => {
+        let tags = await get('task_tags/search', {
+            data: {
+                name: tag
+            }
+        });
+        tags = await tags.json();
+        let tag_id;
+        if (tags.length == 0 || tags[0].name !== tag) {
+            tag_id = await post('task_tags', {
+                data: {
+                    name: tag
+                }
+            });
+            tag_id = await tag_id.json();
+            tag_id = tag_id.id;
+        } else {
+            tag_id = tags[0].id;
+        }
+        return tag_id;
+    };
+
+    handleDelete = async i => {
         let tags = this.state.value;
         tags.splice(i, 1);
         this.setState({ value: tags });
 
-        tags = this.state.external_value;
-        tags.splice(i, 1);
-        this.setState({ external_value: tags });
         this.props.handleChange({
             target: {
                 name: this.props.name,
-                value: tags
+                value: await tags.map(async (obj, i) => {
+                    return await this.getTagId(obj.text);
+                })
             }
         });
     };
 
     handleAddition = async tag => {
-        let tags = await get('task_tags/search', {
-            data: {
-                name: tag.text
-            }
-        });
-        tags = await tags.json();
-        let tag_id;
-        if (tags.length == 0 || tags[0].name !== tag.text) {
-            tag_id = await post('task_tags', {
-                data: {
-                    name: tag.text
-                }
-            });
-            tag_id = await tag_id.json();
-            tag_id = tag_id.id;
-        }
-
-        tags = this.state.value;
+        let tags = this.state.value;
         tags.push(tag);
         this.setState({ value: tags });
 
-        tags = this.state.external_value;
-        tags.push(tag_id);
-        this.setState({ external_value: tags });
         this.props.handleChange({
             target: {
                 name: this.props.name,
-                value: tags
+                value: await Promise.all(
+                    tags.map(async (obj, i) => {
+                        return await this.getTagId(obj.text);
+                    })
+                )
             }
         });
     };

@@ -9,6 +9,7 @@ import redirect from '../../lib/redirect';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faMarker } from '@fortawesome/free-solid-svg-icons';
 import { Link } from '../../server/routes';
+import TextInputComponent from '../../components/TextInput';
 
 import { Card } from 'reactstrap';
 import SimpleMDEComponent from '../../components/SimpleMDEInput';
@@ -28,7 +29,7 @@ class ViewPost extends Component {
             title: data.title,
             body: data.body,
             author_username: data.author_username,
-            is_published: data.is_published
+            can_edit_post: data.can_edit_post
         };
     }
 
@@ -36,9 +37,9 @@ class ViewPost extends Component {
         return (
             <Card className="p-2">
                 <div style={{ fontSize: '2rem' }} className="py-2">
-                    {this.props.author_username}
+                    {this.props.title + ' by ' + this.props.author_username}
                 </div>
-                {this.props.is_published && (
+                {this.props.can_edit_post && (
                     <div className="py-2">
                         <FontAwesomeIcon icon={faMarker} size="lg" />{' '}
                         <Link route={`/post/${this.props.id}/edit`}>

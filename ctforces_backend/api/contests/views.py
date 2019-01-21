@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F, Prefetch
+from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F, Q, Prefetch, IntegerField
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
@@ -87,11 +87,11 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             return api_contests_serializers.ContestPreviewSerializer
         return api_contests_serializers.ContestFullSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.can_edit_contest = request.user.has_perm('change_contest')
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+    def get_object(self):
+        obj = super(ContestViewSet, self).get_object()
+        if self.action == 'retrieve':
+            obj.can_edit_task = self.request.user.has_perm('change_contest', obj)
+        return obj
 
     @action(
         detail=True,
@@ -113,25 +113,44 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
     def get_scoreboard(self, _request, *_args, **_kwargs):
         instance = self.get_object()
 
+        contest_cost_subquery = Subquery(
+            api_models.ContestTaskRelationship.objects.filter(
+                contest_id=instance.id,
+                task_id=OuterRef('task_id'),
+            ).values('cost'),
+            output_field=IntegerField(),
+        )
+
+        user_cost_sum_subquery = api_database_functions.SubquerySum(
+            api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+                contest_id=instance.id,
+                participant_id=OuterRef('id'),
+            ).annotate(
+                cost=Coalesce(
+                    contest_cost_subquery,
+                    V(0),
+                )
+            ).values('cost'),
+            output_field=IntegerField(),
+            field_name='cost',
+        )
+
+        last_contest_solve_subquery = Subquery(
+            api_models.ContestParticipantRelationship.objects.filter(
+                contest=instance,
+                participant=OuterRef('id'),
+            ).values('last_solve')
+        )
+
         users_queryset = instance.participants.annotate(
             cost_sum=Coalesce(
-                api_database_functions.SubquerySum(
-                    api_models.ContestTaskRelationship.objects.filter(
-                        contest_id=instance.id,
-                        task__contest_task_participant_solved_relationship__contest_id=instance.id,
-                        task__contest_task_participant_solved_relationship__participant_id=OuterRef('id'),
-                    ),
-                    field_name='cost',
-                ),
+                user_cost_sum_subquery,
                 V(0),
             ),
-            last_contest_solve=Subquery(
-                api_models.ContestParticipantRelationship.objects.filter(
-                    contest=instance,
-                    participant=OuterRef('id'),
-                ).values('last_solve')
-            ),
-        ).order_by('-cost_sum', 'last_contest_solve')
+            last_contest_solve=last_contest_solve_subquery,
+        ).order_by('-cost_sum', 'last_contest_solve').only(
+            'username',
+        )
 
         users_paginator = api_pagination.UserScoreboardPagination()
 
@@ -251,16 +270,10 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                     participant=self.request.user.id,
                 ),
             ),
-            solved_count=Coalesce(
-                api_database_functions.SubqueryCount(
-                    api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                        contest_id=contest.id,
-                        task_id=OuterRef('id'),
-                    ).values('id').annotate(
-                        user_count=Count('id')
-                    ).values('user_count')
-                ),
-                V(0),
+            solved_count=Count(
+                'contest_task_participant_solved_relationship',
+                filter=Q(contest_id=contest.id),
+                distinct=True,
             ),
             contest_cost=Subquery(
                 api_models.ContestTaskRelationship.objects.filter(

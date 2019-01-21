@@ -3,7 +3,7 @@ import sidebarLayout from '../../layouts/sidebarLayout';
 import withLayout from '../../wrappers/withLayout';
 import FormComponent from '../../components/Form';
 import { required } from '../../lib/validators';
-import { post } from '../../lib/api_requests';
+import { post, get } from '../../lib/api_requests';
 import redirect from '../../lib/redirect';
 
 import { Card } from 'reactstrap';
@@ -17,6 +17,26 @@ import TagsComponent from '../../components/TagsInput';
 class CreateTask extends Component {
     constructor(props) {
         super(props);
+    }
+
+    static async getInitialProps(ctx) {
+        let data = await get(`tasks/${ctx.query.id}/full`, {
+            ctx: ctx
+        });
+        data = await data.json();
+        console.log(data);
+        return {
+            id: data.id,
+            title: data.name,
+            body: data.description,
+            author_username: data.author_username,
+            can_edit_task: data.can_edit_task,
+            is_solved_by_user: data.is_solved_by_user,
+            files: data.files_details,
+            cost: data.cost,
+            flag: data.flag,
+            tags: data.task_tags_details
+        };
     }
 
     onOkSubmit = async ({
@@ -63,36 +83,42 @@ class CreateTask extends Component {
                             name: 'name',
                             type: 'text',
                             placeholder: 'Name',
-                            validators: [required]
+                            validators: [required],
+                            initial_value: this.props.title
                         },
                         {
                             source: TagsComponent,
-                            name: 'tags'
+                            name: 'tags',
+                            initial_value: this.props.tags
                         },
                         {
                             source: TextInputComponent,
                             name: 'cost',
                             type: 'text',
                             placeholder: 'Cost',
-                            validators: [required]
+                            validators: [required],
+                            initial_value: this.props.cost
                         },
                         {
                             source: TextInputComponent,
                             name: 'flag',
                             type: 'text',
                             placeholder: 'Flag',
-                            validators: [required]
+                            validators: [required],
+                            initial_value: this.props.flag
                         },
                         {
                             source: SimpleMDEComponent,
                             name: 'description',
                             pass_props: { id: 'task_textarea' },
-                            validators: [required]
+                            validators: [required],
+                            initial_value: this.props.body
                         },
                         {
                             source: CheckBoxComponent,
                             name: 'is_published',
-                            pass_props: { label: 'is_published' }
+                            pass_props: { label: 'is_published' },
+                            initial_value: this.props.is_published
                         },
                         {
                             source: FileUploaderComponent,
@@ -102,13 +128,12 @@ class CreateTask extends Component {
                                 file_upload_name: 'file_field',
                                 extract_field: 'id',
                                 multiple: true
-                            }
+                            },
+                            initial_value: this.props.files
                         },
                         {
                             source: FileListComponent,
-                            pass_props: {
-                                ref_name: 'files'
-                            }
+                            pass_props: { ref_name: 'files' }
                         }
                     ]}
                 />

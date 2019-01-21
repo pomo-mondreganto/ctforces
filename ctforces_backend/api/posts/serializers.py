@@ -34,11 +34,8 @@ class PostMainSerializer(rest_serializers.ModelSerializer):
             },
         }
 
-    def validate(self, attrs):
-        attrs['author'] = self.context['request'].user
-        return attrs
-
     def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
         instance = super(PostMainSerializer, self).create(validated_data)
         assign_perm('view_post', instance.author, instance)
         assign_perm('change_post', instance.author, instance)

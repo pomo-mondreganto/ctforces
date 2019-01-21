@@ -1,5 +1,7 @@
 import SimpleMDE from 'react-simplemde-editor';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import ReactDOMServer from 'react-dom/server';
+import MarkdownRender from './MarkdownRender';
 
 class SimpleMDEComponent extends Component {
     constructor(props) {
@@ -8,7 +10,7 @@ class SimpleMDEComponent extends Component {
         if (this.props.initial_value !== undefined) {
             initial_value = this.props.initial_value;
         }
-        this.state = {textarea_value: initial_value};
+        this.state = { textarea_value: initial_value };
         this.props.handleChange({
             target: {
                 name: this.props.name,
@@ -36,7 +38,12 @@ class SimpleMDEComponent extends Component {
                 onChange={this.handleMDEChange}
                 value={this.state.textarea_value}
                 options={{
-                    spellChecker: false
+                    spellChecker: false,
+                    previewRender(text) {
+                        return ReactDOMServer.renderToString(
+                            <MarkdownRender source={text} />
+                        );
+                    }
                 }}
             />
         );
