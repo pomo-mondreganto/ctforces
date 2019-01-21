@@ -91,12 +91,13 @@ class TaskViewSerializer(rest_serializers.ModelSerializer):
     files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
     can_edit_task = rest_serializers.BooleanField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
 
     class Meta:
         model = api_models.Task
         fields = (
             'id',
-            'author',
+            'author_username',
             'can_edit_task',
             'cost',
             'description',
@@ -115,6 +116,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
     cost = rest_serializers.IntegerField(min_value=1, max_value=9999)
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     files = api_fields.CurrentUserFilteredPKRF(
         filter_field_name='owner',
         many=True,
@@ -127,6 +129,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
         fields = (
             'id',
             'author',
+            'author_username',
             'cost',
             'description',
             'files',
@@ -142,7 +145,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
 
         extra_kwargs = {
             'author': {
-                'read_only': True,
+                'write_only': True,
             },
             'publication_time': {
                 'read_only': True,
