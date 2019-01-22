@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
-import { api_url } from '../config';
+import React, {Component} from 'react';
+import {api_url} from '../config';
 import getCookie from '../lib/get_cookie';
 
-import { Button, CustomInput } from 'reactstrap';
-import { resolve } from 'url';
-import { rejects } from 'assert';
+import {CustomInput} from 'reactstrap';
+import {rejects} from 'assert';
 
 class FileUploaderComponent extends Component {
     constructor(props) {
@@ -12,11 +11,13 @@ class FileUploaderComponent extends Component {
     }
 
     componentDidMount() {
-        let files = this.props.initial_value;
-        for (let i = 0; i < files.length; ++i) {
-            this.props.putStorage(`${this.props.name}-${i}-uploaded`, true);
+        if (this.props.initial_value !== undefined) {
+            let files = this.props.initial_value;
+            for (let i = 0; i < files.length; ++i) {
+                this.props.putStorage(`${this.props.name}-${i}-uploaded`, true);
+            }
+            this.props.putStorage(`${this.props.name}-list`, files);
         }
-        this.props.putStorage(`${this.props.name}-list`, files);
     }
 
     handleSelectedFiles = event => {
