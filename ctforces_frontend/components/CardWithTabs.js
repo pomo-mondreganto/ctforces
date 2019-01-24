@@ -16,7 +16,7 @@ class CardWithTabsComponent extends Component {
                         return (
                             <NavItem key={i}>
                                 <Link route={obj.href} passHref>
-                                    <NavLink active={i === 0}>
+                                    <NavLink active={obj.active}>
                                         {obj.text}
                                     </NavLink>
                                 </Link>
