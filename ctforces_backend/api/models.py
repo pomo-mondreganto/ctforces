@@ -138,6 +138,17 @@ class Task(models.Model):
 
     tags = models.ManyToManyField('TaskTag', related_name='tasks', blank=True)
 
+    uses_external_container = models.BooleanField(default=False)
+    external_container_name = models.CharField(max_length=255, null=True, blank=True)
+    status = models.CharField(
+        max_length=2,
+        choices=(
+            ('UP', 'Up & running'),
+            ('DN', 'Down'),
+        ),
+        default='DN',
+    )
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if self.is_published and self.publication_time is None:

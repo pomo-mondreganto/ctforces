@@ -34,7 +34,8 @@ class UserProfile extends Component {
                     tabs={[
                         {
                             text: this.props.user.username,
-                            href: `/user/${this.props.user.username}`
+                            href: `/user/${this.props.user.username}`,
+                            active: true
                         },
                         { text: 'Blog', href: '#' },
                         { text: 'Tasks', href: '#' },

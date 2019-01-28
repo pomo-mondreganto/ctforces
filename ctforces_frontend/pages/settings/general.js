@@ -28,7 +28,7 @@ class SettingsSocial extends Component {
                         },
                         { text: 'Blog', href: '#' },
                         { text: 'Tasks', href: '#' },
-                        { text: 'General', href: '/settings/general' },
+                        { text: 'General', href: '/settings/general', active: true },
                         { text: 'Social', href: '/settings/social' }
                     ]}
                 >
