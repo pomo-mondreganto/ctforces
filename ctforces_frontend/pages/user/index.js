@@ -91,6 +91,19 @@ class UserProfile extends Component {
                                         </Link>
                                     </div>
                                 )}
+                            {this.props.auth.loggedIn &&
+                                this.props.auth.user.username ==
+                                    this.props.user.username && (
+                                    <div className="py-2">
+                                        <FontAwesomeIcon
+                                            icon={faMarker}
+                                            size="lg"
+                                        />{' '}
+                                        <Link route="/contest/create">
+                                            <a>Create contest</a>
+                                        </Link>
+                                    </div>
+                                )}
                         </Col>
                         <Col>
                             <img

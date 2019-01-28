@@ -17,7 +17,7 @@ import {
     Container,
     Row
 } from 'reactstrap';
-import TextInputComponent from '../../components/TextInput';
+import TextInputComponent from '../components/TextInput';
 
 class Register extends Component {
     constructor(props) {

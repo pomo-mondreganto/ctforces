@@ -5,7 +5,6 @@ import { Input, Label } from 'reactstrap';
 import { get, post } from '../lib/api_requests';
 
 import { WithContext as ReactTags } from 'react-tag-input';
-import '../styles/tags_style.css';
 
 class TagsComponent extends Component {
     constructor(props) {

@@ -38,11 +38,7 @@ export async function get(path, options) {
             headers: headers,
             credentials: 'include'
         });
-        if (result.status == 404) {
-            redirect('404', options.ctx);
-        } else {
-            return result;
-        }
+        return result;
     } catch (e) {
         redirect('oops', options.ctx);
     }
@@ -70,11 +66,7 @@ export async function post(path, options) {
             credentials: 'include',
             body: body_data
         });
-        if (result.status == 404) {
-            redirect('404', options.ctx);
-        } else {
-            return result;
-        }
+        return result;
     } catch (e) {
         redirect('oops', options.ctx);
     }

@@ -12,4 +12,7 @@ module.exports = routes()
     .add('settings_social', '/settings/social', 'settings/social')
     .add('task_create', '/task/create', 'task/create')
     .add('task_index', '/task/:id', 'task/index')
-    .add('task_edit', '/task/:id/edit', 'task/edit');
+    .add('task_edit', '/task/:id/edit', 'task/edit')
+    .add('contest_create', '/contest/create', 'contest/create')
+    .add('contest_index', '/contest/:id', 'contest/index')
+    .add('contest_edit', '/contest/:id/edit', 'contest/edit');
