@@ -1,0 +1,26 @@
+@import '~bootstrap/scss/bootstrap';
+
+#root {
+    display: grid;
+
+    grid:
+        'menu menu menu menu menu' auto
+        '.... main main side ....' 1fr
+        'foot foot foot foot foot' 20px
+        / 5% 3fr 3fr 2fr 5%;
+
+    grid-row-gap: 30px;
+    grid-column-gap: 30px;
+
+    aside {
+        grid-area: side;
+    }
+
+    main {
+        grid-area: main;
+    }
+
+    header {
+        grid-area: menu;
+    }
+}

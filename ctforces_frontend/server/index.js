@@ -3,7 +3,7 @@ const next = require('next');
 const routes = require('./routes');
 
 const dev = process.env.NODE_ENV !== 'production';
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 const app = next({ dir: '.', dev });
 const handler = routes.getRequestHandler(app);
@@ -11,5 +11,5 @@ const handler = routes.getRequestHandler(app);
 app.prepare().then(() => {
     express()
         .use(handler)
-        .listen(3000);
+        .listen(8080);
 });
