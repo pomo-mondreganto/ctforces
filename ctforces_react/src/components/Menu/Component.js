@@ -62,13 +62,7 @@ const RegisterButton = props => {
 
 const Component = props => {
     return (
-        <Navbar
-            color="light"
-            light
-            sticky="top"
-            expand="lg"
-            className="shadow-sm"
-        >
+        <Navbar color="light" light expand="lg" className="shadow-sm">
             <NavbarToggler onClick={props.toggle} className="border-0">
                 Menu
             </NavbarToggler>

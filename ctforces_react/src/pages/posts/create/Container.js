@@ -2,10 +2,9 @@ import React from 'react';
 
 import Component from './Component';
 import axios from 'axios';
-import withAuth from '../../wrappers/withAuth';
 import { Redirect } from 'react-router-dom';
 
-class RegisterPage extends React.Component {
+class PostCreateContainer extends React.Component {
     constructor(props) {
         super(props);
 
@@ -16,9 +15,10 @@ class RegisterPage extends React.Component {
 
     handleSubmit = async ({ values, actions }) => {
         try {
-            const response = await axios.post('/register/', values);
+            const response = await axios.post('/posts/', values);
+            const { id } = response.data;
             this.setState({
-                redirect: '/login'
+                redirect: `/posts/${id}`
             });
         } catch (error) {
             const errorData = error.response.data;
@@ -39,4 +39,4 @@ class RegisterPage extends React.Component {
     }
 }
 
-export default withAuth(RegisterPage);
+export default PostCreateContainer;

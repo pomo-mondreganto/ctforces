@@ -9,7 +9,7 @@ const Component = props => {
     }
 
     return (
-        <>
+        <nav>
             <Nav className="nav-tabs nav-fill">
                 {props.tabs.map((obj, i) => {
                     return (
@@ -24,7 +24,7 @@ const Component = props => {
             <div className="p-4 border-left border-right border-bottom rounded-bottom">
                 {props.children}
             </div>
-        </>
+        </nav>
     );
 };
 

@@ -5,6 +5,7 @@ import IndexPage from './index/Container';
 import LoginPage from './login/Container';
 import RegisterPage from './register/Container';
 import UsersPage from './users';
+import PostsPage from './posts';
 
 import { Switch } from 'react-router-dom';
 import { PublicRoute, PrivateRoute } from '../lib/Routes';
@@ -17,6 +18,7 @@ const App = () => {
                 <PublicRoute exact path="/login" component={LoginPage} />
                 <PublicRoute exact path="/register" component={RegisterPage} />
                 <PublicRoute path="/users" component={UsersPage} />
+                <PublicRoute path="/posts" component={PostsPage} />
             </Switch>
         </Router>
     );

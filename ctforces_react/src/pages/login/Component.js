@@ -1,26 +1,18 @@
 import React from 'react';
 
 import { LinkContainerNonActive } from '../../lib/LinkContainer';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import TextInput from '../../components/Form/TextInput/Container';
 import DetailError from '../../components/Form/DetailError/Container';
 import Layout from '../../layouts/sidebar/Container';
 import withLayout from '../../wrappers/withLayout';
 
-import {
-    Card,
-    CardBody,
-    CardHeader,
-    CardLink,
-    Col,
-    Row,
-    Button
-} from 'reactstrap';
+import { Card, CardBody, CardHeader, CardLink, Button } from 'reactstrap';
 
 const Component = props => {
     return (
-        <Row className="justify-content-center">
-            <Col className="col-xl-6 col-lg-6 col-md-8 col-sm-10 col-10 my-4">
+        <section>
+            <article>
                 <Card>
                     <CardHeader className="text-center">Sign in</CardHeader>
                     <CardBody>
@@ -33,7 +25,7 @@ const Component = props => {
                                 props.handleSubmit({ values, actions });
                             }}
                         >
-                            {({ isSubmitting, errors }) => (
+                            {({ isSubmitting }) => (
                                 <Form>
                                     <Field
                                         type="text"
@@ -59,23 +51,24 @@ const Component = props => {
                                 </Form>
                             )}
                         </Formik>
+
                         <hr className="my-3" />
-                        <Row>
-                            <Col className="text-left">
+                        <div>
+                            <span className="float-left">
                                 <LinkContainerNonActive to="/restore_password">
                                     <CardLink>Forgot password</CardLink>
                                 </LinkContainerNonActive>
-                            </Col>
-                            <Col className="text-right">
+                            </span>
+                            <span className="float-right">
                                 <LinkContainerNonActive to="/register">
                                     <CardLink>Register</CardLink>
                                 </LinkContainerNonActive>
-                            </Col>
-                        </Row>
+                            </span>
+                        </div>
                     </CardBody>
                 </Card>
-            </Col>
-        </Row>
+            </article>
+        </section>
     );
 };
 
