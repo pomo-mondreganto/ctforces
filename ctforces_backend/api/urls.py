@@ -1,7 +1,4 @@
 from django.urls import re_path, include
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
-from rest_framework import permissions
 from rest_framework.routers import SimpleRouter
 from rest_framework_nested.routers import NestedSimpleRouter
 
@@ -22,17 +19,6 @@ router.register('contest_task_relationship', api_contests_views.ContestTaskRelat
 
 contests_router = NestedSimpleRouter(router, 'contests', lookup='contest')
 contests_router.register('tasks', api_contests_views.ContestTaskViewSet)
-
-schema_view = get_schema_view(
-    openapi.Info(
-        title="CTForces API",
-        default_version='v1',
-        description="Schema of CTForces API. I suggest using schema-redoc/ version due to its beauty :3",
-    ),
-    validators=['flex'],
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
 
 urlpatterns = [
     re_path('^$', api_other_views.test_view, name='test_view'),
@@ -63,8 +49,4 @@ urlpatterns = [
     re_path('^me/$', api_users_views.CurrentUserRetrieveUpdateView.as_view(), name='current_user'),
 
     re_path('^avatar_upload/$', api_users_views.AvatarUploadView.as_view(), name='avatar_upload_view'),
-
-    re_path(r'^schema_swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^schema_swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    re_path(r'^schema_redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

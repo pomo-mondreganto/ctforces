@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
-    'drf_yasg',
     'django_extensions',
     'django_redis',
     'stdimage',

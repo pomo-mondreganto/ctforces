@@ -20,8 +20,6 @@ django-rest-framework-tricks==0.2.9
 django-stdimage==4.0.1
 djangorestframework==3.9.1
 drf-nested-routers==0.91
-drf-yasg==1.13.0
-flex==6.13.2
 idna==2.8
 inflection==0.3.1
 ipython==7.2.0
