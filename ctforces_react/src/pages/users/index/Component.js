@@ -60,7 +60,7 @@ const Component = props => {
                         {props.auth.loggedIn &&
                             props.auth.user.username == props.user.username && (
                                 <div className="py-2">
-                                    <LinkContainer to="/task/create">
+                                    <LinkContainer to="/tasks/create">
                                         <a>Create task</a>
                                     </LinkContainer>
                                 </div>
@@ -68,7 +68,7 @@ const Component = props => {
                         {props.auth.loggedIn &&
                             props.auth.user.username == props.user.username && (
                                 <div className="py-2">
-                                    <LinkContainer to="/contest/create">
+                                    <LinkContainer to="/contests/create">
                                         <a>Create contest</a>
                                     </LinkContainer>
                                 </div>
