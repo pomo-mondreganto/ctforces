@@ -9,6 +9,7 @@ import CheckboxInput from '../../../components/Form/CheckboxInput/Container';
 import SimpleMDEInput from '../../../components/Form/SimpleMDEInput/Container';
 import DetailError from '../../../components/Form/DetailError/Container';
 import TagsInput from '../../../components/Form/TagsInput/Container';
+import FilesInput from '../../../components/Form/FilesInput/Container';
 
 const Component = props => {
     return (
@@ -59,6 +60,7 @@ const Component = props => {
                             label="publish"
                             component={CheckboxInput}
                         />
+                        <Field name="files" component={FilesInput} multiple />
                         <Field component={DetailError} />
                         <Button
                             type="submit"

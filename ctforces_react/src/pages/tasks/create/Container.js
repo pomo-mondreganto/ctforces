@@ -39,8 +39,42 @@ class TaskCreateContainer extends React.Component {
             tags.push(await this.handleTag(tag));
         }
 
+        let uploading_status = {};
+        let upload_promises = [];
+        for (let i = 0; i < values.files.length; ++i) {
+            const file = values.files[i];
+            let formData = new FormData();
+            formData.append('file_field', file);
+            upload_promises.push(
+                axios.post('/task_files/', formData, {
+                    onUploadProgress: progressEvent => {
+                        uploading_status[file.name] = parseInt(
+                            Math.round(
+                                (progressEvent.loaded * 100) /
+                                    progressEvent.total
+                            )
+                        );
+                        actions.setStatus({
+                            uploading: uploading_status
+                        });
+                    }
+                })
+            );
+        }
+
+        const data = await Promise.all(upload_promises);
+        actions.setStatus({});
+        let files = [];
+        for (let i = 0; i < values.files.length; ++i) {
+            files.push(data[i].data.id);
+        }
+
         try {
-            const response = await axios.post('/tasks/', { ...values, tags });
+            const response = await axios.post('/tasks/', {
+                ...values,
+                tags,
+                files
+            });
             const { id } = response.data;
             this.setState({
                 redirect: `/tasks/${id}`

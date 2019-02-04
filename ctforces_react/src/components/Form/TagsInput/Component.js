@@ -11,7 +11,7 @@ const Component = ({ field, form, ...props }) => {
 
     return (
         <FormGroup>
-            <TagsInput value={props.tags} onChange={props.handleChange} />
+            <TagsInput value={field.value} onChange={props.handleChange} />
             <FormFeedback>{form.errors[name]}</FormFeedback>
         </FormGroup>
     );
