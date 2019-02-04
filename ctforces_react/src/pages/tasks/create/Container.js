@@ -2,6 +2,7 @@ import React from 'react';
 
 import Component from './Component';
 import axios from 'axios';
+import { Redirect } from 'react-router-dom';
 
 class TaskCreateContainer extends React.Component {
     constructor(props) {
