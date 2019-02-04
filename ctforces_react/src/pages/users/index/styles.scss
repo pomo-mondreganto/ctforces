@@ -1,0 +1,15 @@
+#profile {
+    display: grid;
+
+    grid:
+        'info avatar' 1fr
+        / 3fr 1fr;
+
+    #info {
+        grid-area: info;
+    }
+
+    #avatar {
+        grid-area: avatar;
+    }
+}

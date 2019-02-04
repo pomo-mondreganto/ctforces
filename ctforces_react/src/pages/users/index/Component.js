@@ -1,11 +1,13 @@
 import React from 'react';
 
-import { Card, Row, Col } from 'reactstrap';
+import { Card } from 'reactstrap';
 import withLayout from '../../../wrappers/withLayout';
 import Layout from '../../../layouts/sidebar/Container';
 import { LinkContainer } from 'react-router-bootstrap';
 import { media_url } from '../../../../config/config';
 import CardWithTabsComponent from '../../../components/CardWithTabs/Container';
+
+import './styles.scss';
 
 const Component = props => {
     return (
@@ -22,24 +24,30 @@ const Component = props => {
             ]}
         >
             {props.user !== null && (
-                <Row>
-                    <Col className="col-8 m-2">
-                        <div>Master</div>
+                <section id="profile">
+                    <article id="info">
+                        <div>
+                            <span>Master</span>
+                        </div>
                         {props.user.hide_personal_info || (
-                            <div
+                            <span
                                 style={{ fontSize: '1.5rem' }}
                                 className="py-1"
                             >
                                 {props.user.personal_info.first_name}{' '}
                                 {props.user.personal_info.last_name}
-                            </div>
+                            </span>
                         )}
-                        <div style={{ fontSize: '2rem' }} className="py-2">
-                            {props.user.username}
+                        <div>
+                            <span style={{ fontSize: '2rem' }} className="py-2">
+                                {props.user.username}
+                            </span>
                         </div>
-                        <div className="py-2">Rating: {props.user.rating}</div>
                         <div className="py-2">
-                            Maximum rating: {props.user.max_rating}
+                            <span>Rating: {props.user.rating}</span>
+                        </div>
+                        <div className="py-2">
+                            <span>Maximum rating: {props.user.max_rating}</span>
                         </div>
                         {props.auth.loggedIn &&
                             props.auth.user.username == props.user.username && (
@@ -65,14 +73,16 @@ const Component = props => {
                                     </LinkContainer>
                                 </div>
                             )}
-                    </Col>
-                    <Col>
-                        <img
-                            src={`${media_url}${props.user.avatar_main}`}
-                            className="img-fluid"
-                        />
-                    </Col>
-                </Row>
+                    </article>
+                    <article id="avatar">
+                        <div>
+                            <img
+                                src={`${media_url}${props.user.avatar_main}`}
+                                className="img-fluid"
+                            />
+                        </div>
+                    </article>
+                </section>
             )}
         </CardWithTabsComponent>
     );

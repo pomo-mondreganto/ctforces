@@ -10,8 +10,9 @@ const Component = ({ field, form, label, ...props }) => {
         <FormGroup check className="pb-3">
             <Label check>
                 <Input
+                    type="checkbox"
                     name={name}
-                    value={field.value}
+                    checked={field.value}
                     disabled={form.isSubmitting}
                     onChange={field.onChange}
                     onBlur={field.onBlur}
