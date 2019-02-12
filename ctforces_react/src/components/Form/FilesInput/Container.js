@@ -10,6 +10,7 @@ class FilesContainer extends React.Component {
     }
 
     handleSelectedFiles = e => {
+        console.log(this.fileRef);
         const { files } = e.target;
         const { name } = this.props.field;
         const old_files = this.props.field.value;
