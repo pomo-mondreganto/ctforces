@@ -26,9 +26,6 @@ const Component = ({ post }) => {
                     )}
                     <hr />
                     <div className="py-2">
-                        <span style={{ fontSize: '2rem' }}>{post.title}</span>
-                    </div>
-                    <div className="py-2">
                         {' '}
                         <span style={{ fontSize: '2rem' }}>{post.body}</span>
                     </div>

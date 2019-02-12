@@ -1,0 +1,15 @@
+#user-info {
+    display: grid;
+    grid:
+        'bullets avatar' 1fr
+        / 1fr 1fr;
+}
+
+#bullets {
+    font-size: 1.2vw;
+    grid-area: 'bullets';
+}
+
+#avatar {
+    grid-area: 'avatar';
+}

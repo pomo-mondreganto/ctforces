@@ -18,7 +18,7 @@ class PostCreateContainer extends React.Component {
             const response = await axios.post('/posts/', values);
             const { id } = response.data;
             this.setState({
-                redirect: `/posts/${id}`
+                redirect: `/posts/${id}/`
             });
         } catch (error) {
             const errorData = error.response.data;

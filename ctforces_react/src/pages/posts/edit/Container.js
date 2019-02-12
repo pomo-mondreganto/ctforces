@@ -16,7 +16,7 @@ class PostEditContainer extends React.Component {
 
     async componentDidMount() {
         const { id } = this.props.match.params;
-        const response = await axios.get(`/posts/${id}`);
+        const response = await axios.get(`/posts/${id}/`);
         this.setState({
             post: response.data
         });
@@ -29,7 +29,7 @@ class PostEditContainer extends React.Component {
                 values
             );
             this.setState({
-                redirect: `/posts/${this.state.post.id}`
+                redirect: `/posts/${this.state.post.id}/`
             });
         } catch (error) {
             const errorData = error.response.data;

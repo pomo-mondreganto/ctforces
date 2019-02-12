@@ -3,11 +3,13 @@ import React from 'react';
 import withLayout from '../../wrappers/withLayout';
 import MasterLayout from '../master/Container';
 
+import Sidebar from '../../components/Sidebar/Container';
+
 const Component = ({ children }) => {
     return (
         <>
             <main>{children}</main>
-            <aside>sidebar</aside>
+            <Sidebar />
         </>
     );
 };

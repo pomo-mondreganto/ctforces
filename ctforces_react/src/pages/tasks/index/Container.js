@@ -1,28 +1,29 @@
 import React from 'react';
 
 import Component from './Component';
+
 import axios from 'axios';
 
-class PostViewContainer extends React.Component {
+class TaskViewContainer extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            post: null
+            task: null
         };
     }
 
     async componentDidMount() {
         const { id } = this.props.match.params;
-        const response = await axios.get(`/posts/${id}/`);
+        const response = await axios.get(`/tasks/${id}/`);
         this.setState({
-            post: response.data
+            task: response.data
         });
     }
 
     render() {
-        return <Component post={this.state.post} />;
+        return <Component task={this.state.task} />;
     }
 }
 
-export default PostViewContainer;
+export default TaskViewContainer;

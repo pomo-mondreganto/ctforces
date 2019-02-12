@@ -5,6 +5,8 @@ import Component from './Component';
 class FilesContainer extends React.Component {
     constructor(props) {
         super(props);
+
+        this.inputRef = React.createRef();
     }
 
     handleSelectedFiles = e => {
@@ -15,6 +17,7 @@ class FilesContainer extends React.Component {
             name,
             Array.from(old_files).concat(Array.from(files))
         );
+        this.inputRef.value = '';
     };
 
     handleRemove = index => {
@@ -27,6 +30,9 @@ class FilesContainer extends React.Component {
     render() {
         return (
             <Component
+                ref={input => {
+                    this.inputRef = input;
+                }}
                 {...this.props}
                 handleSelectedFiles={this.handleSelectedFiles}
                 handleRemove={this.handleRemove}
