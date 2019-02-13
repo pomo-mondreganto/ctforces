@@ -111,10 +111,10 @@ def publish_tasks(contest_id):
 
 
 @shared_task
-def send_users_mail(subject, message_plain, html_message, from_email, recipient_list):
+def send_users_mail(subject, message, html_message, from_email, recipient_list):
     send_mail(
         subject=subject,
-        message=message_plain,
+        message=message,
         from_email=from_email,
         recipient_list=recipient_list,
         html_message=html_message,
