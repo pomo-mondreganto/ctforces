@@ -39,6 +39,16 @@ class HasPermissionOrReadOnlyMixin(permissions.BasePermission):
         return request.user.has_perm(self.permission_name)
 
 
+class HasViewPermissionIfPublishedMixin(HasPermissionMixin):
+    is_published_field_name = 'is_published'
+
+    def has_object_permission(self, request, view, obj):
+        if self.permission_name is None:
+            raise AssertionError('You must specify permission_name')
+
+        return getattr(obj, self.is_published_field_name) or request.user.has_perm(self.permission_name, obj)
+
+
 class HasContestTaskRelationshipPermission(HasPermissionMixin):
     permission_name = 'change_contest'
 
@@ -104,25 +114,24 @@ class HasDeleteContestPermission(HasPermissionMixin):
     permission_name = 'delete_contest'
 
 
-class HasViewTaskPermission(HasPermissionMixin):
+class HasViewTaskPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'view_task'
 
-    def has_object_permission(self, request, view, obj):
-        return obj.is_published or request.user.has_perm(self.permission_name, obj)
 
-
-class HasViewPostPermission(HasPermissionMixin):
+class HasViewPostPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'view_post'
 
-    def has_object_permission(self, request, view, obj):
-        return obj.is_published or request.user.has_perm(self.permission_name, obj)
 
-
-class HasViewContestPermission(HasPermissionMixin):
+class HasViewContestPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'view_contest'
 
-    def has_object_permission(self, request, view, obj):
-        return obj.is_published or request.user.has_perm(self.permission_name, obj)
 
-    def has_permission(self, request, view):
-        return request.method in permissions.SAFE_METHODS
+class HasModifyTaskHintsPermission(HasPermissionMixin):
+    permission_name = 'change_task'
+
+    def has_object_permission(self, request, view, obj):
+        return request.user.has_perm(self.permission_name, obj.task)
+
+
+class HasViewTaskHintPermission(HasViewPermissionIfPublishedMixin):
+    permission_name = 'view_taskhint'

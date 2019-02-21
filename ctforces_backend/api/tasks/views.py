@@ -1,5 +1,6 @@
 from django.db.models import Count, Exists, OuterRef
 from django.utils import timezone
+from guardian.shortcuts import get_objects_for_user
 from rest_framework import mixins as rest_mixins
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
@@ -155,3 +156,31 @@ class TaskFileViewSet(rest_mixins.RetrieveModelMixin,
 
     def get_queryset(self):
         return self.queryset.filter(owner=self.request.user.id)
+
+
+class TaskHintViewSet(api_mixins.CustomPermissionsViewSetMixin,
+                      rest_viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    queryset = api_models.TaskHint.objects.all()
+    serializer_class = api_tasks_serializers.TaskHintSerializer
+
+    action_permission_classes = {
+        'retrieve': (api_permissions.HasViewTaskHintPermission,),
+        'update': (api_permissions.HasModifyTaskHintsPermission,),
+        'partial_update': (api_permissions.HasModifyTaskHintsPermission,),
+        'destroy': (api_permissions.HasModifyTaskHintsPermission,)
+    }
+
+    def get_queryset(self):
+        qs = super(TaskHintViewSet, self).get_queryset()
+        if self.action == 'list':
+            hints_type = self.request.query_params.get('type', 'published')
+
+            if hints_type == 'published':
+                qs = qs.filter(is_published=True)
+            else:
+                qs = get_objects_for_user(self.request.user, 'view_taskhint', api_models.TaskHint)
+
+        return qs

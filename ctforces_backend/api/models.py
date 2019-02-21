@@ -166,6 +166,25 @@ class Task(models.Model):
         ordering = ('id',)
 
 
+class TaskHint(models.Model):
+    author = models.ForeignKey(
+        'User',
+        on_delete=models.SET_NULL,
+        related_name='authored_hints',
+        null=True, blank=True
+    )
+    task = models.ForeignKey(
+        'Task',
+        on_delete=models.CASCADE,
+        related_name='hints',
+        null=False, blank=False
+    )
+
+    is_published = models.BooleanField(default=False)
+
+    body = models.TextField(null=False, blank=True)
+
+
 class TaskFile(models.Model):
     owner = models.ForeignKey('User', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)
     task = models.ForeignKey('Task', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)

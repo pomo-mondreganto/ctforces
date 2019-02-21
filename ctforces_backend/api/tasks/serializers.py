@@ -92,6 +92,7 @@ class TaskViewSerializer(rest_serializers.ModelSerializer):
     can_edit_task = rest_serializers.BooleanField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
+    hints = rest_serializers.SerializerMethodField('get_hints_method')
 
     class Meta:
         model = api_models.Task
@@ -108,7 +109,12 @@ class TaskViewSerializer(rest_serializers.ModelSerializer):
             'publication_time',
             'solved_count',
             'tags_details',
+            'hints',
         )
+
+    @staticmethod
+    def get_hints_method(obj):
+        return api_models.TaskHint.objects.filter(is_published=True, task=obj).values_list('id', flat=True)
 
 
 class TaskFullSerializer(rest_serializers.ModelSerializer):
@@ -141,6 +147,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
             'solved_count',
             'tags',
             'task_tags_details',
+            'hints',
         )
 
         extra_kwargs = {
@@ -191,3 +198,41 @@ class TaskSubmitSerializer(rest_serializers.ModelSerializer):
     def validate_flag(self, flag):
         if flag != self.instance.flag:
             raise rest_serializers.ValidationError('Invalid flag.')
+
+
+class TaskHintSerializer(rest_serializers.ModelSerializer):
+    task = api_fields.CurrentUserPermissionsFilteredPKRF(
+        read_only=False,
+        perms='change_task',
+        queryset=api_models.Task.objects.all(),
+    )
+
+    author_username = rest_serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username',
+        source='author',
+    )
+
+    class Meta:
+        model = api_models.TaskHint
+        fields = (
+            'author',
+            'author_username',
+            'task',
+            'body',
+            'is_published',
+        )
+
+        extra_kwargs = {
+            'author': {
+                'write_only': True,
+            },
+        }
+
+    def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
+        instance = super(TaskHintSerializer, self).create(validated_data)
+        assign_perm('view_taskhint', instance.author, instance)
+        assign_perm('change_taskhint', instance.author, instance)
+        assign_perm('delete_taskhint', instance.author, instance)
+        return instance
