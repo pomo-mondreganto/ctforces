@@ -226,7 +226,7 @@ class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
 class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    serializer_class = api_contests_serializers.ContestTaskViewSerializer
+    serializer_class = api_contests_serializers.ContestTaskPreviewSerializer
     lookup_field = 'task_number'
     lookup_url_kwarg = 'task_number'
 
@@ -272,16 +272,28 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             ),
             solved_count=Count(
                 'contest_task_participant_solved_relationship',
-                filter=Q(contest_id=contest.id),
+                filter=Q(
+                    contest_task_participant_solved_relationship__contest_id=contest.id
+                ),
                 distinct=True,
             ),
             contest_cost=Subquery(
                 api_models.ContestTaskRelationship.objects.filter(
                     contest=contest,
-                    task_id=OuterRef('id')
+                    task_id=OuterRef('id'),
                 ).values('cost')
-            )
-        ).prefetch_related('tags', 'files')
+            ),
+            ordering_number=Subquery(
+                api_models.ContestTaskRelationship.objects.filter(
+                    contest=contest,
+                    task_id=OuterRef('id'),
+                ).values('ordering_number')
+            ),
+        ).prefetch_related('tags', 'files').select_related('author').order_by(
+            '-ordering_number',
+            'contest_cost',
+            'id',
+        )
 
         return queryset
 
@@ -300,7 +312,16 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if not task:
             raise NotFound('No such task.')
 
+        if self.action == 'retrieve' and self.request.user.has_perm('change_task', task):
+            task.real_id = task.id
+            task.can_edit_task = True
+
         return task
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return api_contests_serializers.ContestTaskViewSerializer
+        return super(ContestTaskViewSet, self).get_serializer_class()
 
     @action(detail=True,
             url_name='submit',
