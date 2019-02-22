@@ -23,7 +23,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     pagination_class = api_pagination.TaskDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api_models.Task.objects.order_by('-publication_time')
+    queryset = api_models.Task.objects.order_by('-publication_time').select_related('author')
 
     action_permission_classes = {
         'retrieve': (api_permissions.HasViewTaskPermission,),
@@ -163,7 +163,7 @@ class TaskHintViewSet(api_mixins.CustomPermissionsViewSetMixin,
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api_models.TaskHint.objects.all()
+    queryset = api_models.TaskHint.objects.all().select_related('author')
     serializer_class = api_tasks_serializers.TaskHintSerializer
 
     action_permission_classes = {

@@ -227,6 +227,9 @@ class TaskHintSerializer(rest_serializers.ModelSerializer):
             'author': {
                 'write_only': True,
             },
+            'task': {
+                'write_only': True,
+            }
         }
 
     def create(self, validated_data):
