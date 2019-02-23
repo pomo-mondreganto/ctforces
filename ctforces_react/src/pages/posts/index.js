@@ -13,13 +13,13 @@ const Posts = () => {
         <Switch>
             <PrivateRoute
                 exact
-                path="/posts/create"
+                path="/posts/create/"
                 component={PostCreatePage}
             />
-            <PublicRoute exact path="/posts/:id" component={PostViewPage} />
+            <PublicRoute exact path="/posts/:id/" component={PostViewPage} />
             <PrivateRoute
                 exact
-                path="/posts/:id/edit"
+                path="/posts/:id/edit/"
                 component={PostEditPage}
             />
         </Switch>

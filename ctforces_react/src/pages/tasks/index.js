@@ -8,22 +8,22 @@ import TaskEditPage from './edit/Container';
 import { Switch } from 'react-router-dom';
 import { PublicRoute, PrivateRoute } from '../../lib/Routes';
 
-const Posts = () => {
+const Tasks = () => {
     return (
         <Switch>
             <PrivateRoute
                 exact
-                path="/tasks/create"
+                path="/tasks/create/"
                 component={TaskCreatePage}
             />
-            <PublicRoute exact path="/tasks/:id" component={TaskViewPage} />
+            <PublicRoute exact path="/tasks/:id/" component={TaskViewPage} />
             <PrivateRoute
                 exact
-                path="/tasks/:id/edit"
+                path="/tasks/:id/edit/"
                 component={TaskEditPage}
             />
         </Switch>
     );
 };
 
-export default Posts;
+export default Tasks;

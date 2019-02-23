@@ -9,7 +9,7 @@ import { PublicRoute, PrivateRoute } from '../../lib/Routes';
 const Users = () => {
     return (
         <Switch>
-            <PublicRoute exact path="/users/:username" component={UserPage} />
+            <PublicRoute exact path="/users/:username/" component={UserPage} />
         </Switch>
     );
 };
