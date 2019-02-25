@@ -41,12 +41,6 @@ class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
             'solved_count',
         )
 
-        extra_kwargs = {
-            'main_tag': {
-                'write_only': True,
-            },
-        }
-
 
 class ContestTaskRelationshipUpdateSerializer(rest_serializers.ModelSerializer):
     class Meta:
@@ -59,24 +53,59 @@ class ContestTaskRelationshipUpdateSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class ContestTaskViewSerializer(rest_serializers.ModelSerializer):
+class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer):
     solved_count = rest_serializers.IntegerField(read_only=True)
-    task_tags_details = api_tasks_serializers.TaskTagSerializer(many=True, read_only=True, source='tags')
+    tags_details = api_tasks_serializers.TaskTagSerializer(many=True, read_only=True, source='tags')
     contest_cost = rest_serializers.IntegerField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
+    ordering_number = rest_serializers.IntegerField(read_only=True)
 
     class Meta:
         model = api_models.Task
         fields = (
-            'id',
             'author_username',
             'contest_cost',
             'name',
             'solved_count',
-            'task_tags_details',
+            'tags_details',
             'is_solved_by_user',
+            'ordering_number',
         )
+
+
+class ContestTaskViewSerializer(rest_serializers.ModelSerializer):
+    solved_count = rest_serializers.IntegerField(read_only=True)
+    tags_details = api_tasks_serializers.TaskTagSerializer(many=True, read_only=True, source='tags')
+    files_details = api_tasks_serializers.TaskFileViewSerializer(many=True, read_only=True, source='files')
+    can_edit_task = rest_serializers.BooleanField(read_only=True)
+    is_solved_by_user = rest_serializers.BooleanField(read_only=True)
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
+    hints = rest_serializers.SerializerMethodField('get_hints_method')
+    contest_cost = rest_serializers.IntegerField(read_only=True)
+    ordering_number = rest_serializers.IntegerField(read_only=True)
+    real_id = rest_serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = api_models.Task
+        fields = (
+            'author_username',
+            'can_edit_task',
+            'contest_cost',
+            'description',
+            'files_details',
+            'is_solved_by_user',
+            'name',
+            'solved_count',
+            'tags_details',
+            'hints',
+            'ordering_number',
+            'real_id',
+        )
+
+    @staticmethod
+    def get_hints_method(obj):
+        return api_models.TaskHint.objects.filter(is_published=True, task=obj).values_list('id', flat=True)
 
 
 class ContestFullSerializer(rest_serializers.ModelSerializer):

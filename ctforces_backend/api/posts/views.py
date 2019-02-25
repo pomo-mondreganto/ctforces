@@ -22,7 +22,7 @@ class PostViewSet(api_mixins.CustomPermissionsViewSetMixin,
     serializer_class = api_posts_serializers.PostMainSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api_models.Post.objects.all()
+    queryset = api_models.Post.objects.all().select_related('author')
 
     def get_queryset(self):
         qs = super(PostViewSet, self).get_queryset()
