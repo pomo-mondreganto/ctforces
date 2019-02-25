@@ -1,15 +1,15 @@
 import React from 'react';
 
+import axios from 'axios';
 import Component from './Component';
 
-import axios from 'axios';
 
 class ContestViewContainer extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            contest: null
+            contest: null,
         };
     }
 
@@ -17,7 +17,7 @@ class ContestViewContainer extends React.Component {
         const { id } = this.props.match.params;
         const response = await axios.get(`/contests/${id}/`);
         this.setState({
-            contest: response.data
+            contest: response.data,
         });
     }
 

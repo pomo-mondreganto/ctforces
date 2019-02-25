@@ -3,8 +3,10 @@ import React from 'react';
 import { FormGroup, FormFeedback } from 'reactstrap';
 import DatePicker from 'react-datetime';
 
-const Component = ({ field, form, handleChange, ...props }) => {
-    const name = field.name;
+const Component = ({
+    field, form, handleChange, ...props
+}) => {
+    const { name } = field;
     const invalid = form.errors[name] && form.errors[name] && true;
 
     return (

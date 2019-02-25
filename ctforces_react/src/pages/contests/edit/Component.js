@@ -1,37 +1,35 @@
 import React from 'react';
 
 import { Card, Button } from 'reactstrap';
+import {
+    Formik, Form, Field, FieldArray,
+} from 'formik';
+import moment from 'moment';
 import Layout from '../../../layouts/sidebar/Container';
 import withLayout from '../../../wrappers/withLayout';
-import { Formik, Form, Field, FieldArray } from 'formik';
 import TextInput from '../../../components/Form/TextInput/Container';
 import CheckboxInput from '../../../components/Form/CheckboxInput/Container';
-import SimpleMDEInput from '../../../components/Form/SimpleMDEInput/Container';
 import DetailError from '../../../components/Form/DetailError/Container';
-import TagsInput from '../../../components/Form/TagsInput/Container';
 import CalendarInput from '../../../components/Form/CalendarInput/Container';
-import DatetimeInput from 'react-datetime';
-import moment from 'moment';
 import TaskPreviewInput from '../components/TaskPreview/Container';
 
-const Component = props => {
+const Component = (props) => {
     const {
         name = '',
         description = '',
-        contest_task_relationship_details = [],
-        is_published = false,
-        is_registration_open = false,
-        is_rated = false,
-        is_running = false,
-        publish_tasks_after_finished = false,
-        is_finished = false,
-        start_time = moment().toISOString(),
-        end_time = moment().toISOString()
+        is_published: isPublished = false,
+        is_registration_open: isRegistrationOpen = false,
+        is_rated: isRated = false,
+        is_running: isRunning = false,
+        publish_tasks_after_finished: publishTasksAfterFinished = false,
+        is_finished: isFinished = false,
+        start_time: startTime = moment().toISOString(),
+        end_time: endTime = moment().toISOString(),
     } = { ...props.contest };
 
-    console.log(props.contest);
-
-    const tasks = [{ id: '', name: '', cost: '', main_tag: '' }];
+    const tasks = [{
+        id: '', name: '', cost: '', main_tag: '',
+    }];
 
     return (
         <Card className="p-2">
@@ -45,14 +43,14 @@ const Component = props => {
                     name,
                     description,
                     tasks,
-                    is_published,
-                    is_registration_open,
-                    is_rated,
-                    is_running,
-                    publish_tasks_after_finished,
-                    is_finished,
-                    start_time,
-                    end_time
+                    is_published: isPublished,
+                    is_registration_open: isRegistrationOpen,
+                    is_rated: isRated,
+                    is_running: isRunning,
+                    publish_tasks_after_finished: publishTasksAfterFinished,
+                    is_finished: isFinished,
+                    start_time: startTime,
+                    end_time: endTime,
                 }}
                 onSubmit={(values, actions) => {
                     props.handleSubmit({ values, actions });
@@ -78,32 +76,28 @@ const Component = props => {
                             name="tasks"
                             render={arrayHelpers => (
                                 <>
-                                    {values.tasks.map((obj, i) => {
-                                        return (
-                                            <div key={i}>
-                                                <Field
-                                                    name={`tasks.${i}`}
-                                                    component={TaskPreviewInput}
-                                                />
+                                    {values.tasks.map((obj, i) => (
+                                        <div key={i}>
+                                            <Field
+                                                name={`tasks.${i}`}
+                                                component={TaskPreviewInput}
+                                            />
 
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        arrayHelpers.remove(i)
-                                                    }
-                                                >
-                                                    remove
-                                                </button>
-                                            </div>
-                                        );
-                                    })}
+                                            <button
+                                                type="button"
+                                                onClick={() => arrayHelpers.remove(i)
+                                                }
+                                            >
+                                                remove
+                                            </button>
+                                        </div>
+                                    ))}
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            arrayHelpers.push({
-                                                id: '',
-                                                name: ''
-                                            })
+                                        onClick={() => arrayHelpers.push({
+                                            id: '',
+                                            name: '',
+                                        })
                                         }
                                     >
                                         add task

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Component from './Component';
 import axios from 'axios';
+import Component from './Component';
 
 import withAuth from '../../wrappers/withAuth';
 
@@ -10,25 +10,26 @@ class MenuContainer extends React.Component {
         super(props);
 
         this.state = {
-            isOpen: false
+            isOpen: false,
         };
     }
 
     toggle = () => {
         this.setState({
-            isOpen: !this.state.isOpen
+            isOpen: !this.state.isOpen,
         });
     };
 
     logout = async () => {
         try {
-            const response = await axios.post(`/logout/`);
-        } catch {}
-        this.props.updateAuthUser({
-            loggedIn: false,
-            user: null,
-            requested: true
-        });
+            await axios.post('/logout/');
+        } finally {
+            this.props.updateAuthUser({
+                loggedIn: false,
+                user: null,
+                requested: true,
+            });
+        }
     };
 
     render() {

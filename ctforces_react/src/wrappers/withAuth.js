@@ -1,29 +1,25 @@
 import React from 'react';
 
-import { Creators } from '../store/auth/actions';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { Creators } from '../store/auth/actions';
 
 export default (ChildComponent, options = { request: false }) => {
-    const AuthComponent = class extends React.Component {
-        constructor(props) {
-            super(props);
-        }
-
+    const AuthComponent = class AuthComponentClass extends React.Component {
         async componentDidMount() {
             if (options.request) {
                 try {
-                    const response = await axios.get(`/me/`);
+                    const response = await axios.get('/me/');
                     this.props.updateAuthUser({
                         loggedIn: true,
                         user: response.data,
-                        requested: true
+                        requested: true,
                     });
                 } catch {
                     this.props.updateAuthUser({
                         loggedIn: false,
                         user: null,
-                        requested: true
+                        requested: true,
                     });
                 }
             }
@@ -34,18 +30,16 @@ export default (ChildComponent, options = { request: false }) => {
         }
     };
 
-    const mapStateToProps = state => {
-        return {
-            auth: state.auth
-        };
-    };
+    const mapStateToProps = state => ({
+        auth: state.auth,
+    });
 
     const mapDispatchToProps = {
-        updateAuthUser: Creators.updateAuthUser
+        updateAuthUser: Creators.updateAuthUser,
     };
 
     return connect(
         mapStateToProps,
-        mapDispatchToProps
+        mapDispatchToProps,
     )(AuthComponent);
 };

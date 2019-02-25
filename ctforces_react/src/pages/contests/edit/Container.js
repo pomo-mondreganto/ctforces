@@ -1,8 +1,8 @@
 import React from 'react';
 
-import Component from './Component';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
+import Component from './Component';
 
 class ContestCreateContainer extends React.Component {
     constructor(props) {
@@ -10,7 +10,7 @@ class ContestCreateContainer extends React.Component {
 
         this.state = {
             contest: null,
-            redirect: null
+            redirect: null,
         };
     }
 
@@ -18,38 +18,38 @@ class ContestCreateContainer extends React.Component {
         const { id } = this.props.match.params;
         const response = await axios.get(`/contests/${id}/full/`);
         this.setState({
-            contest: response.data
+            contest: response.data,
         });
     }
 
     handleSubmit = async ({ values, actions }) => {
         try {
             const response = await axios.post('/contests/', {
-                ...values
+                ...values,
             });
             const { id } = response.data;
 
-            const tasks = values.tasks;
-            for (let i = 0; i < tasks.length; ++i) {
+            const { tasks } = values;
+            for (let i = 0; i < tasks.length; i += 1) {
                 const task = tasks[i];
                 await axios.post('/contest_task_relationship/', {
                     task: task.id,
                     contest: id,
                     ordering_number: i,
                     cost: task.cost,
-                    main_tag: task.main_tag
+                    main_tag: task.main_tag,
                 });
             }
 
             this.setState({
-                redirect: `/contests/${id}/`
+                redirect: `/contests/${id}/`,
             });
         } catch (error) {
             const errorData = error.response.data;
-            for (const key in errorData) {
+            Object.keys(errorData).forEach((key) => {
                 actions.setFieldError(key, errorData[key]);
                 actions.setFieldTouched(key, true, false);
-            }
+            });
             actions.setSubmitting(false);
         }
     };

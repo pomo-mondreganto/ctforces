@@ -12,33 +12,30 @@ const PrivateRoute = withAuth(
         return (
             <Route
                 {...rest}
-                render={props =>
-                    auth.loggedIn ? (
-                        <Component {...props} />
-                    ) : (
-                        <Redirect
-                            to={{
-                                pathname: '/login',
-                                state: { from: props.location }
-                            }}
-                        />
-                    )
+                render={props => (auth.loggedIn ? (
+                    <Component {...props} />
+                ) : (
+                    <Redirect
+                        to={{
+                            pathname: '/login',
+                            state: { from: props.location },
+                        }}
+                    />
+                ))
                 }
             />
         );
     },
     {
-        request: true
-    }
+        request: true,
+    },
 );
 
 const PublicRoute = withAuth(
-    ({ auth, component: Component, ...rest }) => {
-        return <Route {...rest} component={Component} />;
-    },
+    ({ auth, component: Component, ...rest }) => <Route {...rest} component={Component} />,
     {
-        request: true
-    }
+        request: true,
+    },
 );
 
 export { PublicRoute, PrivateRoute };

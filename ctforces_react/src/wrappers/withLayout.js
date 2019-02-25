@@ -1,11 +1,15 @@
 import React from 'react';
 
-export default (ChildComponent, LayoutComponent) => {
-    return props => {
-        return (
-            <LayoutComponent>
-                <ChildComponent {...props} />
-            </LayoutComponent>
-        );
-    };
+const Component = (ChildComponent, LayoutComponent) => (props) => {
+    const ComponentWithLayout = () => (
+        <LayoutComponent>
+            <ChildComponent {...props} />
+        </LayoutComponent>
+    );
+    ComponentWithLayout.displayName = 'ComponentWithLayout';
+    return ComponentWithLayout;
 };
+
+Component.displayName = 'WithLayout';
+
+export default Component;

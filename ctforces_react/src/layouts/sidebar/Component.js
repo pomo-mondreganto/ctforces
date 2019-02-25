@@ -5,13 +5,11 @@ import MasterLayout from '../master/Container';
 
 import Sidebar from '../../components/Sidebar/Container';
 
-const Component = ({ children }) => {
-    return (
-        <>
-            <main>{children}</main>
-            <Sidebar />
-        </>
-    );
-};
+const Component = ({ children }) => (
+    <>
+        <main>{children}</main>
+        <Sidebar />
+    </>
+);
 
 export default withLayout(Component, MasterLayout);

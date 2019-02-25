@@ -1,8 +1,8 @@
 import React from 'react';
 
-import Component from './Component';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
+import Component from './Component';
 
 class PostEditContainer extends React.Component {
     constructor(props) {
@@ -10,7 +10,7 @@ class PostEditContainer extends React.Component {
 
         this.state = {
             redirect: null,
-            post: null
+            post: null,
         };
     }
 
@@ -18,25 +18,25 @@ class PostEditContainer extends React.Component {
         const { id } = this.props.match.params;
         const response = await axios.get(`/posts/${id}/`);
         this.setState({
-            post: response.data
+            post: response.data,
         });
     }
 
     handleSubmit = async ({ values, actions }) => {
         try {
-            const response = await axios.put(
+            await axios.put(
                 `/posts/${this.state.post.id}/`,
-                values
+                values,
             );
             this.setState({
-                redirect: `/posts/${this.state.post.id}/`
+                redirect: `/posts/${this.state.post.id}/`,
             });
         } catch (error) {
             const errorData = error.response.data;
-            for (const key in errorData) {
+            Object.keys(errorData).forEach((key) => {
                 actions.setFieldError(key, errorData[key]);
                 actions.setFieldTouched(key, true, false);
-            }
+            });
             actions.setSubmitting(false);
         }
     };

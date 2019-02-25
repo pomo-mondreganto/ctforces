@@ -4,8 +4,8 @@ const { Types, Creators } = createActions({
     updateAuthUser: {
         user: null,
         loggedIn: false,
-        requested: false
-    }
+        requested: false,
+    },
 });
 
 export { Types, Creators };

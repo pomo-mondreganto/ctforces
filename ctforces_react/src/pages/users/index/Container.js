@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Component from './Component';
 import axios from 'axios';
+import Component from './Component';
 import withAuth from '../../../wrappers/withAuth';
 
 class UserIndexPage extends React.Component {
@@ -9,7 +9,7 @@ class UserIndexPage extends React.Component {
         super(props);
 
         this.state = {
-            user: null
+            user: null,
         };
     }
 
@@ -17,7 +17,7 @@ class UserIndexPage extends React.Component {
         const { username } = this.props.match.params;
         const response = await axios.get(`/users/${username}`);
         this.setState({
-            user: response.data
+            user: response.data,
         });
     }
 

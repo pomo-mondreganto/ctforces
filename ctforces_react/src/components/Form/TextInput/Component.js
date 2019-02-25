@@ -3,7 +3,7 @@ import React from 'react';
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 
 const Component = ({ field, form, ...props }) => {
-    const name = field.name;
+    const { name } = field;
     const invalid = form.errors[name] && form.errors[name] && true;
 
     return (

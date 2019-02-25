@@ -1,11 +1,6 @@
 import React from 'react';
 
 import {
-    LinkContainerNonActive,
-    LinkContainerAuto
-} from '../../lib/LinkContainer';
-
-import {
     Button,
     Collapse,
     Nav,
@@ -13,10 +8,15 @@ import {
     NavbarBrand,
     NavbarToggler,
     NavItem,
-    NavLink
+    NavLink,
 } from 'reactstrap';
+import {
+    LinkContainerNonActive,
+    LinkContainerAuto,
+} from '../../lib/LinkContainer';
 
-const LoginButton = props => {
+
+const LoginButton = (props) => {
     if (!props.auth.requested) {
         return null;
     }
@@ -29,18 +29,17 @@ const LoginButton = props => {
                 </Button>
             </LinkContainerNonActive>
         );
-    } else {
-        return (
-            <LinkContainerNonActive to="/login">
-                <Button color="primary" className="btn-block">
-                    Sign In
-                </Button>
-            </LinkContainerNonActive>
-        );
     }
+    return (
+        <LinkContainerNonActive to="/login">
+            <Button color="primary" className="btn-block">
+                Sign In
+            </Button>
+        </LinkContainerNonActive>
+    );
 };
 
-const RegisterButton = props => {
+const RegisterButton = (props) => {
     if (!props.auth.requested) {
         return null;
     }
@@ -51,78 +50,75 @@ const RegisterButton = props => {
                 Logout
             </Button>
         );
-    } else {
-        return (
-            <LinkContainerNonActive to="/register">
-                <Button className="btn-block">Sign Up</Button>
-            </LinkContainerNonActive>
-        );
     }
-};
-
-const Component = props => {
     return (
-        <Navbar color="light" light expand="lg" className="shadow-sm">
-            <NavbarToggler onClick={props.toggle} className="border-0">
-                Menu
-            </NavbarToggler>
-            <LinkContainerNonActive to="/">
-                <NavbarBrand className="d-xs-none d-sm-inline-block d-md-inline-block d-lg-inline-block d-xl-inline-block navbar-brand">
-                    CTForces
-                </NavbarBrand>
-            </LinkContainerNonActive>
-            <NavbarToggler onClick={props.toggleSidebar} className="border-0">
-                icon
-            </NavbarToggler>
-            <Collapse isOpen={props.isOpen} navbar>
-                <Nav navbar className="w-100 pull-left nav-fill mr-auto">
-                    <NavItem>
-                        <LinkContainerAuto to="/">
-                            <NavLink>Home</NavLink>
-                        </LinkContainerAuto>
-                    </NavItem>
-                    <NavItem>
-                        <LinkContainerAuto to="/contests">
-                            <NavLink>Contests</NavLink>
-                        </LinkContainerAuto>
-                    </NavItem>
-                    <NavItem>
-                        <LinkContainerAuto to="/tasks">
-                            <NavLink>Tasks</NavLink>
-                        </LinkContainerAuto>
-                    </NavItem>
-                    <NavItem>
-                        <LinkContainerAuto to="/upsolving">
-                            <NavLink>Upsolving</NavLink>
-                        </LinkContainerAuto>
-                    </NavItem>
-                    <NavItem>
-                        <LinkContainerAuto to="/rating">
-                            <NavLink>Rating</NavLink>
-                        </LinkContainerAuto>
-                    </NavItem>
-                </Nav>
-            </Collapse>
-
-            <Collapse
-                isOpen={props.isOpen}
-                navbar
-                className="justify-content-end mr-auto ml-auto w-25"
-            >
-                <Nav className="nav-fill" navbar>
-                    <NavItem className="mx-1 my-1">
-                        <LoginButton auth={props.auth} />
-                    </NavItem>
-                    <NavItem className="mx-1 my-1">
-                        <RegisterButton
-                            auth={props.auth}
-                            onClick={props.logout}
-                        />
-                    </NavItem>
-                </Nav>
-            </Collapse>
-        </Navbar>
+        <LinkContainerNonActive to="/register">
+            <Button className="btn-block">Sign Up</Button>
+        </LinkContainerNonActive>
     );
 };
+
+const Component = props => (
+    <Navbar color="light" light expand="lg" className="shadow-sm">
+        <NavbarToggler onClick={props.toggle} className="border-0">
+            Menu
+        </NavbarToggler>
+        <LinkContainerNonActive to="/">
+            <NavbarBrand className="d-xs-none d-sm-inline-block d-md-inline-block d-lg-inline-block d-xl-inline-block navbar-brand">
+                CTForces
+            </NavbarBrand>
+        </LinkContainerNonActive>
+        <NavbarToggler onClick={props.toggleSidebar} className="border-0">
+            icon
+        </NavbarToggler>
+        <Collapse isOpen={props.isOpen} navbar>
+            <Nav navbar className="w-100 pull-left nav-fill mr-auto">
+                <NavItem>
+                    <LinkContainerAuto to="/">
+                        <NavLink>Home</NavLink>
+                    </LinkContainerAuto>
+                </NavItem>
+                <NavItem>
+                    <LinkContainerAuto to="/contests">
+                        <NavLink>Contests</NavLink>
+                    </LinkContainerAuto>
+                </NavItem>
+                <NavItem>
+                    <LinkContainerAuto to="/tasks">
+                        <NavLink>Tasks</NavLink>
+                    </LinkContainerAuto>
+                </NavItem>
+                <NavItem>
+                    <LinkContainerAuto to="/upsolving">
+                        <NavLink>Upsolving</NavLink>
+                    </LinkContainerAuto>
+                </NavItem>
+                <NavItem>
+                    <LinkContainerAuto to="/rating">
+                        <NavLink>Rating</NavLink>
+                    </LinkContainerAuto>
+                </NavItem>
+            </Nav>
+        </Collapse>
+
+        <Collapse
+            isOpen={props.isOpen}
+            navbar
+            className="justify-content-end mr-auto ml-auto w-25"
+        >
+            <Nav className="nav-fill" navbar>
+                <NavItem className="mx-1 my-1">
+                    <LoginButton auth={props.auth} />
+                </NavItem>
+                <NavItem className="mx-1 my-1">
+                    <RegisterButton
+                        auth={props.auth}
+                        onClick={props.logout}
+                    />
+                </NavItem>
+            </Nav>
+        </Collapse>
+    </Navbar>
+);
 
 export default Component;

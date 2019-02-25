@@ -1,9 +1,13 @@
 import React from 'react';
 
-import { Input, Label, FormGroup, FormFeedback } from 'reactstrap';
+import {
+    Input, Label, FormGroup, FormFeedback,
+} from 'reactstrap';
 
-const Component = ({ field, form, label, ...props }) => {
-    const name = field.name;
+const Component = ({
+    field, form, label, ...props
+}) => {
+    const { name } = field;
     const invalid = form.errors[name] && form.errors[name] && true;
 
     return (

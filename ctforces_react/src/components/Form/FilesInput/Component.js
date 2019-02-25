@@ -5,12 +5,14 @@ import {
     FormFeedback,
     CustomInput,
     Progress,
-    Button
+    Button,
 } from 'reactstrap';
 
 const Component = React.forwardRef(
-    ({ field, form, multiple = false, ...props }, ref) => {
-        const name = field.name;
+    ({
+        field, form, multiple = false, ...props
+    }, ref) => {
+        const { name } = field;
         const invalid = form.errors[name] && form.errors[name] && true;
         const { uploading = {} } = { ...form.status };
         return (
@@ -21,33 +23,34 @@ const Component = React.forwardRef(
                     id={`file-input-${field.name}`}
                     name={field.name}
                     onChange={props.handleSelectedFiles}
+                    invalid={invalid}
                     multiple={multiple}
                     innerRef={ref}
                 />
-                {field.value.map((obj, index) => {
-                    return (
-                        <div key={index} className="my-3">
-                            <Button
-                                className="mr-3"
-                                onClick={() => {
-                                    props.handleRemove(index);
-                                }}
-                            >
-                                Remove{' '}
-                            </Button>
-                            <span>{obj.name}</span>
-                            <Progress
-                                className="mt-3"
-                                hidden={uploading[obj.name] === undefined}
-                                value={uploading[obj.name] || 0}
-                            />
-                        </div>
-                    );
-                })}
+                {field.value.map((obj, index) => (
+                    <div key={index} className="my-3">
+                        <Button
+                            className="mr-3"
+                            onClick={() => {
+                                props.handleRemove(index);
+                            }}
+                        >
+                            Remove{' '}
+                        </Button>
+                        <span>{obj.name}</span>
+                        <Progress
+                            className="mt-3"
+                            hidden={uploading[obj.name] === undefined}
+                            value={uploading[obj.name] || 0}
+                        />
+                    </div>
+                ))}
                 <FormFeedback>{form.errors[name]}</FormFeedback>
             </FormGroup>
         );
-    }
+    },
 );
+
+Component.displayName = 'FileInputComponent';
 
 export default Component;

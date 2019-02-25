@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { Card, Button } from 'reactstrap';
+import { Formik, Form, Field } from 'formik';
 import Layout from '../../../layouts/sidebar/Container';
 import withLayout from '../../../wrappers/withLayout';
-import { Formik, Form, Field } from 'formik';
 import TextInput from '../../../components/Form/TextInput/Container';
 import CheckboxInput from '../../../components/Form/CheckboxInput/Container';
 import SimpleMDEInput from '../../../components/Form/SimpleMDEInput/Container';
@@ -11,28 +11,24 @@ import DetailError from '../../../components/Form/DetailError/Container';
 import TagsInput from '../../../components/Form/TagsInput/Container';
 import FilesInput from '../../../components/Form/FilesInput/Container';
 
-const Component = props => {
+const Component = (props) => {
     const {
         name = '',
-        task_tags_details = [],
+        task_tags_details: taskTagsDetails = [],
         cost = '',
         flag = '',
         description = '',
-        files_details = [],
-        is_published = false
+        files_details: filesDetails = [],
+        is_published: isPublished = false,
     } = { ...props.task };
 
-    const tags = task_tags_details.map((obj, i) => {
-        return obj.name;
-    });
+    const tags = taskTagsDetails.map(obj => obj.name);
 
-    const files = files_details.map((obj, i) => {
-        return {
-            name: obj.name,
-            uploaded: true,
-            id: obj.id
-        };
-    });
+    const files = filesDetails.map(obj => ({
+        name: obj.name,
+        uploaded: true,
+        id: obj.id,
+    }));
 
     return (
         <Card className="p-2">
@@ -49,7 +45,7 @@ const Component = props => {
                     flag,
                     description,
                     files,
-                    is_published
+                    is_published: isPublished,
                 }}
                 onSubmit={(values, actions) => {
                     props.handleSubmit({ values, actions });

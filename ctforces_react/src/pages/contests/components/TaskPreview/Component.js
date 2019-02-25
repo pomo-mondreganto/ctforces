@@ -2,8 +2,10 @@ import React from 'react';
 
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 
-const Component = ({ field, form, handleChange, ...props }) => {
-    const name = field.name;
+const Component = ({
+    field, form, handleChange, ...props
+}) => {
+    const { name } = field;
     const invalid = form.errors[name] && form.errors[name] && true;
 
     const task = field.value;

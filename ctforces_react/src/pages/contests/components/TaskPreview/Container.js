@@ -1,16 +1,12 @@
 import React from 'react';
 
-import Component from './Component';
 import axios from 'axios';
+import Component from './Component';
 
 class TaskPreviewContainer extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    handleChange = async e => {
-        const name = e.target.name;
-        const value = parseInt(e.target.value);
+    handleChange = async (e) => {
+        const { name } = e.target;
+        const value = parseInt(e.target.value, 10);
 
         this.props.form.setFieldValue(`${name}.id`, value);
         const id = value;
@@ -21,7 +17,7 @@ class TaskPreviewContainer extends React.Component {
             this.props.form.setFieldValue(`${name}.name`, task.name);
             this.props.form.setFieldValue(
                 `${name}.main_tag`,
-                task.tags_details.length > 0 ? task.tags_details[0].id : ''
+                task.tags_details.length > 0 ? task.tags_details[0].id : '',
             );
         } catch {
             this.props.form.setFieldValue(`${name}.cost`, '');

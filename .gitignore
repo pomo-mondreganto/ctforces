@@ -84,7 +84,6 @@ ctforces_frontend/semantic/dist/
 virtualenv
 __pycache__
 local_settings.py
-.eslintrc.js
 db.sqlite3
 ctforces_venv
 
@@ -440,3 +439,5 @@ ctforces_backend/media/files/*
 
 ctforces_backend/ctforces_backend/config.json
 
+ctforces_react/jsconfig.json
+ctforces_react/.editorconfig

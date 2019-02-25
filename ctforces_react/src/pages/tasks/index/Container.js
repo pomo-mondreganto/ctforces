@@ -1,15 +1,15 @@
 import React from 'react';
 
+import axios from 'axios';
 import Component from './Component';
 
-import axios from 'axios';
 
 class TaskViewContainer extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            task: null
+            task: null,
         };
     }
 
@@ -17,7 +17,7 @@ class TaskViewContainer extends React.Component {
         const { id } = this.props.match.params;
         const response = await axios.get(`/tasks/${id}/`);
         this.setState({
-            task: response.data
+            task: response.data,
         });
     }
 

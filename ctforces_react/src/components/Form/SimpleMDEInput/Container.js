@@ -3,11 +3,7 @@ import React from 'react';
 import Component from './Component';
 
 class SimpleMDEContainer extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    handleChange = value => {
+    handleChange = (value) => {
         const { name } = this.props.field;
         this.props.form.setFieldValue(name, value);
     };

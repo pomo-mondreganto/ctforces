@@ -2,19 +2,13 @@ import React from 'react';
 
 import { LinkContainer } from 'react-router-bootstrap';
 
-const LinkContainerAuto = props => {
-    return <LinkContainer exact {...props} />;
-};
+const LinkContainerAuto = props => <LinkContainer exact {...props} />;
 
-const LinkContainerNonActive = props => {
-    return (
-        <LinkContainer
-            {...props}
-            isActive={() => {
-                return false;
-            }}
-        />
-    );
-};
+const LinkContainerNonActive = props => (
+    <LinkContainer
+        {...props}
+        isActive={() => false}
+    />
+);
 
 export { LinkContainerAuto, LinkContainerNonActive };

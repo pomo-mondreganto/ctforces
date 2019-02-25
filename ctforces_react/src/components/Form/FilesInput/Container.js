@@ -9,19 +9,18 @@ class FilesContainer extends React.Component {
         this.inputRef = React.createRef();
     }
 
-    handleSelectedFiles = e => {
-        console.log(this.fileRef);
+    handleSelectedFiles = (e) => {
         const { files } = e.target;
         const { name } = this.props.field;
-        const old_files = this.props.field.value;
+        const oldFiles = this.props.field.value;
         this.props.form.setFieldValue(
             name,
-            Array.from(old_files).concat(Array.from(files))
+            Array.from(oldFiles).concat(Array.from(files)),
         );
         this.inputRef.value = '';
     };
 
-    handleRemove = index => {
+    handleRemove = (index) => {
         const { name } = this.props.field;
         const files = this.props.field.value;
         files.splice(index, 1);
@@ -31,7 +30,7 @@ class FilesContainer extends React.Component {
     render() {
         return (
             <Component
-                ref={input => {
+                ref={(input) => {
                     this.inputRef = input;
                 }}
                 {...this.props}

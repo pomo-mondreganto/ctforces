@@ -10,32 +10,41 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                use: ['babel-loader']
+                loader: 'eslint-loader',
+                enforce: 'pre',
+                options: {
+                    emitWarning: true,
+                },
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: ['babel-loader'],
             },
             {
                 test: /\.css/,
-                use: [MiniCssExtractPlugin.loader, 'css-loader']
+                use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
             {
                 test: /\.scss/,
-                use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
-            }
-        ]
+                use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+            },
+        ],
     },
     plugins: [
         new CleanWebpackPlugin([path.resolve(__dirname, '../dist')], {
-            root: path.resolve(__dirname, '..')
+            root: path.resolve(__dirname, '..'),
         }),
         new MiniCssExtractPlugin({
-            filename: '[name].bundle.css'
+            filename: '[name].bundle.css',
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, '../src/index.html')
-        })
+            template: path.resolve(__dirname, '../src/index.html'),
+        }),
     ],
     output: {
         publicPath: '/',
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, '../dist')
-    }
+        path: path.resolve(__dirname, '../dist'),
+    },
 };
