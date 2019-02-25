@@ -90,7 +90,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
     def get_object(self):
         obj = super(ContestViewSet, self).get_object()
         if self.action == 'retrieve':
-            obj.can_edit_task = self.request.user.has_perm('change_contest', obj)
+            obj.can_edit_contest = self.request.user.has_perm('change_contest', obj)
         return obj
 
     @action(

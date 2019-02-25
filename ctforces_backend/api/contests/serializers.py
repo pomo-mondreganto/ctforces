@@ -41,12 +41,6 @@ class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
             'solved_count',
         )
 
-        extra_kwargs = {
-            'main_tag': {
-                'write_only': True,
-            },
-        }
-
 
 class ContestTaskRelationshipUpdateSerializer(rest_serializers.ModelSerializer):
     class Meta:
