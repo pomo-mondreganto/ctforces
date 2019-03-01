@@ -1,15 +1,10 @@
 import React from 'react';
 
-const Component = (ChildComponent, LayoutComponent) => (props) => {
-    const ComponentWithLayout = () => (
+const Component = (ChildComponent, LayoutComponent) => function ComponentWithLayout(props) {
+    return (
         <LayoutComponent>
             <ChildComponent {...props} />
-        </LayoutComponent>
-    );
-    ComponentWithLayout.displayName = 'ComponentWithLayout';
-    return ComponentWithLayout;
+        </LayoutComponent>);
 };
-
-Component.displayName = 'WithLayout';
 
 export default Component;
