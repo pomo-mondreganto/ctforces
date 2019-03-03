@@ -101,6 +101,7 @@ volumes/static/*
 !volumes/db/postgresql/.gitkeep
 
 environment.env
+environment_dev.env
 .DS_Store
 
 
