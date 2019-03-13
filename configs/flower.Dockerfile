@@ -8,8 +8,10 @@ ADD ./ctforces_backend/requirements.txt /
 RUN pip3 install -r /requirements.txt
 ADD ./ctforces_backend /app
 
-ADD ./configs/django.start.sh /entrypoint.sh
-ADD ./configs/db.check.py /db.check.py
+ADD ./configs/flower.start.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+RUN useradd celery
+USER celery
 
 CMD ["/entrypoint.sh"]
