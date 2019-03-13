@@ -80,14 +80,14 @@ volumes/socks/*
 volumes/celery/*
 volumes/static/*
 volumes/media/*
-
+volumes/react_build/*
 
 
 !volumes/*/.gitkeep
 !volumes/db/postgresql/.gitkeep
 
 environment.env
-environment_dev.env
+configs/environment.dev.env
 .DS_Store
 
 

@@ -30,7 +30,7 @@ services:
     restart: on-failure
     container_name: ctforces_celery
     env_file:
-      - ./configs/environment_dev.env
+      - configs/environment.dev.env
 
   ctforces_flower:
     build:
@@ -46,7 +46,7 @@ services:
     restart: on-failure
     container_name: ctforces_flower
     env_file:
-      - ./configs/environment_dev.env
+      - configs/environment.dev.env
 
   ctforces_nginx:
     image: nginx
@@ -56,8 +56,10 @@ services:
       - ./volumes/static:/static:ro
       - ./volumes/socks:/socks
       - ./volumes/media:/media:ro
+      - ./volumes/react_build:/react_build:ro
     depends_on:
       - ctforces_django
+      - ctforces_react
     ports:
       - "8000:80"
     restart: on-failure
@@ -79,3 +81,14 @@ services:
   ctforces_redis:
     image: redis
     container_name: ctforces_redis
+
+  ctforces_react:
+    build:
+      context: .
+      dockerfile: configs/react.dev.Dockerfile
+    volumes:
+      - ./volumes/react_build:/react_build
+    restart: on-failure
+    container_name: ctforces_react
+    env_file:
+      - configs/environment.dev.env
