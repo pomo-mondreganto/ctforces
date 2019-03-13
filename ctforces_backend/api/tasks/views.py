@@ -23,7 +23,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     pagination_class = api_pagination.TaskDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api_models.Task.objects.order_by('-publication_time').select_related('author')
+    queryset = api_models.Task.objects.order_by('-publication_time', '-id').select_related('author')
 
     action_permission_classes = {
         'retrieve': (api_permissions.HasViewTaskPermission,),
