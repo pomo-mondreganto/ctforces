@@ -16,7 +16,7 @@ services:
     restart: on-failure
     container_name: ctforces_django
     env_file:
-      - ./configs/environment.env
+      - ./configs/environment.dev.env
 
   ctforces_celery:
     build:
@@ -76,7 +76,7 @@ services:
     restart: on-failure
     container_name: ctforces_postgres
     env_file:
-      - ./configs/environment.env
+      - ./configs/environment.dev.env
 
   ctforces_redis:
     image: redis

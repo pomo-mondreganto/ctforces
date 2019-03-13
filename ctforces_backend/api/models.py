@@ -253,7 +253,7 @@ class Contest(models.Model):
     def reset_end_action(self):
         if self.celery_end_task_id:
             current_app.control.revoke(self.celery_end_task_id)
-        result = celery_tasks.end_contest.apply_async(args=(self.id,), eta=self.start_time)
+        result = celery_tasks.end_contest.apply_async(args=(self.id,), eta=self.end_time)
         self.celery_end_task_id = result.id
 
     def save(self, *args, **kwargs):
