@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #####
 # Postgres: wait until container is created

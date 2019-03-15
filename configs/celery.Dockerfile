@@ -1,14 +1,16 @@
-FROM python:3.7
+FROM python:3.7-alpine
 
 MAINTAINER nikrom2012@me.com
 
-RUN apt-get update && apt-get install -y python3-dev python3-pip graphviz libgraphviz-dev pkg-config
+RUN apk add --no-cache postgresql-libs && \
+    apk add --no-cache gcc musl-dev postgresql-dev zlib-dev jpeg-dev && \
+    apk add --no-cache graphviz-dev
 
 ADD ./ctforces_backend/requirements.txt /
 RUN pip3 install -r /requirements.txt
 ADD ./ctforces_backend /app
 
-RUN useradd celery
+RUN adduser -S celery
 USER celery
 
 WORKDIR /app

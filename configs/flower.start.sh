@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo "[+] Waiting 5 secs for celery to start"
-sleep 5
+echo "[+] Waiting 10 secs for celery to start"
+sleep 10
 
 echo "[+] Starting Flower"
 cd /app

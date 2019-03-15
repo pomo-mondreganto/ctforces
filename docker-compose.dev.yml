@@ -49,7 +49,7 @@ services:
       - configs/environment.dev.env
 
   ctforces_nginx:
-    image: nginx
+    image: nginx:1.15.9
     volumes:
       - ./configs/nginx:/etc/nginx/conf.d
       - ./configs/nginx.proxy_params:/etc/nginx/proxy_params
@@ -69,17 +69,17 @@ services:
     build:
       context: .
       dockerfile: configs/postgres.Dockerfile
-    ports:
-      - "5432:5432"
     volumes:
       - ./volumes/db/postgresql/:/var/lib/postgresql/
+    ports:
+      - "5432:5432"
     restart: on-failure
     container_name: ctforces_postgres
     env_file:
       - ./configs/environment.dev.env
 
   ctforces_redis:
-    image: redis
+    image: redis:5.0.3
     container_name: ctforces_redis
 
   ctforces_react:
