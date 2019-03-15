@@ -26,10 +26,9 @@ def process_stdimage(file_name, variations, storage):
 def start_contest(self, contest_id):
     logger.info(f'Request to contest_id {contest_id}, task {self.request.id}')
 
-    if not contest_id:
-        query = Q(celery_start_task_id=self.request.id)
-    else:
-        query = Q(id=contest_id)
+    query = Q(celery_start_task_id=self.request.id)
+    if contest_id:
+        query &= Q(id=contest_id)
 
     contest = get_model('api', 'Contest').objects.filter(query).first()
 
@@ -47,10 +46,9 @@ def start_contest(self, contest_id):
 def end_contest(self, contest_id):
     logger.info('Request to end contest_id {}, task {}'.format(contest_id, self.request.id))
 
-    if not contest_id:
-        query = Q(celery_start_task_id=self.request.id)
-    else:
-        query = Q(id=contest_id)
+    query = Q(celery_end_task_id=self.request.id)
+    if contest_id:
+        query &= Q(id=contest_id)
 
     contest = get_model('api', 'Contest').objects.filter(query).first()
 
