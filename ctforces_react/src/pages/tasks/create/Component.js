@@ -25,6 +25,7 @@ const Component = props => (
                 flag: '',
                 description: '',
                 files: [],
+                hints: [],
                 is_published: false,
             }}
             onSubmit={(values, actions) => {
