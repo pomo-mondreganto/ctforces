@@ -2,8 +2,30 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils import timezone
 
+from api import models as api_models
+
+
+class TaskHintInlineAdmin(admin.TabularInline):
+    model = api_models.TaskHint
+    classes = ('collapse',)
+
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'author',
+                    'body',
+                    'is_published',
+                ),
+            },
+        ),
+    )
+
 
 class CustomTaskAdmin(admin.ModelAdmin):
+    inlines = (TaskHintInlineAdmin,)
     list_display = (
         'id',
         'name',
@@ -64,7 +86,6 @@ class CustomTaskAdmin(admin.ModelAdmin):
 
     raw_id_fields = (
         'solved_by',
-        'tags',
         'author',
     )
 

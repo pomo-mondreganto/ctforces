@@ -1,65 +1,94 @@
-version: "3"
+version: "2.2"
 
 services:
-  ctforces-django:
+  ctforces_django:
     build:
       context: .
       dockerfile: ./configs/django.Dockerfile
     volumes:
       - ./volumes/static:/static
+      - ./volumes/media:/media
       - ./volumes/socks:/socks
       - ./volumes/server_logs:/logs
-      - ./ctforces_backend/:/app
     depends_on:
-      - ctforces-postgres
-      - ctforces-redis
+      - ctforces_postgres
+      - ctforces_redis
     restart: on-failure
-    container_name: ctforces-django-main
-    links:
-      - ctforces-postgres
-      - ctforces-redis
+    container_name: ctforces_django
     env_file:
-      - ./configs/environment.env
+      - ./configs/environment.dev.env
 
-  ctforces-celery:
+  ctforces_celery:
     build:
       context: .
       dockerfile: ./configs/celery.Dockerfile
     volumes:
-    - ./ctforces_backend/:/app
-    - ./volumes/celery/:/celery
+      - ./volumes/celery:/celery
+      - ./volumes/media:/media
     depends_on:
-    - ctforces-redis
-    links:
-    - ctforces-redis
+      - ctforces_redis
+    restart: on-failure
+    container_name: ctforces_celery
     env_file:
-    - ./configs/environment.env
+      - configs/environment.dev.env
 
-  ctforces-nginx:
-    image: nginx
+  ctforces_flower:
+    build:
+      context: .
+      dockerfile: ./configs/flower.Dockerfile
     volumes:
-    - ./configs/nginx.conf:/etc/nginx/nginx.conf
-    - ./configs/nginx.proxy_params:/etc/nginx/proxy_params
-    - ./volumes/static:/static:ro
-    - ./volumes/socks:/socks
+      - ./volumes/celery:/celery
+      - ./volumes/media:/media
+      - ./volumes/socks:/socks
     depends_on:
-    - ctforces-django
-    ports:
-    - "8000:80"
+      - ctforces_redis
+      - ctforces_celery
     restart: on-failure
-    container_name: ctforces-nginx-main
+    container_name: ctforces_flower
+    env_file:
+      - configs/environment.dev.env
 
-  ctforces-postgres:
-    image: postgres
+  ctforces_nginx:
+    image: nginx:1.15.9
     volumes:
-    - ./volumes/db/postgresql/:/var/lib/postgresql/
+      - ./configs/nginx:/etc/nginx/conf.d
+      - ./configs/nginx.proxy_params:/etc/nginx/proxy_params
+      - ./volumes/static:/static:ro
+      - ./volumes/socks:/socks
+      - ./volumes/media:/media:ro
+      - ./volumes/react_build:/react_build:ro
+    depends_on:
+      - ctforces_django
+      - ctforces_react
+    ports:
+      - "8000:80"
     restart: on-failure
-    container_name: ctforces-postgres-main
+    container_name: ctforces_nginx
+
+  ctforces_postgres:
+    build:
+      context: .
+      dockerfile: configs/postgres.Dockerfile
+    volumes:
+      - ./volumes/db/postgresql/:/var/lib/postgresql/
     ports:
       - "5432:5432"
+    restart: on-failure
+    container_name: ctforces_postgres
     env_file:
-      - ./configs/environment.env
+      - ./configs/environment.dev.env
 
-  ctforces-redis:
-    image: redis
-    container_name: ctforces-redis-main
+  ctforces_redis:
+    image: redis:5.0.3
+    container_name: ctforces_redis
+
+  ctforces_react:
+    build:
+      context: .
+      dockerfile: configs/react.dev.Dockerfile
+    volumes:
+      - ./volumes/react_build:/react_build
+    restart: on-failure
+    container_name: ctforces_react
+    env_file:
+      - configs/environment.dev.env

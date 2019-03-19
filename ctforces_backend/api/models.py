@@ -244,45 +244,26 @@ class Contest(models.Model):
         blank=True
     )
 
+    def reset_start_action(self):
+        if self.celery_start_task_id:
+            current_app.control.revoke(self.celery_start_task_id)
+        result = celery_tasks.start_contest.apply_async(args=(self.id,), eta=self.start_time)
+        self.celery_start_task_id = result.id
+
+    def reset_end_action(self):
+        if self.celery_end_task_id:
+            current_app.control.revoke(self.celery_end_task_id)
+        result = celery_tasks.end_contest.apply_async(args=(self.id,), eta=self.end_time)
+        self.celery_end_task_id = result.id
+
     def save(self, *args, **kwargs):
-        add_start_task = False
-        add_end_task = False
+        if not self.id or Contest.objects.only('start_time').get(id=self.id).start_time != self.start_time:
+            self.reset_start_action()
 
-        if self.id:
-            old = Contest.objects.only(
-                'celery_start_task_id',
-                'celery_end_task_id',
-                'start_time',
-                'end_time'
-            ).get(id=self.id)
-
-            if old.start_time != self.start_time:
-                current_app.control.revoke(old.celery_start_task_id)
-                if self.start_time is not None:
-                    add_start_task = True
-
-            if old.end_time != self.end_time:
-                current_app.control.revoke(old.celery_end_task_id)
-                if self.end_time is not None:
-                    add_end_task = True
-
-        else:
-            if self.start_time is not None:
-                add_start_task = True
-
-            if self.end_time is not None:
-                add_end_task = True
+        if not self.id or Contest.objects.only('end_time').get(id=self.id).end_time != self.end_time:
+            self.reset_end_action()
 
         super(Contest, self).save(*args, **kwargs)
-
-        if add_start_task:
-            result = celery_tasks.start_contest.apply_async(args=(self.id,), eta=self.start_time)
-            self.celery_start_task_id = result.id
-        if add_end_task:
-            result = celery_tasks.end_contest.apply_async(args=(self.id,), eta=self.end_time)
-            self.celery_end_task_id = result.id
-
-        super(Contest, self).save()
 
 
 class ContestTaskRelationship(models.Model):

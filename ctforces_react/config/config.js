@@ -1,5 +1,13 @@
-const apiUrl = 'http://127.0.0.1:8000/api';
-const mediaUrl = 'http://127.0.0.1:8000';
+let serverUrl = "";
+
+if (process.env.NODE_ENV === 'development') {
+    serverUrl = 'http://127.0.0.1:8000';
+} else {
+    serverUrl = 'http://tasks.ctforces.com'
+}
+
+const apiUrl = serverUrl + '/api';
+const mediaUrl = serverUrl;
 const smallWidth = 991;
 
 export { apiUrl, mediaUrl, smallWidth };

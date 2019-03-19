@@ -10,8 +10,10 @@ ADD ./ctforces_backend/requirements.txt /
 RUN pip3 install -r /requirements.txt
 ADD ./ctforces_backend /app
 
+ADD ./configs/flower.start.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 RUN adduser -S celery
 USER celery
 
-WORKDIR /app
-CMD ["/usr/local/bin/celery", "-A", "ctforces_backend", "worker", "--concurrency", "20", "-E", "-l", "info", "--statedb=/celery/celery.state"]
+CMD ["/entrypoint.sh"]

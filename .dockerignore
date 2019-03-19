@@ -188,5 +188,5 @@ fabric.properties
 .idea/
 .git/
 
-ctforces_venv/
-ctforces_frontend/node_modules
+ctforces_react/node_modules
+volumes/

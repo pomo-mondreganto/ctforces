@@ -150,7 +150,7 @@ class CustomUserAdmin(UserAdmin):
             messages.SUCCESS,
         )
 
-    register_for_contest.short_description = 'Register selected user for contest'
+    register_for_contest.short_description = 'Register selected users for contest'
 
     actions = (
         'register_for_contest',
