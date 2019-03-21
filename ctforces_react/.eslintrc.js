@@ -32,6 +32,9 @@ module.exports = {
             createClass: 'createReactClass',
             pragma: 'React',
             version: 'detect'
+        },
+        "import/resolver": {
+            "babel-module": {}
         }
     }
 };
