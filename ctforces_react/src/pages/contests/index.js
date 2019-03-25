@@ -4,6 +4,7 @@ import { Switch } from 'react-router-dom';
 import ContestCreatePage from './create/Container';
 import ContestViewPage from './index/Container';
 import ContestEditPage from './edit/Container';
+import ContestListPage from './list/Container';
 
 import { PublicRoute, PrivateRoute } from '../../lib/Routes';
 
@@ -18,6 +19,11 @@ const Contests = () => (
             exact
             path="/contests/:id/"
             component={ContestViewPage}
+        />
+        <PublicRoute
+            exact
+            path="/contests/"
+            component={ContestListPage}
         />
         <PrivateRoute
             exact

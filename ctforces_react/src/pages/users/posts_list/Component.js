@@ -22,17 +22,28 @@ const Component = props => (
         ]}
     >
         <>
-            {props.tasks && props.tasks.map((obj, i) => (
+            {props.posts && props.posts.map((obj, i) => (
                 <div key={i}>
-                    <LinkContainerNonActive to={`/tasks/${obj.id}/`}>
-                        <a>
-                            {obj.name}
-                        </a>
-                    </LinkContainerNonActive>
+                    <div className="py-2">
+                        <span style={{ fontSize: '2rem' }}>
+                            <LinkContainerNonActive to={`/posts/${obj.id}/`}>
+                                <a>{obj.title}</a>
+                            </LinkContainerNonActive>
+                            {' by '}
+                            <LinkContainerNonActive to={`/users/${obj.author_username}/`} >
+                                <a>{obj.author_username}</a>
+                            </LinkContainerNonActive>
+                        </span>
+                    </div>
+                    <hr />
+                    <div className="py-2">
+                        {' '}
+                        <span style={{ fontSize: '2rem' }}>{obj.body}</span>
+                    </div>
                 </div>
             ))}
-            {props.tasks
-                && <Pagination to={`/users/${props.username}/tasks/`}
+            {props.posts
+                && <Pagination to={`/users/${props.username}/posts/`}
                     currentPage={props.currentPage}
                     count={props.count}
                     pageSize={props.pageSize} />}
