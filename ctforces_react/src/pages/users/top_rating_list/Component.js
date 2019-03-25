@@ -18,7 +18,7 @@ const Component = props => (
                 </LinkContainerNonActive>
             </div>
         ))}
-        {props.tasks
+        {props.users
             && <Pagination to="/users/rating/top/"
                 currentPage={props.currentPage}
                 count={props.count}
