@@ -29,7 +29,7 @@ class SocialSettingsPage extends React.Component {
                 hide_personal_info: hidePersonalInfo,
             });
             this.setState({
-                redirect: `/users/${this.props.auth.username}/`,
+                redirect: `/users/${this.props.auth.user.username}/`,
             });
         } catch (error) {
             const errorData = error.response.data;

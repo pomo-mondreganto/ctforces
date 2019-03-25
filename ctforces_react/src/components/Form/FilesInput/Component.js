@@ -51,6 +51,6 @@ const Component = React.forwardRef(
     },
 );
 
-Component.displayName = 'FileInputComponent';
+Component.displayName = 'FilesInputComponent';
 
 export default Component;
