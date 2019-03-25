@@ -70,7 +70,7 @@ services:
       context: .
       dockerfile: configs/postgres.Dockerfile
     volumes:
-      - ./volumes/db/postgresql/:/var/lib/postgresql/
+      - ./volumes/db/postgresql/data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: on-failure
