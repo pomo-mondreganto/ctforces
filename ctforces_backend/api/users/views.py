@@ -209,7 +209,10 @@ class LoginView(APIView):
             raise AuthenticationFailed('User is not activated')
 
         login(request, user)
-        response_data = api_users_serializers.UserBasicSerializer(user).data
+        response_data = api_users_serializers.UserBasicSerializer(
+            user,
+            context={'request': request},
+        ).data
         return Response(response_data)
 
 
