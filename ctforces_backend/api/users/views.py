@@ -292,14 +292,14 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, url_name='tasks', url_path='tasks', methods=['get'])
     def get_users_tasks(self, request, **_kwargs):
-        tasks_type = request.query_params.get('type', 'published')
+        tasks_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        if tasks_type == 'published':
-            queryset = api_models.Task.objects.filter(is_published=True)
-        else:
-            queryset = get_objects_for_user(request.user, 'view_task', api_models.Task)
+        queryset = api_models.Task.objects.filter(is_published=True, author=user)
 
-        queryset = queryset.filter(author=user).order_by('-id')
+        if tasks_type == 'all':
+            queryset = (queryset | get_objects_for_user(request.user, 'view_task', api_models.Task)).distinct()
+
+        queryset = queryset.order_by('-id')
         paginator = api_pagination.TaskDefaultPagination()
         page = paginator.paginate_queryset(
             queryset=queryset,
@@ -315,14 +315,14 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, url_name='posts', url_path='posts', methods=['get'])
     def get_users_posts(self, request, **_kwargs):
-        posts_type = request.query_params.get('type', 'published')
+        posts_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        if posts_type == 'published':
-            queryset = api_models.Post.objects.filter(is_published=True)
-        else:
-            queryset = get_objects_for_user(request.user, 'view_post', api_models.Post)
+        queryset = api_models.Post.objects.filter(is_published=True, author=user)
 
-        queryset = queryset.filter(author=user).order_by('-id')
+        if posts_type == 'all':
+            queryset = (queryset | get_objects_for_user(request.user, 'view_post', api_models.Post)).distinct()
+
+        queryset = queryset.order_by('-id')
         paginator = api_pagination.PostDefaultPagination()
         page = paginator.paginate_queryset(
             queryset=queryset,
@@ -338,14 +338,14 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, url_name='contests', url_path='contests', methods=['get'])
     def get_users_contests(self, request, **_kwargs):
-        contests_type = request.query_params.get('type', 'published')
+        contests_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        if contests_type == 'published':
-            queryset = api_models.Contest.objects.filter(is_published=True)
-        else:
-            queryset = get_objects_for_user(request.user, 'view_contest', api_models.Contest)
+        queryset = api_models.Contest.objects.filter(is_published=True, author=user)
 
-        queryset = queryset.filter(author=user).order_by('-id')
+        if contests_type == 'all':
+            queryset = (queryset | get_objects_for_user(request.user, 'view_contest', api_models.Contest)).distinct()
+
+        queryset = queryset.order_by('-id')
         paginator = api_pagination.ContestDefaultPagination()
         page = paginator.paginate_queryset(
             queryset=queryset,
