@@ -15,7 +15,7 @@ class UserIndexPage extends React.Component {
 
     async componentDidMount() {
         const { username } = this.props.match.params;
-        const response = await axios.get(`/users/${username}`);
+        const response = await axios.get(`/users/${username}/`);
         this.setState({
             user: response.data,
         });

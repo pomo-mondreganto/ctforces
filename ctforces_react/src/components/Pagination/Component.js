@@ -11,7 +11,7 @@ const Component = props => (
         </PaginationItem>
         {props.paginationInfo.pages.map((obj, i) => (
             <PaginationItem key={i}>
-                <LinkContainerAuto to={`/tasks/?page=${obj}`}>
+                <LinkContainerAuto to={`${props.paginationInfo.to}?page=${obj}`}>
                     <PaginationLink>
                         {obj}
                     </PaginationLink>

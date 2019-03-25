@@ -4,7 +4,7 @@ import axios from 'axios';
 import queryString from 'querystring';
 import Component from './Component';
 
-class TaskListContainer extends React.Component {
+class TopRatingContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -14,12 +14,12 @@ class TaskListContainer extends React.Component {
 
     async componentDidMount() {
         const { page: currentPage = 1 } = queryString.parse(this.props.location.search);
-        const response = await axios.get(`/tasks/?page=${currentPage}`);
+        const response = await axios.get(`/users/rating_top/?page=${currentPage}`);
         const { data } = response;
-        const { page_size: pageSize, count, results: tasks } = data;
+        const { page_size: pageSize, count, results: users } = data;
         this.setState({
             count,
-            tasks,
+            users,
             currentPage,
             pageSize,
         });
@@ -27,11 +27,11 @@ class TaskListContainer extends React.Component {
 
     render() {
         return <Component
-            tasks={this.state.tasks}
+            users={this.state.users}
             currentPage={this.state.currentPage}
             count={this.state.count}
             pageSize={this.state.pageSize} />;
     }
 }
 
-export default TaskListContainer;
+export default TopRatingContainer;

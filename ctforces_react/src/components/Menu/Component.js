@@ -23,7 +23,7 @@ const LoginButton = (props) => {
 
     if (props.auth.loggedIn) {
         return (
-            <LinkContainerNonActive to={`/users/${props.auth.user.username}`}>
+            <LinkContainerNonActive to={`/users/${props.auth.user.username}/`}>
                 <Button color="primary" className="btn-block">
                     {props.auth.user.username}
                 </Button>
@@ -31,7 +31,7 @@ const LoginButton = (props) => {
         );
     }
     return (
-        <LinkContainerNonActive to="/login">
+        <LinkContainerNonActive to="/login/">
             <Button color="primary" className="btn-block">
                 Sign In
             </Button>
@@ -52,7 +52,7 @@ const RegisterButton = (props) => {
         );
     }
     return (
-        <LinkContainerNonActive to="/register">
+        <LinkContainerNonActive to="/register/">
             <Button className="btn-block">Sign Up</Button>
         </LinkContainerNonActive>
     );
@@ -79,22 +79,22 @@ const Component = props => (
                     </LinkContainerAuto>
                 </NavItem>
                 <NavItem>
-                    <LinkContainerAuto to="/contests">
+                    <LinkContainerAuto to="/contests/">
                         <NavLink>Contests</NavLink>
                     </LinkContainerAuto>
                 </NavItem>
                 <NavItem>
-                    <LinkContainerAuto to="/tasks">
+                    <LinkContainerAuto to="/tasks/">
                         <NavLink>Tasks</NavLink>
                     </LinkContainerAuto>
                 </NavItem>
                 <NavItem>
-                    <LinkContainerAuto to="/upsolving">
+                    <LinkContainerAuto to="/users/upsolving/top/">
                         <NavLink>Upsolving</NavLink>
                     </LinkContainerAuto>
                 </NavItem>
                 <NavItem>
-                    <LinkContainerAuto to="/rating">
+                    <LinkContainerAuto to="/users/rating/top/">
                         <NavLink>Rating</NavLink>
                     </LinkContainerAuto>
                 </NavItem>

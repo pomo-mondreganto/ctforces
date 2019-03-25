@@ -17,7 +17,7 @@ const Component = ({ post }) => (
                 {post.can_edit_post && (
                     <div className="py-2">
                         <LinkContainerNonActive
-                            to={`/posts/${post.id}/edit`}
+                            to={`/posts/${post.id}/edit/`}
                         >
                             <a>Edit post</a>
                         </LinkContainerNonActive>

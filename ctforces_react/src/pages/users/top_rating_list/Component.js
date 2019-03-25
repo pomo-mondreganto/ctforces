@@ -9,17 +9,17 @@ import { LinkContainerNonActive } from 'lib/LinkContainer';
 
 const Component = props => (
     <Card>
-        {props.tasks && props.tasks.map((obj, i) => (
+        {props.users && props.users.map((obj, i) => (
             <div key={i}>
-                <LinkContainerNonActive to={`/tasks/${obj.id}/`}>
+                <LinkContainerNonActive to={`/users/${obj.username}/`}>
                     <a>
-                        {obj.name}
+                        {obj.username}
                     </a>
                 </LinkContainerNonActive>
             </div>
         ))}
-        {props.tasks
-            && <Pagination to={'/tasks/'}
+        {props.users
+            && <Pagination to="/users/rating/top/"
                 currentPage={props.currentPage}
                 count={props.count}
                 pageSize={props.pageSize} />}

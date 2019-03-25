@@ -18,7 +18,7 @@ class RegisterPage extends React.Component {
         try {
             await axios.post('/register/', values);
             this.setState({
-                redirect: '/login',
+                redirect: '/login/',
             });
         } catch (error) {
             const errorData = error.response.data;
