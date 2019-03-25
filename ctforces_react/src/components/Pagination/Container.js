@@ -23,6 +23,7 @@ class PaginationContainer extends React.Component {
             pages,
             left,
             right,
+            to: props.to,
         };
     }
 

@@ -11,17 +11,17 @@ const Contests = () => (
     <Switch>
         <PrivateRoute
             exact
-            path="/contests/create"
+            path="/contests/create/"
             component={ContestCreatePage}
         />
         <PublicRoute
             exact
-            path="/contests/:id"
+            path="/contests/:id/"
             component={ContestViewPage}
         />
         <PrivateRoute
             exact
-            path="/contests/:id/edit"
+            path="/contests/:id/edit/"
             component={ContestEditPage}
         />
     </Switch>

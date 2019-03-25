@@ -19,7 +19,7 @@ const Component = ({ contest }) => (
                 {contest.can_edit_contest && (
                     <div className="py-2">
                         <LinkContainerNonActive
-                            to={`/contests/${contest.id}/edit`}
+                            to={`/contests/${contest.id}/edit/`}
                         >
                             <a>Edit contest</a>
                         </LinkContainerNonActive>

@@ -35,7 +35,7 @@ const Component = ({ task }) => (
                 {task.can_edit_task && (
                     <div className="py-2">
                         <LinkContainerNonActive
-                            to={`/tasks/${task.id}/edit`}
+                            to={`/tasks/${task.id}/edit/`}
                         >
                             <a>Edit task</a>
                         </LinkContainerNonActive>
