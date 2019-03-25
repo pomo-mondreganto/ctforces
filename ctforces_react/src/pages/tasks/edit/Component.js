@@ -74,7 +74,6 @@ const Component = (props) => {
                         />
                         <Field name="description" component={SimpleMDEInput} />
                         <Field
-                            type="checkbox"
                             name="is_published"
                             label="publish"
                             component={CheckboxInput}

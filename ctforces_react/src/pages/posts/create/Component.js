@@ -35,7 +35,6 @@ const Component = props => (
                     />
                     <Field name="body" component={SimpleMDEInput} />
                     <Field
-                        type="checkbox"
                         name="is_published"
                         label="publish"
                         component={CheckboxInput}

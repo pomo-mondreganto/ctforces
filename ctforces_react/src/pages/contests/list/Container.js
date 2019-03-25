@@ -17,7 +17,6 @@ class TaskListContainer extends React.Component {
         const response = await axios.get(`/contests/?page=${currentPage}`);
         const { data } = response;
         const { page_size: pageSize, count, results: contests } = data;
-        console.log(contests);
         this.setState({
             count,
             contests,

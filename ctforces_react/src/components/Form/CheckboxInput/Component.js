@@ -9,7 +9,6 @@ const Component = ({
 }) => {
     const { name } = field;
     const invalid = form.errors[name] && form.errors[name] && true;
-
     return (
         <FormGroup check className="pb-3">
             <Label check>

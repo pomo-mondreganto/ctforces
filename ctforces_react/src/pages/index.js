@@ -8,8 +8,9 @@ import UsersPage from './users';
 import PostsPage from './posts';
 import TasksPage from './tasks';
 import ContestsPage from './contests';
+import SettingsPage from './settings';
 
-import { PublicRoute } from '../lib/Routes';
+import { PublicRoute, PrivateRoute } from '../lib/Routes';
 
 const App = () => (
     <Router>
@@ -21,6 +22,8 @@ const App = () => (
             <PublicRoute path="/posts/" component={PostsPage} />
             <PublicRoute path="/tasks/" component={TasksPage} />
             <PublicRoute path="/contests/" component={ContestsPage} />
+
+            <PrivateRoute path="/settings/" component={SettingsPage} />
         </Switch>
     </Router>
 );

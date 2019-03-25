@@ -90,42 +90,36 @@ const Component = props => (
                     />
 
                     <Field
-                        type="checkbox"
                         name="is_published"
                         label="Published"
                         component={CheckboxInput}
                     />
 
                     <Field
-                        type="checkbox"
                         name="is_registration_open"
                         label="Registration is opened"
                         component={CheckboxInput}
                     />
 
                     <Field
-                        type="checkbox"
                         name="is_rated"
                         label="Rated"
                         component={CheckboxInput}
                     />
 
                     <Field
-                        type="checkbox"
                         name="is_running"
                         label="Running"
                         component={CheckboxInput}
                     />
 
                     <Field
-                        type="checkbox"
                         name="publish_tasks_after_finished"
                         label="Publish tasks after contest is finished"
                         component={CheckboxInput}
                     />
 
                     <Field
-                        type="checkbox"
                         name="is_finished"
                         label="Finished"
                         component={CheckboxInput}
