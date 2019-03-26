@@ -4,7 +4,7 @@
     "description": "CTForces frontend",
     "main": "index.js",
     "scripts": {
-        "start": "parcel server --port 3000 --host 127.0.0.1 --no-source-maps --no-autoinstall src/index.html",
+        "start": "parcel serve --port 3000 --host 127.0.0.1 --no-autoinstall src/index.html",
         "build": "parcel build --no-source-maps --no-autoinstall src/index.html"
     },
     "author": "xmikasax",
@@ -39,6 +39,7 @@
         "@babel/plugin-proposal-class-properties": "^7.3.0",
         "@babel/preset-env": "^7.3.1",
         "@babel/preset-react": "^7.0.0",
+        "autoprefixer": "^9.5.0",
         "babel-eslint": "^10.0.1",
         "babel-plugin-module-resolver": "^3.2.0",
         "eslint": "^5.14.1",
@@ -49,6 +50,7 @@
         "parcel-bundler": "^1.12.3",
         "parcel-plugin-bundle-visualiser": "^1.2.0",
         "parcel-plugin-clean-dist": "0.0.6",
+        "postcss-modules": "^1.4.1",
         "sass": "^1.17.3"
     }
 }
