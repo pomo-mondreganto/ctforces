@@ -1,5 +1,5 @@
-@import '~bootstrap/scss/bootstrap';
-@import '~easymde/dist/easymde.min.css';
+@import '~bootstrap/scss/bootstrap.scss';
+@import '../../node_modules/easymde/dist/easymde.min.css'; //fix it wtf
 @import './calendar.scss';
 
 #root {

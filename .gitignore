@@ -425,4 +425,4 @@ ctforces_backend/ctforces_backend/config.json
 *.env
 
 ctforces_react/jsconfig.json
-ctforces_react/.editorconfig
+ctforces_react/dist/
