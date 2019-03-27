@@ -44,7 +44,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     def get_queryset(self):
         queryset = super(TaskViewSet, self).get_queryset()
 
-        if self.action == 'list':
+        if self.action == 'list' or self.action == 'search_by_tag':
             queryset = queryset.filter(is_published=True)
 
         return queryset.annotate(
@@ -74,6 +74,23 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         return obj
 
     @action(
+        detail=False,
+        url_path='search_tag',
+        url_name='search_tag',
+        methods=['get']
+    )
+    def search_by_tag(self, request, *_args, **_kwargs):
+        tag_name = request.query_params.get('name', '')
+        tasks = self.get_queryset().filter(tags__name=tag_name)
+
+        return api_pagination.get_paginated_response(
+            paginator=api_pagination.TaskDefaultPagination(),
+            queryset=tasks,
+            serializer_class=api_tasks_serializers.TaskPreviewSerializer,
+            request=request,
+        )
+
+    @action(
         detail=True,
         url_path='full',
         url_name='full',
@@ -90,21 +107,16 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         url_name='solved',
         methods=['get'],
     )
-    def get_solved(self, _request, *_args, **_kwargs):
+    def get_solved(self, request, *_args, **_kwargs):
         instance = self.get_object()
         users_solved = instance.solved_by.all()
-        paginator = api_pagination.UserDefaultPagination()
-        page = paginator.paginate_queryset(
+
+        return api_pagination.get_paginated_response(
+            paginator=api_pagination.UserDefaultPagination,
             queryset=users_solved,
-            request=self.request,
+            serializer_class=api_users_serializers.UserBasicSerializer,
+            request=request,
         )
-
-        if page is not None:
-            serializer = api_users_serializers.UserBasicSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-
-        serializer = api_users_serializers.UserBasicSerializer(users_solved, many=True)
-        return Response(serializer.data)
 
     @action(
         detail=True,

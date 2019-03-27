@@ -264,28 +264,26 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     lookup_url_kwarg = 'username'
 
     @action(detail=False, url_name='upsolving_top', url_path='upsolving_top', methods=['get'])
-    def get_upsolving_top(self, _request):
-        users_with_upsolving = self.get_queryset().only('username').order_by('-cost_sum', 'last_solve')
-        page = self.paginate_queryset(users_with_upsolving)
+    def get_upsolving_top(self, request):
+        users_with_upsolving = self.get_queryset().only('username', 'rating').order_by('-cost_sum', 'last_solve')
 
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(users_with_upsolving, many=True)
-        return Response(serializer.data)
+        return api_pagination.get_paginated_response(
+            paginator=self.paginate_queryset,
+            queryset=users_with_upsolving,
+            serializer_class=self.get_serializer,
+            request=request,
+        )
 
     @action(detail=False, url_name='rating_top', url_path='rating_top', methods=['get'])
-    def get_rating_top(self, _request):
+    def get_rating_top(self, request):
         users_with_rating = api_models.User.objects.only('username', 'rating').order_by('-rating', 'last_solve')
-        page = self.paginate_queryset(users_with_rating)
 
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(users_with_rating, many=True)
-        return Response(serializer.data)
+        return api_pagination.get_paginated_response(
+            paginator=self.paginate_queryset,
+            queryset=users_with_rating,
+            serializer_class=self.get_serializer,
+            request=request,
+        )
 
     @action(detail=False, url_name='search', url_path='search', methods=['get'])
     def search_users(self, request):
@@ -309,18 +307,13 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 distinct=True,
             ),
         )
-        paginator = api_pagination.TaskDefaultPagination()
-        page = paginator.paginate_queryset(
+
+        return api_pagination.get_paginated_response(
+            paginator=api_pagination.TaskDefaultPagination(),
             queryset=queryset,
-            request=self.request,
+            serializer_class=api_tasks_serializers.TaskPreviewSerializer,
+            request=request,
         )
-
-        if page is not None:
-            serializer = api_tasks_serializers.TaskPreviewSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-
-        serializer = api_tasks_serializers.TaskPreviewSerializer(queryset, many=True)
-        return Response(serializer.data)
 
     @action(detail=True, url_name='posts', url_path='posts', methods=['get'])
     def get_users_posts(self, request, **_kwargs):
@@ -332,18 +325,13 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             queryset = (queryset | get_objects_for_user(request.user, 'view_post', api_models.Post)).distinct()
 
         queryset = queryset.order_by('-id')
-        paginator = api_pagination.PostDefaultPagination()
-        page = paginator.paginate_queryset(
+
+        return api_pagination.get_paginated_response(
+            paginator=api_pagination.PostDefaultPagination(),
             queryset=queryset,
-            request=self.request,
+            serializer_class=api_posts_serializers.PostMainSerializer,
+            request=request,
         )
-
-        if page is not None:
-            serializer = api_posts_serializers.PostMainSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-
-        serializer = api_posts_serializers.PostMainSerializer(queryset, many=True)
-        return Response(serializer.data)
 
     @action(detail=True, url_name='contests', url_path='contests', methods=['get'])
     def get_users_contests(self, request, **_kwargs):
@@ -355,15 +343,10 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             queryset = (queryset | get_objects_for_user(request.user, 'view_contest', api_models.Contest)).distinct()
 
         queryset = queryset.order_by('-id')
-        paginator = api_pagination.ContestDefaultPagination()
-        page = paginator.paginate_queryset(
+
+        return api_pagination.get_paginated_response(
+            paginator=api_pagination.ContestDefaultPagination(),
             queryset=queryset,
-            request=self.request,
+            serializer_class=api_contests_serializers.ContestPreviewSerializer,
+            request=request
         )
-
-        if page is not None:
-            serializer = api_contests_serializers.ContestPreviewSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-
-        serializer = api_contests_serializers.ContestPreviewSerializer(queryset, many=True)
-        return Response(serializer.data)
