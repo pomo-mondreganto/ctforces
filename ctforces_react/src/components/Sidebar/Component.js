@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Card } from 'reactstrap';
+import { Card, CardHeader } from 'reactstrap';
 
 import { mediaUrl } from '../../../config/config';
 import './styles.scss';
@@ -11,8 +11,8 @@ const Component = (props) => {
         <aside id="sidebar">
             {props.auth.requested && props.auth.loggedIn && (
                 <Card className="mb-2" id="user-info">
+                    <CardHeader id="main">{user.username}</CardHeader>
                     <div id="bullets" className="p-3">
-                        <span>{user.username}</span>
                         <p className="my-0">{`Rating: ${user.rating}`}</p>
                         <p>{`Points: ${user.cost_sum}`}</p>
                     </div>

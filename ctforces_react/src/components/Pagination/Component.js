@@ -5,7 +5,7 @@ import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import { LinkContainerAuto } from 'lib/LinkContainer';
 
 const Component = props => (
-    <Pagination>
+    <Pagination className="mb-0">
         <PaginationItem disabled={!props.left}>
             <PaginationLink previous />
         </PaginationItem>
