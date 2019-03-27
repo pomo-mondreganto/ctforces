@@ -92,6 +92,7 @@ class TaskViewSerializer(rest_serializers.ModelSerializer):
     can_edit_task = rest_serializers.BooleanField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
+    author_rating = rest_serializers.SlugRelatedField(read_only=True, slug_field='rating', source='author')
     hints = rest_serializers.SerializerMethodField('get_hints_method')
 
     class Meta:
@@ -99,6 +100,7 @@ class TaskViewSerializer(rest_serializers.ModelSerializer):
         fields = (
             'id',
             'author_username',
+            'author_rating',
             'can_edit_task',
             'cost',
             'description',
@@ -123,6 +125,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
     files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
     cost = rest_serializers.IntegerField(min_value=1, max_value=9999)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
+    author_rating = rest_serializers.SlugRelatedField(read_only=True, slug_field='rating', source='author')
     files = api_fields.CurrentUserFilteredPKRF(
         filter_field_name='owner',
         many=True,
@@ -136,6 +139,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
             'id',
             'author',
             'author_username',
+            'author_rating',
             'cost',
             'description',
             'files',
@@ -209,11 +213,18 @@ class TaskHintSerializer(rest_serializers.ModelSerializer):
         source='author',
     )
 
+    author_rating = rest_serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='rating',
+        source='author',
+    )
+
     class Meta:
         model = api_models.TaskHint
         fields = (
             'author',
             'author_username',
+            'author_rating',
             'task',
             'body',
             'is_published',

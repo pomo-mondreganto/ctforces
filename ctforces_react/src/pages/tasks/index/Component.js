@@ -1,28 +1,50 @@
 import React from 'react';
 
-import { Card } from 'reactstrap';
+import {Button, Card, CardBody, CardSubtitle, CardText, CardTitle,} from 'reactstrap';
+import {getRank, getRankColor} from 'lib/Ranking';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faEdit} from '@fortawesome/free-solid-svg-icons';
 import Layout from '../../../layouts/sidebar/Container';
 import withLayout from '../../../wrappers/withLayout';
 
-import { LinkContainerNonActive } from '../../../lib/LinkContainer';
+import {LinkContainerNonActive} from '../../../lib/LinkContainer';
 
 const Component = ({ task }) => (
     <Card className="p-2">
         {task !== null && (
-            <>
-                <div className="py-2">
-                    <span style={{ fontSize: '2rem' }}>
-                        {`${task.name} by ${task.author_username}`}
-                    </span>
-                </div>
-                <div>
-                    <span style={{ fontSize: '2rem' }}>
-                        {`Cost: ${task.cost}`}
-                    </span>
-                </div>
-                <div>
+            <CardBody>
+                <CardTitle className="h2">
+                    {task.name}
+                </CardTitle>
+                <CardSubtitle>
+                    <p>
+                        By <span style={{
+                        color: getRankColor(getRank(task.author_rating)),
+                    }}>
+                            <LinkContainerNonActive
+                                to={`/users/${task.author_username}/`}
+                            >
+                                <span>
+                                    {task.author_username}
+                                </span>
+                            </LinkContainerNonActive>
+                        </span> {' '}
+                        {task.can_edit_task && (
+                            <LinkContainerNonActive
+                                to={`/posts/${task.id}/edit/`}
+                            >
+                                <FontAwesomeIcon icon={faEdit}/>
+                            </LinkContainerNonActive>
+                        )}</p>
                     Tags:
-                    {task.tags_details.map((obj, i) => <div key={i}>{obj.name}</div>)}
+                    {task.tags_details.map((tag, i) => (
+                        <Button key={i} style={{marginTop: '2px', marginBottom: '2px'}} className="btn-sm ml-2" outline
+                                color="secondary">
+                            {tag.name}
+                        </Button>
+                    ))}
+                </CardSubtitle>
+                <div>
                 </div>
                 <div>
                     Files:
@@ -32,22 +54,11 @@ const Component = ({ task }) => (
                         </div>
                     ))}
                 </div>
-                {task.can_edit_task && (
-                    <div className="py-2">
-                        <LinkContainerNonActive
-                            to={`/tasks/${task.id}/edit/`}
-                        >
-                            <a>Edit task</a>
-                        </LinkContainerNonActive>
-                    </div>
-                )}
                 <hr />
-                <div className="py-2">
-                    <span style={{ fontSize: '2rem' }}>
-                        {task.description}
-                    </span>
-                </div>
-            </>
+                <CardText>
+                    {task.description}
+                </CardText>
+            </CardBody>
         )}
     </Card>
 );

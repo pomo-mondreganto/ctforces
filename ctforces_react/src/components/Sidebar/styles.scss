@@ -1,20 +1,19 @@
 #user-info {
     display: grid;
-    grid:
-        'main main' 1fr
+    grid: 'main main' auto
         'bullets avatar' 1fr
         / 1fr 1fr;
 }
 
 #main {
-    grid-area: 'main'
+    grid-area: main;
 }
 
 #bullets {
     font-size: 1.2vw;
-    grid-area: 'bullets';
+    grid-area: bullets;
 }
 
 #avatar {
-    grid-area: 'avatar';
+    grid-area: avatar;
 }

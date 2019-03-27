@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -302,7 +303,12 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if tasks_type == 'all':
             queryset = (queryset | get_objects_for_user(request.user, 'view_task', api_models.Task)).distinct()
 
-        queryset = queryset.order_by('-id')
+        queryset = queryset.order_by('-id').annotate(
+            solved_count=Count(
+                'solved_by',
+                distinct=True,
+            ),
+        )
         paginator = api_pagination.TaskDefaultPagination()
         page = paginator.paginate_queryset(
             queryset=queryset,

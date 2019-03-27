@@ -24,6 +24,7 @@ class UserTasksPage extends React.Component {
         this.setState({
             user: responseUser.data,
             pageSize,
+            currentPage,
             count,
             tasks,
         });
