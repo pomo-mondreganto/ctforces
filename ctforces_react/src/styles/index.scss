@@ -1,9 +1,10 @@
 @import './fonts.scss';
 @import './utils.scss';
 @import '~bootstrap/scss/bootstrap.scss';
+@import './screens.scss';
 
 html {
-    font-size: 1em;
+    font-size: 100%;
 }
 
 #root {
@@ -11,12 +12,6 @@ html {
     line-height: 1.5em;
 
     display: grid;
-
-    grid:
-        'head head head head head' auto
-        '.... main main side ....' 1fr
-        'foot foot foot foot foot' 20px
-        / 5% 3fr 3fr 3fr 5%;
 
     grid-row-gap: 30px;
     grid-column-gap: 30px;
@@ -31,5 +26,25 @@ html {
 
     header {
         grid-area: head;
+    }
+}
+
+@include respond(desktop) {
+    #root {
+        grid:
+        'head head head head head' auto
+        '.... main main side ....' 1fr
+        'foot foot foot foot foot' 20px
+        / 5% 3fr 3fr 3fr 5%;
+    }
+}
+
+@include respond(mobile) {
+    #root {
+        grid:
+        'head head head head head' auto
+        '.... main main main ....' 1fr
+        'foot foot foot foot foot' 20px
+        / 5% 3fr 3fr 3fr 5%;
     }
 }

@@ -1,8 +1,16 @@
+@import '../screens.scss';
+
+@include respond(mobile) {
+    #sidebar {
+        display: none;
+    }
+}
+
 #user-info {
     display: grid;
     grid: 'main main' auto
         'bullets avatar' 1fr
-        / 1fr 1fr;
+        / 1.2fr 1fr;
 }
 
 #main {
