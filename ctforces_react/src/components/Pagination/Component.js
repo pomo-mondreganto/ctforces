@@ -4,8 +4,10 @@ import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 
 import { LinkContainerAuto } from 'lib/LinkContainer';
 
+import 'styles/components/Pagination.scss';
+
 const Component = props => (
-    <Pagination className="mb-0">
+    <Pagination className="pagination">
         <PaginationItem disabled={!props.left}>
             <PaginationLink previous />
         </PaginationItem>

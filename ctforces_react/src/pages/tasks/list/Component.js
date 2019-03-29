@@ -4,7 +4,7 @@ import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
 
 import {
-    Button, Card, CardBody, CardFooter, CardTitle, Row, Table,
+    Button, Card, CardBody, CardFooter, CardTitle,
 } from 'reactstrap';
 import Pagination from 'components/Pagination/Container';
 import { LinkContainerNonActive } from 'lib/LinkContainer';
@@ -12,52 +12,50 @@ import { LinkContainerNonActive } from 'lib/LinkContainer';
 const Component = props => (
     <Card>
         <CardBody>
-            <CardTitle className="mb-4"><p className="h3 text-center">Tasks</p></CardTitle>
-            <Table>
-                <thead className="thead-light">
-                    <tr>
-                        <th className="border-right text-center" style={{ width: '6%' }}>#</th>
-                        <th className="border-left border-right text-center" style={{ width: '54%' }}>Name</th>
-                        <th className="border-left border-right text-center" style={{ width: '6%' }}>Cost</th>
-                        <th className="border-left border-right text-center" style={{ width: '20%' }}>Tags</th>
-                        <th style={{ width: '8%' }} className="text-center border-left">Solved</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <CardTitle className="mb-4"><p className="th1 ta-c">Tasks</p></CardTitle>
+            <div className="tasks-table">
+                <div className="tasks-table-head">
+                    <span className="ta-c">#</span>
+                    <span className="ta-l">Name</span>
+                    <span className="ta-c">Cost</span>
+                    <span className="ta-c">Tags</span>
+                    <span className="ta-c">Solved</span>
+                </div>
+                <div className="tasks-table-body">
                     {props.tasks && props.tasks.map((obj, i) => (
-                        <tr key={i}>
-                            <td className="border-right text-center align-middle">{i + 1 + props.pageSize * (props.currentPage - 1)}</td>
-                            <td className="border-left border-right align-middle">
+                        <div key={i} className="tasks-table-item">
+                            <span className="ta-c">{i + 1 + props.pageSize * (props.currentPage - 1)}</span>
+                            <span className="ta-l">
                                 <LinkContainerNonActive to={`/tasks/${obj.id}/`}>
                                     <a>
                                         {obj.name}
                                     </a>
                                 </LinkContainerNonActive>
-                            </td>
-                            <td className="border-left border-right align-middle text-center">
+                            </span>
+                            <span className="ta-c">
                                 {obj.cost}
-                            </td>
-                            <td className="border-left border-right align-middle">
-                                <Row className="justify-content-center">
+                            </span>
+                            <span className="ta-c">
+                                <span>
                                     {obj.task_tags_details.map((tag, j) => (
-                                        <Button style={{ marginTop: '2px', marginBottom: '2px' }} className="btn-sm"
+                                        <Button className="btn-sm mr-1"
                                             outline color="secondary" key={j}>
                                             {tag.name}
                                         </Button>
                                     ))}
-                                </Row>
-                            </td>
-                            <td className="text-center border-left align-middle">
+                                </span>
+                            </span>
+                            <span className="ta-c">
                                 <LinkContainerNonActive to={`/tasks/${obj.id}/solved/`}>
                                     <a>
                                         {obj.solved_count}
                                     </a>
                                 </LinkContainerNonActive>
-                            </td>
-                        </tr>
+                            </span>
+                        </div>
                     ))}
-                </tbody>
-            </Table>
+                </div>
+            </div>
         </CardBody>
         <CardFooter>
             {
