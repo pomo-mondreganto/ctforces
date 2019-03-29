@@ -2,7 +2,7 @@ import React from 'react';
 
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { Creators } from '../store/auth/actions';
+import { Creators } from 'store/auth/actions';
 
 export default (ChildComponent, options = { request: false }) => {
     const AuthComponent = class AuthComponentClass extends React.Component {
