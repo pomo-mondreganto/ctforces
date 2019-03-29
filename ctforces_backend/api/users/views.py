@@ -268,7 +268,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         users_with_upsolving = self.get_queryset().only('username', 'rating').order_by('-cost_sum', 'last_solve')
 
         return api_pagination.get_paginated_response(
-            paginator=self.paginate_queryset,
+            paginator=self.paginator,
             queryset=users_with_upsolving,
             serializer_class=self.get_serializer,
             request=request,
@@ -279,7 +279,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         users_with_rating = api_models.User.objects.only('username', 'rating').order_by('-rating', 'last_solve')
 
         return api_pagination.get_paginated_response(
-            paginator=self.paginate_queryset,
+            paginator=self.paginator,
             queryset=users_with_rating,
             serializer_class=self.get_serializer,
             request=request,
