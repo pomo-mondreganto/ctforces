@@ -2,14 +2,14 @@ import React from 'react';
 
 import { Card, Button } from 'reactstrap';
 import { Formik, Form, Field } from 'formik';
-import Layout from '../../../layouts/sidebar/Container';
-import withLayout from '../../../wrappers/withLayout';
-import TextInput from '../../../components/Form/TextInput/Container';
-import CheckboxInput from '../../../components/Form/CheckboxInput/Container';
-import SimpleMDEInput from '../../../components/Form/SimpleMDEInput/Container';
-import DetailError from '../../../components/Form/DetailError/Container';
-import TagsInput from '../../../components/Form/TagsInput/Container';
-import FilesInput from '../../../components/Form/FilesInput/Container';
+import Layout from 'layouts/sidebar/Container';
+import withLayout from 'wrappers/withLayout';
+import TextInput from 'components/Form/TextInput/Container';
+import CheckboxInput from 'components/Form/CheckboxInput/Container';
+import SimpleMDEInput from 'components/Form/SimpleMDEInput/Container';
+import DetailError from 'components/Form/DetailError/Container';
+import TagsInput from 'components/Form/TagsInput/Container';
+import FilesInput from 'components/Form/FilesInput/Container';
 
 const Component = props => (
     <Card className="p-2">

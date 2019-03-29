@@ -9,4 +9,4 @@ function getRankColor(rank) {
     return 'yellow';
 }
 
-export {getRank, getRankColor};
+export { getRank, getRankColor };

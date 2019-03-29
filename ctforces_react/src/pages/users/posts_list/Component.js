@@ -2,11 +2,11 @@ import React from 'react';
 
 import { LinkContainerNonActive } from 'lib/LinkContainer';
 import Pagination from 'components/Pagination/Container';
-import withLayout from '../../../wrappers/withLayout';
-import Layout from '../../../layouts/sidebar/Container';
-import CardWithTabsComponent from '../../../components/CardWithTabs/Container';
+import withLayout from 'wrappers/withLayout';
+import Layout from 'layouts/sidebar/Container';
+import CardWithTabsComponent from 'components/CardWithTabs/Container';
 
-import '../styles.scss';
+import 'styles/pages/users.scss';
 
 const Component = props => (
     <CardWithTabsComponent

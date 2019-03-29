@@ -15,7 +15,7 @@ class FilesContainer extends React.Component {
         const oldFiles = this.props.field.value;
         this.props.form.setFieldValue(
             name,
-            Array.from(oldFiles).concat(Array.from(files)),
+            oldFiles.concat(Array.from(files)),
         );
         this.inputRef.value = '';
     };

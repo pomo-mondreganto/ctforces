@@ -13,7 +13,7 @@ import {
 import {
     LinkContainerNonActive,
     LinkContainerAuto,
-} from '../../lib/LinkContainer';
+} from 'lib/LinkContainer';
 
 
 const LoginButton = (props) => {

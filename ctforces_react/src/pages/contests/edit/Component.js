@@ -5,12 +5,12 @@ import {
     Formik, Form, Field, FieldArray,
 } from 'formik';
 import moment from 'moment';
-import Layout from '../../../layouts/sidebar/Container';
-import withLayout from '../../../wrappers/withLayout';
-import TextInput from '../../../components/Form/TextInput/Container';
-import CheckboxInput from '../../../components/Form/CheckboxInput/Container';
-import DetailError from '../../../components/Form/DetailError/Container';
-import CalendarInput from '../../../components/Form/CalendarInput/Container';
+import Layout from 'layouts/sidebar/Container';
+import withLayout from 'wrappers/withLayout';
+import TextInput from 'components/Form/TextInput/Container';
+import CheckboxInput from 'components/Form/CheckboxInput/Container';
+import DetailError from 'components/Form/DetailError/Container';
+import CalendarInput from 'components/Form/CalendarInput/Container';
 import TaskPreviewInput from '../components/TaskPreview/Container';
 
 const Component = (props) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Route, Redirect } from 'react-router-dom';
-import withAuth from '../wrappers/withAuth';
+import withAuth from 'wrappers/withAuth';
 
 const PrivateRoute = withAuth(
     ({ auth, component: Component, ...rest }) => {

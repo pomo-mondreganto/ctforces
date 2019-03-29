@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch } from 'react-router-dom';
 
+import { PrivateRoute } from 'lib/Routes';
 import SocialSettingsPage from './social/Container';
 import GeneralSettingsPage from './general/Container';
 
-import { PrivateRoute } from '../../lib/Routes';
 
 const Settings = () => (
     <Switch>

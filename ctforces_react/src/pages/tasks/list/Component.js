@@ -3,9 +3,11 @@ import React from 'react';
 import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
 
-import {Button, Card, CardBody, CardFooter, CardTitle, Row, Table,} from 'reactstrap';
+import {
+    Button, Card, CardBody, CardFooter, CardTitle, Row, Table,
+} from 'reactstrap';
 import Pagination from 'components/Pagination/Container';
-import {LinkContainerNonActive} from 'lib/LinkContainer';
+import { LinkContainerNonActive } from 'lib/LinkContainer';
 
 const Component = props => (
     <Card>
@@ -38,8 +40,8 @@ const Component = props => (
                             <td className="border-left border-right align-middle">
                                 <Row className="justify-content-center">
                                     {obj.task_tags_details.map((tag, j) => (
-                                        <Button style={{marginTop: '2px', marginBottom: '2px'}} className="btn-sm"
-                                                outline color="secondary" key={j}>
+                                        <Button style={{ marginTop: '2px', marginBottom: '2px' }} className="btn-sm"
+                                            outline color="secondary" key={j}>
                                             {tag.name}
                                         </Button>
                                     ))}

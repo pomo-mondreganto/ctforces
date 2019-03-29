@@ -2,8 +2,8 @@ import React from 'react';
 
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
+import withAuth from 'wrappers/withAuth';
 import Component from './Component';
-import withAuth from '../../wrappers/withAuth';
 
 class RegisterPage extends React.Component {
     constructor(props) {

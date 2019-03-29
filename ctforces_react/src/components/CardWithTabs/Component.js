@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Nav, NavItem, NavLink } from 'reactstrap';
-import { LinkContainerAuto } from '../../lib/LinkContainer';
+import { LinkContainerAuto } from 'lib/LinkContainer';
 
 const Component = (props) => {
     if (!props.tabs) {

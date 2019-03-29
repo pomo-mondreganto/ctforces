@@ -4,6 +4,8 @@ import {
     Input, Label, FormGroup, FormFeedback,
 } from 'reactstrap';
 
+import 'styles/components/Form/CheckboxInput.scss';
+
 const Component = ({
     field, form, label, ...props
 }) => {
