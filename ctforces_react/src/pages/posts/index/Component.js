@@ -1,13 +1,15 @@
 import React from 'react';
 
-import {Card, CardBody, CardSubtitle, CardText, CardTitle,} from 'reactstrap';
-import {getRank, getRankColor} from 'lib/Ranking';
+import {
+    Card, CardBody, CardSubtitle, CardText, CardTitle,
+} from 'reactstrap';
+import { getRank, getRankColor } from 'lib/Ranking';
 import moment from 'moment';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEdit} from '@fortawesome/free-solid-svg-icons';
-import {LinkContainerNonActive} from '../../../lib/LinkContainer';
-import Layout from '../../../layouts/sidebar/Container';
-import withLayout from '../../../wrappers/withLayout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { LinkContainerNonActive } from 'lib/LinkContainer';
+import Layout from 'layouts/sidebar/Container';
+import withLayout from 'wrappers/withLayout';
 
 const Component = ({ post }) => (
     <Card className="p-2">
@@ -18,8 +20,8 @@ const Component = ({ post }) => (
                 </CardTitle>
                 <CardSubtitle>
                     By <span style={{
-                    color: getRankColor(getRank(post.author_rating)),
-                }}>
+                        color: getRankColor(getRank(post.author_rating)),
+                    }}>
                         <LinkContainerNonActive
                             to={`/users/${post.author_username}/`}
                         >
@@ -34,7 +36,7 @@ const Component = ({ post }) => (
                         <LinkContainerNonActive
                             to={`/posts/${post.id}/edit/`}
                         >
-                            <FontAwesomeIcon icon={faEdit}/>
+                            <FontAwesomeIcon icon={faEdit} />
                         </LinkContainerNonActive>
                     )}
                 </CardSubtitle>

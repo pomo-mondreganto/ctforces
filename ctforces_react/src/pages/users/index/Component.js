@@ -1,12 +1,12 @@
 import React from 'react';
 
 import { LinkContainerNonActive } from 'lib/LinkContainer';
-import withLayout from '../../../wrappers/withLayout';
-import Layout from '../../../layouts/sidebar/Container';
-import { mediaUrl } from '../../../../config/config';
-import CardWithTabsComponent from '../../../components/CardWithTabs/Container';
+import withLayout from 'wrappers/withLayout';
+import Layout from 'layouts/sidebar/Container';
+import { mediaUrl } from 'config/config';
+import CardWithTabsComponent from 'components/CardWithTabs/Container';
 
-import '../styles.scss';
+import 'styles/pages/users.scss';
 
 const Component = props => (
     <CardWithTabsComponent

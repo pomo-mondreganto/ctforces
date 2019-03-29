@@ -424,5 +424,4 @@ ctforces_backend/ctforces_backend/config.json
 
 *.env
 
-ctforces_react/jsconfig.json
 ctforces_react/dist/

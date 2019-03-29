@@ -1,6 +1,6 @@
 import React from 'react';
 
-import MenuComponent from '../../components/Menu/Container';
+import MenuComponent from 'components/Menu/Container';
 
 const Component = ({ children }) => (
     <>

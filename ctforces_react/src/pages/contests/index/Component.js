@@ -1,10 +1,10 @@
 import React from 'react';
 
 import { Card } from 'reactstrap';
-import Layout from '../../../layouts/sidebar/Container';
-import withLayout from '../../../wrappers/withLayout';
+import Layout from 'layouts/sidebar/Container';
+import withLayout from 'wrappers/withLayout';
 
-import { LinkContainerNonActive } from '../../../lib/LinkContainer';
+import { LinkContainerNonActive } from 'lib/LinkContainer';
 
 const Component = ({ contest }) => (
     <Card className="p-2">

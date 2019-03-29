@@ -1,9 +1,9 @@
 import React from 'react';
 
 import axios from 'axios';
+import withAuth from 'wrappers/withAuth';
 import Component from './Component';
 
-import withAuth from '../../wrappers/withAuth';
 
 class MenuContainer extends React.Component {
     constructor(props) {

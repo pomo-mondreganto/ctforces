@@ -2,8 +2,8 @@ import React from 'react';
 
 import axios from 'axios';
 import queryString from 'querystring';
+import withAuth from 'wrappers/withAuth';
 import Component from './Component';
-import withAuth from '../../../wrappers/withAuth';
 
 
 class UserTasksPage extends React.Component {

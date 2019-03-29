@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 
+import 'styles/components/Form/DetailError.scss';
+
 const Component = ({ field, form, ...props }) => {
     const name = 'detail';
     const invalid = form.errors[name] && form.errors[name] && true;

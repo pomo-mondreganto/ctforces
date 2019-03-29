@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Switch, BrowserRouter as Router } from 'react-router-dom';
+import { PublicRoute, PrivateRoute } from 'lib/Routes';
 import IndexPage from './index/Container';
 import LoginPage from './login/Container';
 import RegisterPage from './register/Container';
@@ -10,7 +11,6 @@ import TasksPage from './tasks';
 import ContestsPage from './contests';
 import SettingsPage from './settings';
 
-import { PublicRoute, PrivateRoute } from '../lib/Routes';
 
 const App = () => (
     <Router>

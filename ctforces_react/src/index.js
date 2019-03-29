@@ -9,7 +9,7 @@ import rootReducer from './store';
 import App from './pages';
 import { apiUrl } from '../config/config';
 
-import './styles/index.scss';
+import 'styles/index.scss';
 
 axios.defaults.baseURL = apiUrl;
 axios.defaults.withCredentials = true;

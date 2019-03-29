@@ -1,7 +1,7 @@
 import React from 'react';
 
+import withAuth from 'wrappers/withAuth';
 import Component from './Component';
-import withAuth from '../../wrappers/withAuth';
 
 class SidebarContainer extends React.Component {
     render() {

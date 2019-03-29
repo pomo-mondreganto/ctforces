@@ -3,6 +3,8 @@ import React from 'react';
 import { FormGroup, FormFeedback } from 'reactstrap';
 import DatePicker from 'react-datetime';
 
+import 'styles/components/Form/Calendar.scss';
+
 const Component = ({
     field, form, handleChange, ...props
 }) => {

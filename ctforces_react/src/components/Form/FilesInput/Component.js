@@ -8,6 +8,8 @@ import {
     Button,
 } from 'reactstrap';
 
+import 'styles/components/Form/FilesInput.scss';
+
 const Component = React.forwardRef(
     ({
         field, form, multiple = false, ...props

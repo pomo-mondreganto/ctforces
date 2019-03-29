@@ -1,12 +1,12 @@
 import React from 'react';
 import { Switch } from 'react-router-dom';
 
+import { PublicRoute, PrivateRoute } from 'lib/Routes';
 import TaskCreatePage from './create/Container';
 import TaskViewPage from './index/Container';
 import TaskEditPage from './edit/Container';
 import TaskListPage from './list/Container';
 
-import { PublicRoute, PrivateRoute } from '../../lib/Routes';
 
 const Tasks = () => (
     <Switch>

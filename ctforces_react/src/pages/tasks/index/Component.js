@@ -1,13 +1,15 @@
 import React from 'react';
 
-import {Button, Card, CardBody, CardSubtitle, CardText, CardTitle,} from 'reactstrap';
-import {getRank, getRankColor} from 'lib/Ranking';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEdit} from '@fortawesome/free-solid-svg-icons';
-import Layout from '../../../layouts/sidebar/Container';
-import withLayout from '../../../wrappers/withLayout';
+import {
+    Button, Card, CardBody, CardSubtitle, CardText, CardTitle,
+} from 'reactstrap';
+import { getRank, getRankColor } from 'lib/Ranking';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import Layout from 'layouts/sidebar/Container';
+import withLayout from 'wrappers/withLayout';
 
-import {LinkContainerNonActive} from '../../../lib/LinkContainer';
+import { LinkContainerNonActive } from 'lib/LinkContainer';
 
 const Component = ({ task }) => (
     <Card className="p-2">
@@ -19,8 +21,8 @@ const Component = ({ task }) => (
                 <CardSubtitle>
                     <p>
                         By <span style={{
-                        color: getRankColor(getRank(task.author_rating)),
-                    }}>
+                            color: getRankColor(getRank(task.author_rating)),
+                        }}>
                             <LinkContainerNonActive
                                 to={`/users/${task.author_username}/`}
                             >
@@ -33,13 +35,13 @@ const Component = ({ task }) => (
                             <LinkContainerNonActive
                                 to={`/posts/${task.id}/edit/`}
                             >
-                                <FontAwesomeIcon icon={faEdit}/>
+                                <FontAwesomeIcon icon={faEdit} />
                             </LinkContainerNonActive>
                         )}</p>
                     Tags:
                     {task.tags_details.map((tag, i) => (
-                        <Button key={i} style={{marginTop: '2px', marginBottom: '2px'}} className="btn-sm ml-2" outline
-                                color="secondary">
+                        <Button key={i} style={{ marginTop: '2px', marginBottom: '2px' }} className="btn-sm ml-2" outline
+                            color="secondary">
                             {tag.name}
                         </Button>
                     ))}

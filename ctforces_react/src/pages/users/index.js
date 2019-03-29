@@ -1,12 +1,12 @@
 import React from 'react';
 import { Switch } from 'react-router-dom';
+import { PublicRoute } from 'lib/Routes';
 import UserPage from './index/Container';
 import TasksListPage from './tasks_list/Container';
 import PostsListPage from './posts_list/Container';
 import RatingTopPage from './top_rating_list/Container';
 import UpsolvingTopPage from './top_upsolving_list/Container';
 
-import { PublicRoute } from '../../lib/Routes';
 
 const Users = () => (
     <Switch>

@@ -1,12 +1,12 @@
 import React from 'react';
 
 import { Switch } from 'react-router-dom';
+import { PublicRoute, PrivateRoute } from 'lib/Routes';
 import ContestCreatePage from './create/Container';
 import ContestViewPage from './index/Container';
 import ContestEditPage from './edit/Container';
 import ContestListPage from './list/Container';
 
-import { PublicRoute, PrivateRoute } from '../../lib/Routes';
 
 const Contests = () => (
     <Switch>
