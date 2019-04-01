@@ -8,6 +8,7 @@ const Component = ({ children }) => (
             <MenuComponent />
         </header>
         {children}
+        <footer className="ta-c">Powered by <strong>KekusCorporation</strong></footer>
     </>
 );
 

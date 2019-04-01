@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { Card, Button } from 'reactstrap';
+import { Button } from 'reactstrap';
+import CardWithTabs from 'components/CardWithTabs/Container';
 import { Formik, Form, Field } from 'formik';
 import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
@@ -12,10 +13,9 @@ import TagsInput from 'components/Form/TagsInput/Container';
 import FilesInput from 'components/Form/FilesInput/Container';
 
 const Component = props => (
-    <Card className="p-2">
-        <div style={{ fontSize: '2rem' }} className="py-2">
-            Create task
-        </div>
+    <CardWithTabs
+        title="Create task"
+    >
         <hr />
         <Formik
             initialValues={{
@@ -72,7 +72,7 @@ const Component = props => (
                 </Form>
             )}
         </Formik>
-    </Card>
+    </CardWithTabs>
 );
 
 export default withLayout(Component, Layout);

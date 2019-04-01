@@ -1,67 +1,30 @@
-.tasks-table {
-    display: grid;
-    grid: 'head' auto
-          'body' 1fr
-          / 100%;
+@import '~/styles/lib/components/_table.scss';
+
+#tasks-table {
+    @extend %table;
 }
 
-.tasks-table-head {
-    grid-area: head;
+#tasks-table-head {
+    
+    @extend %table-head;
 
-    display: grid;
-
-    background-color: #d0d8e5;
-
-    padding-top: 10px;
-    padding-bottom: 10px;
-
-    grid-template-columns: 1fr 9fr 1fr 4fr 2fr;
-
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
+    grid-template-columns: 1fr 9fr 1.5fr 4fr 2fr;
 
     > span.ta-l {
         padding-left: 5px;
     }
 }
 
-.tasks-table-body {
-    grid-area: body;
+#tasks-table-body {
+    @extend %table-body;
 }
 
 .tasks-table-item {
-    display: grid;
+    @extend %table-item;
 
-    grid-template-columns: 1fr 9fr 1fr 4fr 2fr;
-
-    > span {
-        padding-top: 10px;
-        padding-bottom: 10px;
-        border-left: 1px solid #d0d8e5;
-        border-bottom: 1px solid #d0d8e5;
-
-        display: grid;
-
-        min-width: 0;
-
-        align-items: center;
-    }
-
-    > span:last-child {
-        border-right: 1px solid #d0d8e5;
-    }
+    grid-template-columns: 1fr 9fr 1.5fr 4fr 2fr;
 
     > span.ta-l {
         padding-left: 5px;
-    }
-}
-
-.tasks-table-item:last-child {
-    > span:first-child {
-        border-bottom-left-radius: 5px;
-    }
-
-    > span:last-child {
-        border-bottom-right-radius: 5px;
     }
 }

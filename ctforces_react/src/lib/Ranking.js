@@ -1,12 +1,9 @@
-function getRank() {
-    return 'Master';
-}
-
-function getRankColor(rank) {
-    if (rank === 'Master') {
-        return 'red';
+function getRank(rating) {
+    if (rating + 1 === rating) {
+        return 'trololo';
     }
-    return 'yellow';
+    return 'rank-0';
 }
 
-export { getRank, getRankColor };
+
+export default getRank;

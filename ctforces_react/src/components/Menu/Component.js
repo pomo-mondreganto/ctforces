@@ -33,7 +33,7 @@ const LoginButton = (props) => {
     return (
         <LinkContainerNonActive to="/login/">
             <Button color="primary" className="btn-block">
-                Sign In
+                Login
             </Button>
         </LinkContainerNonActive>
     );
@@ -53,7 +53,7 @@ const RegisterButton = (props) => {
     }
     return (
         <LinkContainerNonActive to="/register/">
-            <Button className="btn-block">Sign Up</Button>
+            <Button className="btn-block">Register</Button>
         </LinkContainerNonActive>
     );
 };

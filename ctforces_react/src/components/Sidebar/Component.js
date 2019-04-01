@@ -12,8 +12,8 @@ const Component = (props) => {
         <aside id="sidebar">
             {props.auth.requested && props.auth.loggedIn && (
                 <Card className="mb-2" id="user-info">
-                    <CardHeader id="main">{user.username}</CardHeader>
-                    <div id="bullets" className="p-3">
+                    <CardHeader id="sidebar-main">{user.username}</CardHeader>
+                    <div id="sidebar-bullets" className="p-3">
                         <p className="my-0" style={{ fontSize: '0.87rem' }}>Rating: <strong>{user.rating}</strong></p>
                         <p style={{ fontSize: '0.87rem' }}>Points: <strong>{user.cost_sum}</strong></p>
                         <ul className="ml-1 pl-4" style={{ fontSize: '0.9rem' }}>
@@ -54,14 +54,17 @@ const Component = (props) => {
                             </li>
                         </ul>
                     </div>
-                    <img
-                        id="avatar"
-                        className="w-100 h-auto p-3"
-                        src={`${mediaUrl}${user.avatar_small}`}
-                    />
+                    <div id="sidebar-avatar">
+                        <img
+
+                            className="p-3"
+                            src={`${mediaUrl}${user.avatar_small}`}
+                        />
+                    </div>
                 </Card>
-            )}
-        </aside>
+            )
+            }
+        </aside >
     );
 };
 

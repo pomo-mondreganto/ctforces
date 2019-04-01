@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Formik, Form, Field } from 'formik';
 import {
-    CardBody, CardHeader, Button,
+    Button,
 } from 'reactstrap';
 import TextInput from 'components/Form/TextInput/Container';
 import CheckboxInput from 'components/Form/CheckboxInput/Container';
@@ -36,51 +36,48 @@ const Component = (props) => {
                         { text: 'Social', href: '/settings/social/' },
                     ]}
                 >
-                    <CardHeader className="text-center">Social Settings</CardHeader>
-                    <CardBody>
-                        <Formik
-                            initialValues={{
-                                first_name: personalInfo.first_name,
-                                last_name: personalInfo.last_name,
-                                hide_personal_info: hidePersonalInfo,
-                            }}
-                            enableReinitialize
-                            onSubmit={(values, actions) => {
-                                props.handleSubmit({ values, actions });
-                            }}
-                        >
-                            {({ isSubmitting }) => (
-                                <Form>
-                                    <Field
-                                        type="text"
-                                        name="first_name"
-                                        placeholder="First name"
-                                        component={TextInput}
-                                    />
-                                    <Field
-                                        type="text"
-                                        name="last_name"
-                                        placeholder="Last name"
-                                        component={TextInput}
-                                    />
-                                    <Field
-                                        name="hide_personal_info"
-                                        label="Hide personal info"
-                                        component={CheckboxInput}
-                                    />
-                                    <Field component={DetailError} />
-                                    <Button
-                                        type="submit"
-                                        color="primary"
-                                        className="btn-block"
-                                        disabled={isSubmitting}
-                                    >
-                                        Update
-                                    </Button>
-                                </Form>
-                            )}
-                        </Formik>
-                    </CardBody>
+                    <Formik
+                        initialValues={{
+                            first_name: personalInfo.first_name,
+                            last_name: personalInfo.last_name,
+                            hide_personal_info: hidePersonalInfo,
+                        }}
+                        enableReinitialize
+                        onSubmit={(values, actions) => {
+                            props.handleSubmit({ values, actions });
+                        }}
+                    >
+                        {({ isSubmitting }) => (
+                            <Form>
+                                <Field
+                                    type="text"
+                                    name="first_name"
+                                    placeholder="First name"
+                                    component={TextInput}
+                                />
+                                <Field
+                                    type="text"
+                                    name="last_name"
+                                    placeholder="Last name"
+                                    component={TextInput}
+                                />
+                                <Field
+                                    name="hide_personal_info"
+                                    label="Hide personal info"
+                                    component={CheckboxInput}
+                                />
+                                <Field component={DetailError} />
+                                <Button
+                                    type="submit"
+                                    color="primary"
+                                    className="btn-block"
+                                    disabled={isSubmitting}
+                                >
+                                    Update
+                                </Button>
+                            </Form>
+                        )}
+                    </Formik>
                 </CardWithTabsComponent>
             </article>
         </section>);

@@ -8,6 +8,7 @@ import TaskEditPage from './edit/Container';
 import TaskListPage from './list/Container';
 
 import 'styles/pages/tasks.scss';
+import 'styles/components/LongText.scss';
 
 const Tasks = () => (
     <Switch>

@@ -3,27 +3,51 @@ import React from 'react';
 import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
 
-import { Card } from 'reactstrap';
+import CardWithTabs from 'components/CardWithTabs/Container';
 import Pagination from 'components/Pagination/Container';
 import { LinkContainerNonActive } from 'lib/LinkContainer';
 
+import getRank from 'lib/Ranking';
+
 const Component = props => (
-    <Card>
-        {props.users && props.users.map((obj, i) => (
-            <div key={i}>
-                <LinkContainerNonActive to={`/users/${obj.username}/`}>
-                    <a>
-                        {obj.username}
-                    </a>
-                </LinkContainerNonActive>
+    <CardWithTabs
+        title="Upsolving"
+        pagination={
+            <>
+                {
+                    props.users
+                    && <Pagination to="/users/rating/top/"
+                        currentPage={props.currentPage}
+                        count={props.count}
+                        pageSize={props.pageSize} />
+                }
+            </>
+        }
+    >
+        <div id="tasks-table">
+            <div id="users-table-head">
+                <span className="ta-c">#</span>
+                <span className="ta-l">Username</span>
+                <span className="ta-c">Rating</span>
             </div>
-        ))}
-        {props.users
-            && <Pagination to="/users/upsolving/top/"
-                currentPage={props.currentPage}
-                count={props.count}
-                pageSize={props.pageSize} />}
-    </Card>
+            <div id="users-table-body">
+                {props.users && props.users.map((obj, i) => (
+
+                    <div key={i} className="users-table-item">
+                        <span className="ta-c">{i + 1 + props.pageSize * (props.currentPage - 1)}</span>
+                        <span className="ta-l">
+                            <LinkContainerNonActive to={`/users/${obj.username}/`}>
+                                <a className={getRank(obj.rating)}>
+                                    {obj.username}
+                                </a>
+                            </LinkContainerNonActive>
+                        </span>
+                        <span className="ta-c">{obj.rating}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </CardWithTabs>
 );
 
 export default withLayout(Component, Layout);

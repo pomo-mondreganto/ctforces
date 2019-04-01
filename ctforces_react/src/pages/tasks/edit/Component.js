@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { Card, Button } from 'reactstrap';
+import { Button } from 'reactstrap';
+import CardWithTabs from 'components/CardWithTabs/Container';
 import { Formik, Form, Field } from 'formik';
 import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
@@ -31,10 +32,9 @@ const Component = (props) => {
     }));
 
     return (
-        <Card className="p-2">
-            <div style={{ fontSize: '2rem' }} className="py-2">
-                Edit task
-            </div>
+        <CardWithTabs
+            title="Edit task"
+        >
             <hr />
             <Formik
                 enableReinitialize
@@ -45,6 +45,7 @@ const Component = (props) => {
                     flag,
                     description,
                     files,
+                    hints: [],
                     is_published: isPublished,
                 }}
                 onSubmit={(values, actions) => {
@@ -91,7 +92,7 @@ const Component = (props) => {
                     </Form>
                 )}
             </Formik>
-        </Card>
+        </CardWithTabs>
     );
 };
 

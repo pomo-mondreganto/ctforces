@@ -5,9 +5,9 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import axios from 'axios';
+import { apiUrl } from 'config/config';
 import rootReducer from './store';
 import App from './pages';
-import { apiUrl } from '../config/config';
 
 import 'styles/index.scss';
 

@@ -6,6 +6,8 @@ import Layout from 'layouts/sidebar/Container';
 import { mediaUrl } from 'config/config';
 import CardWithTabsComponent from 'components/CardWithTabs/Container';
 
+import getRank from 'lib/Ranking';
+
 import 'styles/pages/users.scss';
 
 const Component = props => (
@@ -24,28 +26,25 @@ const Component = props => (
         {props.user !== null && (
             <section id="profile">
                 <article id="info">
-                    <div>
-                        <span>Master</span>
+                    <div className={`${getRank()} th1`}>
+                        Master
                     </div>
                     {props.user.hide_personal_info || (
-                        <span
-                            style={{ fontSize: '1.5rem' }}
-                            className="py-1"
+                        <div
+                            className="py-3"
                         >
                             {props.user.personal_info.first_name}{' '}
                             {props.user.personal_info.last_name}
-                        </span>
+                        </div>
                     )}
-                    <div>
-                        <span style={{ fontSize: '2rem' }} className="py-2">
-                            {props.user.username}
-                        </span>
+                    <div className="pb-2 th2">
+                        {props.user.username}
                     </div>
                     <div className="py-2">
-                        <span>Rating: {props.user.rating}</span>
+                        Rating: <span className={getRank()}>{props.user.rating}</span>
                     </div>
                     <div className="py-2">
-                        <span>Maximum rating: {props.user.max_rating}</span>
+                        Maximum rating: <span className={getRank()}>{props.user.max_rating}</span>
                     </div>
                     {props.auth.loggedIn
                         && props.auth.user.username === props.user.username && (
@@ -73,12 +72,9 @@ const Component = props => (
                     )}
                 </article>
                 <article id="avatar">
-                    <div>
-                        <img
-                            src={`${mediaUrl}${props.user.avatar_main}`}
-                            className="img-fluid"
-                        />
-                    </div>
+                    <img
+                        src={`${mediaUrl}${props.user.avatar_main}`}
+                    />
                 </article>
             </section>
         )}

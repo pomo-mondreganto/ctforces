@@ -1,53 +1,53 @@
 import React from 'react';
 
-import {
-    Card, CardBody, CardSubtitle, CardText, CardTitle,
-} from 'reactstrap';
-import { getRank, getRankColor } from 'lib/Ranking';
-import moment from 'moment';
+import getRank from 'lib/Ranking';
+import convert from 'lib/HumanTime';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { LinkContainerNonActive } from 'lib/LinkContainer';
 import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
 
+import CardWithTabs from 'components/CardWithTabs/Container';
+
 const Component = ({ post }) => (
-    <Card className="p-2">
+    <CardWithTabs>
         {post !== null && (
-            <CardBody>
-                <CardTitle>
-                    <p className="h2">{post.title}</p>
-                </CardTitle>
-                <CardSubtitle>
-                    By <span style={{
-                        color: getRankColor(getRank(post.author_rating)),
-                    }}>
-                        <LinkContainerNonActive
-                            to={`/users/${post.author_username}/`}
-                        >
-                            <span>
-                                {post.author_username}
-                            </span>
-                        </LinkContainerNonActive>
-                    </span>, {' '}
-                    {moment(post.created_at).format('LLL')}
-                    {'  '}
+            <>
+                <div className="th1">
+                    <LinkContainerNonActive to={`/posts/${post.id}/`}>
+                        <a>{post.title}</a>
+                    </LinkContainerNonActive>
+                </div>
+                <div className="mt-3">
+                    By {' '}
+                    <LinkContainerNonActive to={`/users/${post.author_username}/`} >
+                        <a className={getRank(post.author_rating)}>
+                            {post.author_username}
+                        </a>
+                    </LinkContainerNonActive>
+                    , {convert(post.created_at)}
+                    {' '}
                     {post.can_edit_post && (
-                        <LinkContainerNonActive
-                            to={`/posts/${post.id}/edit/`}
-                        >
-                            <FontAwesomeIcon icon={faEdit} />
-                        </LinkContainerNonActive>
+                        <>
+                            {' '}
+                            <LinkContainerNonActive
+                                to={`/posts/${post.id}/edit/`}
+                            >
+                                <FontAwesomeIcon icon={faEdit} className="c-p" />
+                            </LinkContainerNonActive>
+                        </>
                     )}
-                </CardSubtitle>
+                </div>
+
                 <hr />
-                <CardText>
+                <div className="py-2 long-text">
                     {post.body}
-                </CardText>
-            </CardBody>
+                </div>
+            </>
         )}
 
-    </Card>
+    </CardWithTabs>
 );
 
 export default withLayout(Component, Layout);

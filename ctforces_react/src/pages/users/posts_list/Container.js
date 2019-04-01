@@ -24,6 +24,7 @@ class UserPostsPage extends React.Component {
         this.setState({
             user: responseUser.data,
             pageSize,
+            currentPage,
             count,
             posts,
         });

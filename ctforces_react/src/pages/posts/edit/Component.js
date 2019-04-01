@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Card, Button } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { Formik, Form, Field } from 'formik';
 import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
@@ -9,14 +9,15 @@ import CheckboxInput from 'components/Form/CheckboxInput/Container';
 import SimpleMDEInput from 'components/Form/SimpleMDEInput/Container';
 import DetailError from 'components/Form/DetailError/Container';
 
+import CardWithTabs from 'components/CardWithTabs/Container';
+
 const Component = (props) => {
     const { title = '', body = '', is_published: isPublished = false } = { ...props.post };
 
     return (
-        <Card className="p-2">
-            <div style={{ fontSize: '2rem' }} className="py-2">
-                Edit post
-            </div>
+        <CardWithTabs
+            title="Edit post"
+        >
             <hr />
             <Formik
                 enableReinitialize
@@ -51,7 +52,7 @@ const Component = (props) => {
                     </Form>
                 )}
             </Formik>
-        </Card>
+        </CardWithTabs>
     );
 };
 

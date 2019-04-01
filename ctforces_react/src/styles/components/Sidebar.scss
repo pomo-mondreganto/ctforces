@@ -1,4 +1,4 @@
-@import '../screens.scss';
+@import '~/styles/lib/_screens.scss';
 
 @include respond(mobile) {
     #sidebar {
@@ -8,20 +8,28 @@
 
 #user-info {
     display: grid;
-    grid: 'main main' auto
-        'bullets avatar' 1fr
+    grid: 'sidebar-main sidebar-main' auto
+        'sidebar-bullets sidebar-avatar' 1fr
         / 1.2fr 1fr;
 }
 
-#main {
-    grid-area: main;
+#sidebar-main {
+    grid-area: sidebar-main;
 }
 
-#bullets {
+#sidebar-bullets {
     font-size: 1.2vw;
-    grid-area: bullets;
+    grid-area: sidebar-bullets;
 }
 
-#avatar {
-    grid-area: avatar;
+#sidebar-avatar {
+    grid-area: sidebar-avatar;
+
+    display: grid;
+    align-items: center;
+    justify-content: left;
+
+    > img {
+        object-fit: contain;
+    }
 }

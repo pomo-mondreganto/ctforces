@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Formik, Form, Field } from 'formik';
 import {
-    CardBody, CardHeader, Button,
+    Button,
 } from 'reactstrap';
 import TextInput from 'components/Form/TextInput/Container';
 import FilesInput from 'components/Form/FilesInput/Container';
@@ -27,72 +27,69 @@ const Component = props => (
                     { text: 'Social', href: '/settings/social/' },
                 ]}
             >
-                <CardHeader className="text-center">General Settings</CardHeader>
-                <CardBody>
-                    <Formik
-                        initialValues={{
-                            old_password: '',
-                            password: '',
-                        }}
+                <Formik
+                    initialValues={{
+                        old_password: '',
+                        password: '',
+                    }}
 
-                        onSubmit={(values, actions) => {
-                            props.handleSubmit({ values, actions });
-                        }}
-                    >
-                        {({ isSubmitting }) => (
-                            <Form>
-                                <Field
-                                    type="password"
-                                    name="old_password"
-                                    placeholder="Old password"
-                                    component={TextInput}
-                                />
-                                <Field
-                                    type="password"
-                                    name="password"
-                                    placeholder="New password"
-                                    component={TextInput}
-                                />
-                                <Field component={DetailError} />
-                                <Button
-                                    type="submit"
-                                    color="primary"
-                                    className="btn-block"
-                                    disabled={isSubmitting}
-                                >
-                                    Update
-                                </Button>
-                            </Form>
-                        )}
-                    </Formik>
+                    onSubmit={(values, actions) => {
+                        props.handleSubmit({ values, actions });
+                    }}
+                >
+                    {({ isSubmitting }) => (
+                        <Form>
+                            <Field
+                                type="password"
+                                name="old_password"
+                                placeholder="Old password"
+                                component={TextInput}
+                            />
+                            <Field
+                                type="password"
+                                name="password"
+                                placeholder="New password"
+                                component={TextInput}
+                            />
+                            <Field component={DetailError} />
+                            <Button
+                                type="submit"
+                                color="primary"
+                                className="btn-block"
+                                disabled={isSubmitting}
+                            >
+                                Update
+                            </Button>
+                        </Form>
+                    )}
+                </Formik>
 
-                    <hr />
+                <hr />
 
-                    <Formik
-                        initialValues={{
-                            avatar: [],
-                        }}
+                <Formik
+                    initialValues={{
+                        avatar: [],
+                    }}
 
-                        onSubmit={(values, actions) => {
-                            props.handleSubmitAvatar({ values, actions });
-                        }}
-                    >
-                        {({ isSubmitting }) => (
-                            <Form>
-                                <Field name="avatar" component={FilesInput} />
-                                <Field component={DetailError} />
-                                <Button
-                                    type="submit"
-                                    color="primary"
-                                    className="btn-block"
-                                    disabled={isSubmitting}
-                                >
-                                    Upload avatar
-                                </Button>
-                            </Form>
-                        )}
-                    </Formik>
-                </CardBody>
+                    onSubmit={(values, actions) => {
+                        props.handleSubmitAvatar({ values, actions });
+                    }}
+                >
+                    {({ isSubmitting }) => (
+                        <Form>
+                            <Field name="avatar" component={FilesInput} />
+                            <Field component={DetailError} />
+                            <Button
+                                type="submit"
+                                color="primary"
+                                className="btn-block"
+                                disabled={isSubmitting}
+                            >
+                                Upload avatar
+                            </Button>
+                        </Form>
+                    )}
+                </Formik>
             </CardWithTabsComponent>
         </article>
     </section>);
