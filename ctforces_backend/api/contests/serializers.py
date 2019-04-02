@@ -20,8 +20,7 @@ class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
     )
 
     task = api_fields.CurrentUserPermissionsFilteredPKRF(
-        read_only=True,
-        write_only=True,
+        read_only=False,
         queryset=api_models.Task.objects.all(),
         perms='change_task',
         additional_queryset=api_models.Task.objects.filter(is_published=True),
