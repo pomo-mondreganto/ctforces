@@ -17,7 +17,7 @@ class PostViewSet(api_mixins.CustomPermissionsViewSetMixin,
                   rest_mixins.CreateModelMixin,
                   rest_mixins.UpdateModelMixin,
                   rest_viewsets.GenericViewSet):
-    permission_classes = (IsAuthenticatedOrReadOnly, api_permissions.HasEditPostPermissionOrReadOnly)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = api_pagination.PostDefaultPagination
     serializer_class = api_posts_serializers.PostMainSerializer
     lookup_field = 'id'

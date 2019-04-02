@@ -196,6 +196,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
 
 class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
+                                     rest_mixins.RetrieveModelMixin,
                                      rest_mixins.CreateModelMixin,
                                      rest_mixins.UpdateModelMixin,
                                      rest_mixins.DestroyModelMixin,
@@ -207,7 +208,7 @@ class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
     serializer_class = api_contests_serializers.ContestTaskRelationshipMainSerializer
 
     action_permission_classes = {
-        'create': (api_permissions.HasCreateContestPermission,),
+        'create': (api_permissions.HasContestTaskRelationshipPermission,),
         'update': (api_permissions.HasContestTaskRelationshipPermission,),
         'partial_update': (api_permissions.HasContestTaskRelationshipPermission,),
         'destroy': (api_permissions.HasContestTaskRelationshipPermission,),
