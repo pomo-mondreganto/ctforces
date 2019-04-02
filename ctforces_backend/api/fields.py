@@ -13,14 +13,18 @@ class CurrentUserFilteredPKRF(PrimaryKeyRelatedField):
 
 
 class CurrentUserPermissionsFilteredPKRF(PrimaryKeyRelatedField):
-    def __init__(self, perms, **kwargs):
+    def __init__(self, perms, additional_queryset=None, **kwargs):
         super(CurrentUserPermissionsFilteredPKRF, self).__init__(**kwargs)
         self.perms = perms
+        self.additional_queryset = additional_queryset
 
     def get_queryset(self):
         qs = super(CurrentUserPermissionsFilteredPKRF, self).get_queryset()
-        return get_objects_for_user(
+        qs = get_objects_for_user(
             user=self.context['request'].user,
             klass=qs,
             perms=self.perms,
         )
+        if self.additional_queryset:
+            qs = (qs | self.additional_queryset).distinct()
+        return qs

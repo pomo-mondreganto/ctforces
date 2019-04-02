@@ -24,6 +24,7 @@ class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
         write_only=True,
         queryset=api_models.Task.objects.all(),
         perms='change_task',
+        additional_queryset=api_models.Task.objects.filter(is_published=True),
     )
 
     class Meta:
