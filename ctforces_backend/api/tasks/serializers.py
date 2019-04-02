@@ -171,6 +171,8 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
 
     @staticmethod
     def validate_tags(data):
+        if len(data) < 1:
+            raise rest_serializers.ValidationError('Please specify at least one tag')
         if len(data) > 5:
             raise rest_serializers.ValidationError('You are allowed to use 5 tags or less.')
         return data
