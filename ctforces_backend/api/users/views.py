@@ -157,7 +157,7 @@ class PasswordResetRequestView(APIView):
                 }
             )
 
-        token = serialize(user.id, 'password_reset.txt')
+        token = serialize(user.id, 'password_reset')
 
         context = {
             'token': token,
