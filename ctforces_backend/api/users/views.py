@@ -91,7 +91,10 @@ class ActivationEmailResendView(APIView):
         if user.is_active:
             raise ValidationError({'email': 'User is already activated'})
 
-        delta = timezone.now() - user.last_email_resend
+        last_resend = user.last_email_resend
+        if not last_resend:
+            last_resend = timezone.now() - timezone.timedelta(seconds=settings.EMAIL_RESEND_DELTA + 1)
+        delta = timezone.now() - last_resend
 
         if delta < timezone.timedelta(seconds=settings.EMAIL_RESEND_DELTA):
             raise ValidationError(
@@ -138,7 +141,10 @@ class PasswordResetRequestView(APIView):
         if not user:
             raise ValidationError({'email': 'User with such email is not registered'})
 
-        delta = timezone.now() - user.last_email_resend
+        last_resend = user.last_email_resend
+        if not last_resend:
+            last_resend = timezone.now() - timezone.timedelta(seconds=settings.EMAIL_RESEND_DELTA + 1)
+        delta = timezone.now() - last_resend
 
         if delta < timezone.timedelta(seconds=settings.EMAIL_RESEND_DELTA):
             raise ValidationError(
