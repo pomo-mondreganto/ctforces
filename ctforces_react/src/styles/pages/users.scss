@@ -27,11 +27,11 @@
     }
 }
 
-#users-table {
+.users-table {
     @extend %table;
 }
 
-#users-table-head {
+.users-table-head {
     
     @extend %table-head;
 
@@ -42,7 +42,7 @@
     }
 }
 
-#users-table-body {
+.users-table-body {
     @extend %table-body;
 }
 

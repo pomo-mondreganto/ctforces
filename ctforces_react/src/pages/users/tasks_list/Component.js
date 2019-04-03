@@ -8,22 +8,13 @@ import {
 import withLayout from 'wrappers/withLayout';
 import Layout from 'layouts/sidebar/Container';
 import CardWithTabsComponent from 'components/CardWithTabs/Container';
+import UserTopBar from 'snippets_components/UserTopBar';
 
 import 'styles/pages/users.scss';
 
 const Component = props => (
     <CardWithTabsComponent
-        tabs={[
-            {
-                text: props.username,
-                href: `/users/${props.username}`,
-            },
-            { text: 'Blog', href: `/users/${props.username}/posts/` },
-            { text: 'Tasks', href: `/users/${props.username}/tasks/` },
-            { text: 'General', href: '/settings/general/' },
-            { text: 'Social', href: '/settings/social/' },
-        ]}
-
+        tabs={UserTopBar(props.username)}
         pagination={
             <>
                 {
@@ -36,15 +27,15 @@ const Component = props => (
             </>
         }
     >
-        <div id="tasks-table">
-            <div id="tasks-table-head">
+        <div className="tasks-table">
+            <div className="tasks-table-head">
                 <span className="ta-c">#</span>
                 <span className="ta-l">Name</span>
                 <span className="ta-c">Cost</span>
                 <span className="ta-c">Tags</span>
                 <span className="ta-c">Solved</span>
             </div>
-            <div id="tasks-table-body">
+            <div className="tasks-table-body">
                 {props.tasks && props.tasks.map((obj, i) => (
                     <div key={i} className="tasks-table-item">
                         <span className="ta-c">{i + 1 + props.pageSize * (props.currentPage - 1)}</span>

@@ -10,6 +10,8 @@ import DetailError from 'components/Form/DetailError/Container';
 import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
 
+import UserTopBar from 'snippets_components/UserTopBar';
+
 import CardWithTabsComponent from 'components/CardWithTabs/Container';
 
 const Component = (props) => {
@@ -25,21 +27,11 @@ const Component = (props) => {
         <section>
             <article>
                 <CardWithTabsComponent
-                    tabs={[
-                        {
-                            text: props.auth.user.username,
-                            href: `/users/${props.auth.user.username}/`,
-                        },
-                        { text: 'Blog', href: `/users/${props.auth.user.username}/posts/` },
-                        { text: 'Tasks', href: `/users/${props.auth.user.username}/tasks/` },
-                        { text: 'General', href: '/settings/general/' },
-                        { text: 'Social', href: '/settings/social/' },
-                    ]}
+                    tabs={UserTopBar(props.auth.user.username)}
                 >
                     <Formik
                         initialValues={{
-                            first_name: personalInfo.first_name,
-                            last_name: personalInfo.last_name,
+                            personal_info: personalInfo,
                             hide_personal_info: hidePersonalInfo,
                         }}
                         enableReinitialize
@@ -51,13 +43,13 @@ const Component = (props) => {
                             <Form>
                                 <Field
                                     type="text"
-                                    name="first_name"
+                                    name="personal_info.first_name"
                                     placeholder="First name"
                                     component={TextInput}
                                 />
                                 <Field
                                     type="text"
-                                    name="last_name"
+                                    name="personal_info.last_name"
                                     placeholder="Last name"
                                     component={TextInput}
                                 />

@@ -8,20 +8,13 @@ import CardWithTabsComponent from 'components/CardWithTabs/Container';
 
 import getRank from 'lib/Ranking';
 
+import UserTopBar from 'snippets_components/UserTopBar';
+
 import 'styles/pages/users.scss';
 
 const Component = props => (
     <CardWithTabsComponent
-        tabs={[
-            {
-                text: props.username,
-                href: `/users/${props.username}/`,
-            },
-            { text: 'Blog', href: `/users/${props.username}/posts/` },
-            { text: 'Tasks', href: `/users/${props.username}/tasks/` },
-            { text: 'General', href: '/settings/general/' },
-            { text: 'Social', href: '/settings/social/' },
-        ]}
+        tabs={UserTopBar(props.username)}
     >
         {props.user !== null && (
             <section id="profile">

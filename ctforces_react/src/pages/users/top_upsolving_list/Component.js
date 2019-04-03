@@ -24,13 +24,13 @@ const Component = props => (
             </>
         }
     >
-        <div id="tasks-table">
-            <div id="users-table-head">
+        <div className="tasks-table">
+            <div className="users-table-head">
                 <span className="ta-c">#</span>
                 <span className="ta-l">Username</span>
                 <span className="ta-c">Rating</span>
             </div>
-            <div id="users-table-body">
+            <div className="users-table-body">
                 {props.users && props.users.map((obj, i) => (
 
                     <div key={i} className="users-table-item">

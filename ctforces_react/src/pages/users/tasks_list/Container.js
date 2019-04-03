@@ -1,7 +1,7 @@
 import React from 'react';
 
 import axios from 'axios';
-import queryString from 'querystring';
+import qs from 'lib/qs';
 import withAuth from 'wrappers/withAuth';
 import Component from './Component';
 
@@ -17,12 +17,10 @@ class UserTasksPage extends React.Component {
 
     async componentDidMount() {
         const { username } = this.props.match.params;
-        const { page: currentPage = 1 } = queryString.parse(this.props.location.search);
-        const responseUser = await axios.get(`/users/${username}/`);
+        const { page: currentPage = 1 } = qs(this.props.location.search);
         const responseTasks = await axios.get(`/users/${username}/tasks/?page=${currentPage}`);
         const { page_size: pageSize, count, results: tasks } = responseTasks.data;
         this.setState({
-            user: responseUser.data,
             pageSize,
             currentPage,
             count,

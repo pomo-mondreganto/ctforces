@@ -6,11 +6,14 @@
     }
 }
 
+#sidebar {
+    min-width: 350px;
+}
+
 #user-info {
     display: grid;
-    grid: 'sidebar-main sidebar-main' auto
-        'sidebar-bullets sidebar-avatar' 1fr
-        / 1.2fr 1fr;
+    grid: 'sidebar-bullets sidebar-avatar' 1fr
+        / 1.3fr 1fr;
 }
 
 #sidebar-main {
@@ -18,7 +21,6 @@
 }
 
 #sidebar-bullets {
-    font-size: 1.2vw;
     grid-area: sidebar-bullets;
 }
 
@@ -30,6 +32,7 @@
     justify-content: left;
 
     > img {
+        width: 100%;
         object-fit: contain;
     }
 }

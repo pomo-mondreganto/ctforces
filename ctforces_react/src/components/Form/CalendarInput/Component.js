@@ -18,7 +18,6 @@ const Component = ({
                 value={field.value}
                 disabled={form.isSubmitting}
                 onChange={handleChange}
-                onBlur={field.onBlur}
                 invalid={invalid}
                 {...props}
             />

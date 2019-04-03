@@ -15,18 +15,9 @@ class SocialSettingsPage extends React.Component {
     }
 
     handleSubmit = async ({ values, actions }) => {
-        const {
-            first_name: firstName,
-            last_name: lastName,
-            hide_personal_info: hidePersonalInfo,
-        } = values;
         try {
             await axios.put('/me/', {
-                personal_info: {
-                    first_name: firstName,
-                    last_name: lastName,
-                },
-                hide_personal_info: hidePersonalInfo,
+                ...values,
             });
             this.setState({
                 redirect: `/users/${this.props.auth.user.username}/`,

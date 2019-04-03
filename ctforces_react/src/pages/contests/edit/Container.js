@@ -11,34 +11,58 @@ class ContestCreateContainer extends React.Component {
         this.state = {
             contest: null,
             redirect: null,
+            old_tasks: [],
         };
     }
 
     async componentDidMount() {
         const { id } = this.props.match.params;
         const response = await axios.get(`/contests/${id}/full/`);
+        const contest = response.data;
         this.setState({
-            contest: response.data,
+            contest,
+            old_relationships: contest.contest_task_relationship_details.map(relationship => ({
+                task: relationship.task,
+                id: relationship.id,
+            })),
         });
     }
 
     handleSubmit = async ({ values, actions }) => {
         try {
-            const response = await axios.post('/contests/', {
+            for (let i = 0; i < this.state.old_relationships.length; i += 1) {
+                if (!values.tasks.map(task => task.id).includes(
+                    this.state.old_relationships[i].task,
+                )) {
+                    await axios.delete(`/contest_task_relationship/${this.state.old_relationships[i].id}/`);
+                }
+            }
+
+            const response = await axios.put(`/contests/${this.state.contest.id}/`, {
                 ...values,
+                tasks: values.tasks.map(task => ({
+                    ...task,
+                    main_tag: task.main_tag.id,
+                })),
+                start_time: values.start_time.toISOString(),
+                end_time: values.end_time.toISOString(),
             });
             const { id } = response.data;
 
             const { tasks } = values;
             for (let i = 0; i < tasks.length; i += 1) {
                 const task = tasks[i];
-                await axios.post('/contest_task_relationship/', {
-                    task: task.id,
-                    contest: id,
-                    ordering_number: i,
-                    cost: task.cost,
-                    main_tag: task.main_tag,
-                });
+                if (!this.state.old_relationships.map(relationship => relationship.task).includes(
+                    task.id,
+                )) {
+                    await axios.post('/contest_task_relationship/', {
+                        task: task.id,
+                        contest: id,
+                        ordering_number: i,
+                        cost: task.cost,
+                        main_tag: task.main_tag.id,
+                    });
+                }
             }
 
             this.setState({

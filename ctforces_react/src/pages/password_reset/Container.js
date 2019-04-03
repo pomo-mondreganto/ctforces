@@ -16,33 +16,17 @@ class LoginPage extends React.Component {
 
     handleSubmit = async ({ values, actions }) => {
         try {
-            const response = await axios.post('/login/', values);
-            this.props.updateAuthUser({
-                requested: true,
-                user: response.data,
-                loggedIn: true,
+            await axios.post('/request_password_reset/', values);
+            this.setState({
+                redirect: '/',
             });
-            if (this.props.location.state && this.props.location.state.from) {
-                this.setState({
-                    redirect: this.props.location.state.from,
-                });
-            } else {
-                this.setState({
-                    redirect: '/',
-                });
-            }
         } catch (error) {
             const errorData = error.response.data;
-            let needResend = false;
             Object.keys(errorData).forEach((key) => {
                 actions.setFieldError(key, errorData[key]);
                 actions.setFieldTouched(key, true, false);
-                if (errorData[key] === 'User is not activated') {
-                    needResend = true;
-                }
             });
             actions.setSubmitting(false);
-            this.setState({ needResend });
         }
     };
 
@@ -51,7 +35,7 @@ class LoginPage extends React.Component {
             return <Redirect to={this.state.redirect} />;
         }
 
-        return <Component handleSubmit={this.handleSubmit} needResend={this.state.needResend} />;
+        return <Component handleSubmit={this.handleSubmit} />;
     }
 }
 

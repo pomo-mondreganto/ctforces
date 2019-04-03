@@ -23,15 +23,15 @@ const Component = props => (
             </>
         }
     >
-        <div id="tasks-table">
-            <div id="tasks-table-head">
+        <div className="tasks-table">
+            <div className="tasks-table-head">
                 <span className="ta-c">#</span>
                 <span className="ta-l">Name</span>
                 <span className="ta-c">Cost</span>
                 <span className="ta-c">Tags</span>
                 <span className="ta-c">Solved</span>
             </div>
-            <div id="tasks-table-body">
+            <div className="tasks-table-body">
                 {props.tasks && props.tasks.map((obj, i) => (
                     <div key={i} className="tasks-table-item">
                         <span className="ta-c">{i + 1 + props.pageSize * (props.currentPage - 1)}</span>

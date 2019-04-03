@@ -90,7 +90,7 @@ class TaskEditContainer extends React.Component {
         }
 
         try {
-            const response = await axios.post('/tasks/', {
+            const response = await axios.put('/tasks/', {
                 ...values,
                 tags,
                 files,

@@ -22,7 +22,8 @@ const Component = props => (
                 </Nav>
             </nav>
         )}
-        <div className={`p-4 border-left border-right border-bottom rounded-top ${props.tabs ? '' : 'border-top'}`}>
+        <div className={`p-4 border-left border-right border-bottom rounded-top ${props.pagination
+            ? '' : 'rounded-bottom'} ${props.tabs ? '' : 'border-top'}`}>
             {props.title && (
                 <p className="th1 ta-c mb-4">
                     {props.title}
