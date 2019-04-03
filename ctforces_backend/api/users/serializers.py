@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_core_exceptions
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
+from rest_framework import validators as rest_validators
 from rest_framework.fields import empty
 
 from api import models as api_models
@@ -21,7 +22,13 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
                 'write_only': True
             },
             'username': {
-                'validators': [api_models.User.username_validator]
+                'validators': [
+                    api_models.User.username_validator,
+                    rest_validators.UniqueValidator(
+                        queryset=api_models.User.objects.all(),
+                        message='User with this username already exists',
+                    ),
+                ],
             },
         }
 
