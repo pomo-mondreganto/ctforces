@@ -296,11 +296,12 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_users_tasks(self, request, **_kwargs):
         tasks_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        queryset = api_models.Task.objects.filter(is_published=True, author=user)
+        queryset = api_models.Task.objects.filter(is_published=True)
 
         if tasks_type == 'all':
             queryset = (queryset | get_objects_for_user(request.user, 'view_task', api_models.Task)).distinct()
 
+        queryset = queryset.filter(author=user)
         queryset = queryset.order_by('-id').annotate(
             solved_count=Count(
                 'solved_by',
@@ -319,11 +320,12 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_users_posts(self, request, **_kwargs):
         posts_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        queryset = api_models.Post.objects.filter(is_published=True, author=user)
+        queryset = api_models.Post.objects.filter(is_published=True)
 
         if posts_type == 'all':
             queryset = (queryset | get_objects_for_user(request.user, 'view_post', api_models.Post)).distinct()
 
+        queryset = queryset.filter(author=user)
         queryset = queryset.order_by('-id')
 
         return api_pagination.get_paginated_response(
@@ -337,11 +339,12 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_users_contests(self, request, **_kwargs):
         contests_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        queryset = api_models.Contest.objects.filter(is_published=True, author=user)
+        queryset = api_models.Contest.objects.filter(is_published=True)
 
         if contests_type == 'all':
             queryset = (queryset | get_objects_for_user(request.user, 'view_contest', api_models.Contest)).distinct()
 
+        queryset = queryset.filter(author=user)
         queryset = queryset.order_by('-id')
 
         return api_pagination.get_paginated_response(
