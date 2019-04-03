@@ -93,6 +93,29 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             obj.can_edit_contest = self.request.user.has_perm('change_contest', obj)
         return obj
 
+    def list(self, request, *args, **kwargs):
+        upcoming_queryset = self.get_queryset().filter(is_running=False, is_finished=False)
+        running_queryset = self.get_queryset().filter(is_running=True)
+        finished_queryset = self.get_queryset().filter(is_finished=True)
+
+        upcoming = self.get_serializer(upcoming_queryset, many=True).data
+        running = self.get_serializer(running_queryset, many=True).data
+
+        finished = api_pagination.get_paginated_data(
+            api_pagination.ContestDefaultPagination(),
+            finished_queryset,
+            self.get_serializer_class(),
+            request
+        )
+
+        response_data = {
+            'upcoming': upcoming,
+            'running': running,
+            'finished': finished,
+        }
+
+        return Response(response_data)
+
     @action(
         detail=True,
         url_path='full',

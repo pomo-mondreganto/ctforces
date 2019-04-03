@@ -39,6 +39,20 @@ class ContestDefaultPagination(PageNumberWithPageSizePagination):
     page_size_query_param = 'page_size'
 
 
+def get_paginated_data(paginator, queryset, serializer_class, request):
+    page = paginator.paginate_queryset(
+        queryset=queryset,
+        request=request,
+    )
+
+    if page is not None:
+        serializer = serializer_class(page, many=True)
+        return serializer.data
+
+    serializer = serializer_class(queryset, many=True)
+    return serializer.data
+
+
 def get_paginated_response(paginator, queryset, serializer_class, request):
     page = paginator.paginate_queryset(
         queryset=queryset,

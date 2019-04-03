@@ -347,9 +347,24 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         queryset = queryset.filter(author=user)
         queryset = queryset.order_by('-id')
 
-        return api_pagination.get_paginated_response(
-            paginator=api_pagination.ContestDefaultPagination(),
-            queryset=queryset,
-            serializer_class=api_contests_serializers.ContestPreviewSerializer,
-            request=request
+        upcoming_queryset = queryset.filter(is_running=False, is_finished=False)
+        running_queryset = queryset.filter(is_running=True)
+        finished_queryset = queryset.filter(is_finished=True)
+
+        upcoming = api_contests_serializers.ContestPreviewSerializer(upcoming_queryset, many=True).data
+        running = api_contests_serializers.ContestPreviewSerializer(running_queryset, many=True).data
+
+        finished = api_pagination.get_paginated_data(
+            api_pagination.ContestDefaultPagination(),
+            finished_queryset,
+            api_contests_serializers.ContestPreviewSerializer,
+            request
         )
+
+        response_data = {
+            'upcoming': upcoming,
+            'running': running,
+            'finished': finished,
+        }
+
+        return Response(response_data)
