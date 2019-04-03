@@ -69,11 +69,11 @@ class EmailConfirmationEndpointView(APIView):
             if not user_id:
                 raise TypeError
         except TypeError:
-            raise ValidationError('Token is invalid or has expired.')
+            raise ValidationError({'detail': 'Token is invalid or has expired.'})
 
         user = api_models.User.objects.filter(id=user_id).first()
         if not user:
-            raise ValidationError('No such user.')
+            raise ValidationError({'detail': 'No such user.'})
         user.is_active = True
         user.save()
         return Response(user_id)
@@ -87,18 +87,21 @@ class ActivationEmailResendView(APIView):
         email = request.data.get('email', '').lower()
         user = api_models.User.objects.filter(email=email).first()
         if not user:
-            raise ValidationError('User with such email is not registered')
+            raise ValidationError({'email': 'User with such email is not registered'})
         if user.is_active:
-            raise ValidationError('User is already activated')
+            raise ValidationError({'email': 'User is already activated'})
 
         delta = timezone.now() - user.last_email_resend
 
         if delta < timezone.timedelta(hours=1):
             raise ValidationError(
-                'You can resend activation email in {0} minutes {1} seconds'.format(
-                    delta.seconds // 60,
-                    delta.seconds % 60,
-                )
+                {
+                    'detail':
+                        'You can resend activation email in {0} minutes {1} seconds'.format(
+                            delta.seconds // 60,
+                            delta.seconds % 60,
+                        )
+                }
             )
 
         token = serialize(user.id, 'email_confirmation')
@@ -133,16 +136,19 @@ class PasswordResetRequestView(APIView):
         email = request.data.get('email', '').lower()
         user = api_models.User.objects.filter(email=email).first()
         if not user:
-            raise ValidationError('User with such email is not registered')
+            raise ValidationError({'email': 'User with such email is not registered'})
 
         delta = timezone.now() - user.last_email_resend
 
         if delta < timezone.timedelta(hours=1):
             raise ValidationError(
-                'You can resend password reset email in {0} minutes {1} seconds'.format(
-                    delta.seconds // 60,
-                    delta.seconds % 60,
-                )
+                {
+                    'detail':
+                        'You can resend activation email in {0} minutes {1} seconds'.format(
+                            delta.seconds // 60,
+                            delta.seconds % 60,
+                        )
+                }
             )
 
         token = serialize(user.id, 'password_reset.txt')
@@ -182,11 +188,11 @@ class PasswordResetEndpointView(APIView):
             if not user_id:
                 raise TypeError
         except TypeError:
-            raise ValidationError('Token is invalid or has expired.')
+            raise ValidationError({'detail': 'Token is invalid or has expired.'})
 
         user = api_models.User.objects.filter(id=user_id).first()
         if not user:
-            raise ValidationError('No such user.')
+            raise ValidationError({'detail': 'No such user.'})
 
         serializer = api_users_serializers.UserPasswordResetSerializer(data={'password': new_password}, instance=user)
         serializer.is_valid(raise_exception=True)
