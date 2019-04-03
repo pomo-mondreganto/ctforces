@@ -93,7 +93,7 @@ class ActivationEmailResendView(APIView):
 
         delta = timezone.now() - user.last_email_resend
 
-        if delta < timezone.timedelta(hours=1):
+        if delta < timezone.timedelta(seconds=settings.EMAIL_RESEND_DELTA):
             raise ValidationError(
                 {
                     'detail':
@@ -140,7 +140,7 @@ class PasswordResetRequestView(APIView):
 
         delta = timezone.now() - user.last_email_resend
 
-        if delta < timezone.timedelta(hours=1):
+        if delta < timezone.timedelta(seconds=settings.EMAIL_RESEND_DELTA):
             raise ValidationError(
                 {
                     'detail':
