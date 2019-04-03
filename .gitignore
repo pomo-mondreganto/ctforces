@@ -425,3 +425,5 @@ ctforces_backend/ctforces_backend/config.json
 *.env
 
 ctforces_react/dist/
+
+!volumes/media/avatars/default_avatar*.png
