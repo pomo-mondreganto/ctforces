@@ -47,10 +47,10 @@ def get_paginated_data(paginator, queryset, serializer_class, request):
 
     if page is not None:
         serializer = serializer_class(page, many=True)
-        return serializer.data
+        return paginator, serializer.data
 
     serializer = serializer_class(queryset, many=True)
-    return serializer.data
+    return None, serializer.data
 
 
 def get_paginated_response(paginator, queryset, serializer_class, request):

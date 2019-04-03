@@ -101,12 +101,15 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         upcoming = self.get_serializer(upcoming_queryset, many=True).data
         running = self.get_serializer(running_queryset, many=True).data
 
-        finished = api_pagination.get_paginated_data(
+        paginator, finished = api_pagination.get_paginated_data(
             api_pagination.ContestDefaultPagination(),
             finished_queryset,
             self.get_serializer_class(),
-            request
+            request,
         )
+
+        if paginator:
+            finished = paginator.get_paginated_response(finished).data
 
         response_data = {
             'upcoming': upcoming,

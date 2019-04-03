@@ -354,12 +354,15 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         upcoming = api_contests_serializers.ContestPreviewSerializer(upcoming_queryset, many=True).data
         running = api_contests_serializers.ContestPreviewSerializer(running_queryset, many=True).data
 
-        finished = api_pagination.get_paginated_data(
+        paginator, finished = api_pagination.get_paginated_data(
             api_pagination.ContestDefaultPagination(),
             finished_queryset,
             api_contests_serializers.ContestPreviewSerializer,
-            request
+            request,
         )
+
+        if paginator:
+            finished = paginator.get_paginated_response(finished).data
 
         response_data = {
             'upcoming': upcoming,
