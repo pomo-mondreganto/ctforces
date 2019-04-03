@@ -3,8 +3,8 @@
 echo "[+] Cleaning /react_build"
 rm -rf /react_build/*
 
-echo "[+] Running webpack docker-dev"
-webpack --config config/webpack.docker-dev.js
+echo "[+] Running npm run build"
+npm run build
 
 echo "[+] Copying dist/* files to /react_build"
 cp dist/* /react_build
