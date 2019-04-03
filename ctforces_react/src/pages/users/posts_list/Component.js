@@ -8,21 +8,14 @@ import CardWithTabsComponent from 'components/CardWithTabs/Container';
 import getRank from 'lib/Ranking';
 import convert from 'lib/HumanTime';
 
+import UserTopBar from 'snippets_components/UserTopBar';
+
 import 'styles/pages/users.scss';
 import 'styles/pages/posts.scss';
 
 const Component = props => (
     <CardWithTabsComponent
-        tabs={[
-            {
-                text: props.username,
-                href: `/users/${props.username}`,
-            },
-            { text: 'Blog', href: `/users/${props.username}/posts/` },
-            { text: 'Tasks', href: `/users/${props.username}/tasks/` },
-            { text: 'General', href: '/settings/general/' },
-            { text: 'Social', href: '/settings/social/' },
-        ]}
+        tabs={UserTopBar(props.username)}
 
         pagination={
             <>

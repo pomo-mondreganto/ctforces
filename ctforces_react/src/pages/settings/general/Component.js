@@ -10,22 +10,15 @@ import DetailError from 'components/Form/DetailError/Container';
 import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
 
+import UserTopBar from 'snippets_components/UserTopBar';
+
 import CardWithTabsComponent from 'components/CardWithTabs/Container';
 
 const Component = props => (
     <section>
         <article>
             <CardWithTabsComponent
-                tabs={[
-                    {
-                        text: props.auth.user.username,
-                        href: `/users/${props.auth.user.username}/`,
-                    },
-                    { text: 'Blog', href: `/users/${props.auth.user.username}/posts/` },
-                    { text: 'Tasks', href: `/users/${props.auth.user.username}/tasks/` },
-                    { text: 'General', href: '/settings/general/' },
-                    { text: 'Social', href: '/settings/social/' },
-                ]}
+                tabs={UserTopBar(props.auth.user.username)}
             >
                 <Formik
                     initialValues={{

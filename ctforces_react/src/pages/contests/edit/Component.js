@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Card, Button } from 'reactstrap';
+import { Button } from 'reactstrap';
 import {
     Formik, Form, Field, FieldArray,
 } from 'formik';
@@ -11,6 +11,7 @@ import TextInput from 'components/Form/TextInput/Container';
 import CheckboxInput from 'components/Form/CheckboxInput/Container';
 import DetailError from 'components/Form/DetailError/Container';
 import CalendarInput from 'components/Form/CalendarInput/Container';
+import CardWithTabs from 'components/CardWithTabs/Container';
 import TaskPreviewInput from '../components/TaskPreview/Container';
 
 const Component = (props) => {
@@ -23,19 +24,32 @@ const Component = (props) => {
         is_running: isRunning = false,
         publish_tasks_after_finished: publishTasksAfterFinished = false,
         is_finished: isFinished = false,
-        start_time: startTime = moment().toISOString(),
-        end_time: endTime = moment().toISOString(),
     } = { ...props.contest };
 
-    const tasks = [{
-        id: '', name: '', cost: '', main_tag: '',
-    }];
+    let {
+
+        start_time: startTime = '',
+        end_time: endTime = '',
+    } = { ...props.contest };
+
+    const {
+        contest_task_relationship_details: tasksRelationships = [],
+    } = { ...props.contest };
+
+    startTime = moment(startTime);
+    endTime = moment(endTime);
+
+    const tasks = tasksRelationships.map(relationship => ({
+        id: relationship.task,
+        name: relationship.task_name,
+        cost: relationship.cost,
+        main_tag: relationship.main_tag_details,
+    }));
 
     return (
-        <Card className="p-2">
-            <div style={{ fontSize: '2rem' }} className="py-2">
-                Edit contest
-            </div>
+        <CardWithTabs
+            title="Edit contest"
+        >
             <hr />
             <Formik
                 enableReinitialize
@@ -77,31 +91,68 @@ const Component = (props) => {
                             render={arrayHelpers => (
                                 <>
                                     {values.tasks.map((obj, i) => (
-                                        <div key={i}>
+                                        <div key={i} className="task-add-preview mb-4">
                                             <Field
-                                                name={`tasks.${i}`}
+                                                name={`tasks[${i}]`}
                                                 component={TaskPreviewInput}
                                             />
-
-                                            <button
-                                                type="button"
-                                                onClick={() => arrayHelpers.remove(i)
-                                                }
-                                            >
-                                                remove
-                                            </button>
+                                            <div className="task-add-buttons">
+                                                <Button
+                                                    type="button"
+                                                    onClick={() => arrayHelpers.insert(i + 1, {
+                                                        id: '', name: '', cost: '', main_tag: {},
+                                                    })}
+                                                    className="task-add-button-add"
+                                                    outline
+                                                    color="success"
+                                                    size="sm"
+                                                >
+                                                    Add task
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        arrayHelpers.remove(i);
+                                                    }}
+                                                    className="task-add-button-remove"
+                                                    outline
+                                                    color="danger"
+                                                    size="sm"
+                                                >
+                                                    Remove
+                                                </Button>
+                                            </div>
                                         </div>
                                     ))}
-                                    <button
-                                        type="button"
-                                        onClick={() => arrayHelpers.push({
-                                            id: '',
-                                            name: '',
-                                        })
-                                        }
-                                    >
-                                        add task
-                                    </button>
+                                    {values.tasks.length === 0 && (
+                                        <div className="task-add-buttons mb-4">
+                                            <Button
+                                                type="button"
+                                                onClick={() => arrayHelpers.insert(0, {
+                                                    id: '', name: '', cost: '', main_tag: {},
+                                                })}
+                                                className="task-add-button-add"
+                                                outline
+                                                color="success"
+                                                size="sm"
+                                            >
+                                                Add task
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                onClick={() => {
+                                                    arrayHelpers.remove(0);
+                                                }}
+                                                disabled
+                                                className="task-add-button-remove"
+                                                outline
+                                                color="danger"
+                                                size="sm"
+                                            >
+                                                Remove
+                                            </Button>
+                                        </div>
+                                    )}
                                 </>
                             )}
                         />
@@ -160,7 +211,7 @@ const Component = (props) => {
                     </Form>
                 )}
             </Formik>
-        </Card>
+        </CardWithTabs>
     );
 };
 

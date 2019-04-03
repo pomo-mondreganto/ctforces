@@ -1,7 +1,7 @@
 import React from 'react';
 
 import axios from 'axios';
-import queryString from 'querystring';
+import qs from 'lib/qs';
 import Component from './Component';
 
 class TopRatingContainer extends React.Component {
@@ -13,7 +13,7 @@ class TopRatingContainer extends React.Component {
     }
 
     async componentDidMount() {
-        const { page: currentPage = 1 } = queryString.parse(this.props.location.search);
+        const { page: currentPage = 1 } = qs(this.props.location.search);
         const response = await axios.get(`/users/upsolving_top/?page=${currentPage}`);
         const { data } = response;
         const { page_size: pageSize, count, results: users } = data;

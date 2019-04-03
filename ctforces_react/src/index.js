@@ -6,8 +6,10 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import axios from 'axios';
 import { apiUrl } from 'config/config';
+import { BrowserRouter as Router } from 'react-router-dom';
 import rootReducer from './store';
 import App from './pages';
+
 
 import 'styles/index.scss';
 
@@ -20,7 +22,9 @@ const store = createStore(rootReducer);
 
 render(
     <Provider store={store}>
-        <App />
+        <Router>
+            <App />
+        </Router>
     </Provider>,
     document.getElementById('root'),
 );

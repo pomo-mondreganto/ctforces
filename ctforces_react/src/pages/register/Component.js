@@ -63,7 +63,7 @@ const Component = props => (
                 <hr className="my-3" />
                 <div className="mb-5 mt-4">
                     <span className="float-left">
-                        <LinkContainerNonActive to="/restore_password/">
+                        <LinkContainerNonActive to="/reset_password/">
                             <a>Forgot password</a>
                         </LinkContainerNonActive>
                     </span>

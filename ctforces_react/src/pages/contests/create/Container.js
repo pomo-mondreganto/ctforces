@@ -17,6 +17,12 @@ class ContestCreateContainer extends React.Component {
         try {
             const response = await axios.post('/contests/', {
                 ...values,
+                tasks: values.tasks.map(task => ({
+                    ...task,
+                    main_tag: task.main_tag.id,
+                })),
+                start_time: values.start_time.toISOString(),
+                end_time: values.end_time.toISOString(),
             });
             const { id } = response.data;
 
@@ -28,7 +34,7 @@ class ContestCreateContainer extends React.Component {
                     contest: id,
                     ordering_number: i,
                     cost: task.cost,
-                    main_tag: task.main_tag,
+                    main_tag: task.main_tag.id,
                 });
             }
 

@@ -5,7 +5,7 @@ import Component from './Component';
 class CalendarContainer extends React.Component {
     handleChange = (moment) => {
         const { name } = this.props.field;
-        this.props.form.setFieldValue(name, moment.toISOString());
+        this.props.form.setFieldValue(name, moment);
     };
 
     render() {
