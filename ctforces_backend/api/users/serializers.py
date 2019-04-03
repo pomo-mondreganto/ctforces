@@ -72,8 +72,8 @@ class UserPasswordResetSerializer(rest_serializers.ModelSerializer):
             },
         }
 
-    def validate_password(self, data):
-        password = data
+    def validate(self, data):
+        password = data.get('password')
 
         errors = dict()
         try:
