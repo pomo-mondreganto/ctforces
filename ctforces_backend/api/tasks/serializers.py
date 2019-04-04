@@ -85,6 +85,12 @@ class TaskFileViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOn
             'upload_time',
         )
 
+        extra_kwargs = {
+            'file_field': {
+                'use_url': False,
+            },
+        }
+
 
 class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
