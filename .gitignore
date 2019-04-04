@@ -81,6 +81,7 @@ volumes/celery/*
 volumes/static/*
 volumes/media/*
 volumes/react_build/*
+volumes/certbot/*
 
 
 !volumes/*/.gitkeep
