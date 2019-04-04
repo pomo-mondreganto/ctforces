@@ -115,6 +115,9 @@ class HasViewTaskPermission(HasViewPermissionIfPublishedMixin):
 class HasViewPostPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_post'
 
+    def has_permission(self, request, view):
+        return True
+
 
 class HasViewContestPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_contest'

@@ -250,6 +250,10 @@ class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
     def get_object(self):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, id=self.request.user.id)
+        obj.can_create_tasks = self.request.user.has_perm('api.create_task')
+        obj.can_create_posts = self.request.user.has_perm('api.create_post')
+        obj.can_create_contests = self.request.user.has_perm('api.create_contest')
+        obj.can_create_taskfiles = self.request.user.has_perm('api.create_taskfile')
         return obj
 
 
