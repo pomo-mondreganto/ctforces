@@ -49,7 +49,7 @@ services:
       - configs/environment.dev.env
 
   nginx:
-    image: nginx_dev:1.15.9-alpine
+    image: nginx:1.15.9-alpine
     volumes:
       - ./configs/nginx_dev:/etc/nginx/conf.d
       - ./configs/nginx.proxy_params:/etc/nginx/proxy_params
