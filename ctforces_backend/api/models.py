@@ -228,6 +228,7 @@ class Contest(models.Model):
 
     publish_tasks_after_finished = models.BooleanField(default=True)
     is_rated = models.BooleanField(default=True)
+    always_recalculate_rating = models.BooleanField(default=False)
 
     celery_start_task_id = models.CharField(max_length=50, null=True, blank=True)
     celery_end_task_id = models.CharField(max_length=50, null=True, blank=True)
@@ -301,6 +302,7 @@ class ContestParticipantRelationship(models.Model):
 
     last_solve = models.DateTimeField(default=timezone.now)
     delta = models.IntegerField(null=True, blank=True)
+    has_opened_contest = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (

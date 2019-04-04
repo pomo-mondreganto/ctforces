@@ -111,7 +111,19 @@ def recalculate_rating(contest_id):
         ).values('last_solve')
     )
 
-    participants = contest.participants.annotate(
+    participants = contest.participants.all()
+
+    if not contest.always_recalculate_rating:
+        participants = participants.annotate(
+            has_opened_contest=Subquery(
+                get_model('api', 'ContestParticipantRelationship').objects.filter(
+                    contest=contest,
+                    participant=OuterRef('id'),
+                ).values('has_opened_contest'),
+            ),
+        ).filter(has_opened_contest=True)
+
+    participants = participants.annotate(
         cost_sum=Coalesce(
             user_cost_sum_subquery,
             V(0),

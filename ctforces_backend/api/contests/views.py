@@ -278,6 +278,12 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if not contest.is_published and not self.request.user.has_perm('view_contest', contest):
             raise PermissionDenied(detail='You cannot access this contest')
 
+        if self.action == 'retrieve':
+            api_models.ContestParticipantRelationship.objects.filter(
+                contest=contest,
+                participant=self.request.user,
+            ).update(has_opened_contest=True)
+
         return contest
 
     def get_queryset(self):
