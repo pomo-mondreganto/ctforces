@@ -44,7 +44,7 @@ def start_contest(self, contest_id):
 
 @shared_task(bind=True)
 def end_contest(self, contest_id):
-    logger.info('Request to end contest_id {}, task {}'.format(contest_id, self.request.id))
+    logger.info(f'Request to end contest_id {contest_id}, task {self.request.id}')
 
     query = Q(celery_end_task_id=self.request.id)
     if contest_id:

@@ -362,7 +362,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         task = self.get_object()
         contest = self.get_contest()
         if contest.is_running and not contest.participants.filter(id=self.request.user.id).exists():
-            raise PermissionDenied('You are not registered.')
+            raise PermissionDenied('You are not registered for this contest.')
 
         if api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
             contest=contest,

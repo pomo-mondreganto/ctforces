@@ -50,82 +50,82 @@ class HasViewPermissionIfPublishedMixin(HasPermissionMixin):
 
 
 class HasContestTaskRelationshipPermission(HasPermissionMixin):
-    permission_name = 'change_contest'
+    permission_name = 'api.change_contest'
 
     def has_object_permission(self, request, view, obj):
         return request.user.has_perm(self.permission_name, obj.contest)
 
 
 class HasEditTaskPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
-    permission_name = 'change_task'
+    permission_name = 'api.change_task'
 
 
 class HasEditTaskPermission(HasPermissionMixin):
-    permission_name = 'change_task'
+    permission_name = 'api.change_task'
 
 
 class HasCreateTaskPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
-    permission_name = 'add_task'
+    permission_name = 'api.add_task'
 
 
 class HasCreateTaskPermission(HasPermissionMixin):
-    permission_name = 'add_task'
+    permission_name = 'api.add_task'
 
 
 class HasDeleteTaskPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
-    permission_name = 'delete_task'
+    permission_name = 'api.delete_task'
 
 
 class HasDeleteTaskPermission(HasPermissionMixin):
-    permission_name = 'delete_task'
+    permission_name = 'api.delete_task'
 
 
 class HasCreateTaskFilePermission(HasPermissionMixin):
-    permission_name = 'add_taskfile'
+    permission_name = 'api.add_taskfile'
 
 
 class HasCreateTaskFilePermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
-    permission_name = 'add_taskfile'
+    permission_name = 'api.add_taskfile'
 
 
 class HasEditPostPermission(HasPermissionMixin):
-    permission_name = 'change_post'
+    permission_name = 'api.change_post'
 
 
 class HasEditPostPermissionOrReadOnly(HasPermissionOrReadOnlyMixin):
-    permission_name = 'change_post'
+    permission_name = 'api.change_post'
 
 
 class HasEditContestPermission(HasPermissionMixin):
-    permission_name = 'change_contest'
+    permission_name = 'api.change_contest'
 
 
 class HasCreateContestPermission(HasPermissionMixin):
-    permission_name = 'add_contest'
+    permission_name = 'api.add_contest'
 
 
 class HasDeleteContestPermission(HasPermissionMixin):
-    permission_name = 'delete_contest'
+    permission_name = 'api.delete_contest'
 
 
 class HasViewTaskPermission(HasViewPermissionIfPublishedMixin):
-    permission_name = 'view_task'
+    permission_name = 'api.view_task'
 
 
 class HasViewPostPermission(HasViewPermissionIfPublishedMixin):
-    permission_name = 'view_post'
+    permission_name = 'api.view_post'
 
 
 class HasViewContestPermission(HasViewPermissionIfPublishedMixin):
-    permission_name = 'view_contest'
+    permission_name = 'api.view_contest'
 
 
 class HasModifyTaskHintsPermission(HasPermissionMixin):
-    permission_name = 'change_task'
+    permission_name = 'api.change_task'
 
     def has_object_permission(self, request, view, obj):
         return request.user.has_perm(self.permission_name, obj.task)
 
 
 class HasViewTaskHintPermission(HasViewPermissionIfPublishedMixin):
-    permission_name = 'view_taskhint'
+    permission_name = 'api.view_taskhint'

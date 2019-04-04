@@ -34,7 +34,8 @@ class CustomUploadTo:
         if self.kwargs.get('random_filename'):
             defaults['name'] = uuid.uuid4().hex
         if self.kwargs.get('append_random'):
-            defaults['name'] = '{}_{}'.format(defaults['name'], uuid.uuid4().hex)
+            random_str = uuid.uuid4().hex
+            defaults['name'] = f'{defaults["name"]}_{random_str}'
         result = os.path.join(self.path_pattern.format(**defaults), self.file_pattern.format(**defaults)).lstrip('/')
 
         return result
@@ -110,5 +111,5 @@ class CustomFileField(FileField):
         data = super(CustomFileField, self).clean(*args, **kwargs)
         file = data.file
         if file.size > self.max_file_size:
-            raise exceptions.ValidationError('File size must be under {}MB.'.format(self.max_file_size // 1024 // 1024))
+            raise exceptions.ValidationError(f'File size must be under {self.max_file_size // 1024 // 1024}MB.')
         return data

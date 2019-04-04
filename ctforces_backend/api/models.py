@@ -116,7 +116,7 @@ class TaskTag(models.Model):
     )
 
     def __str__(self):
-        return "Tag object ({}:{})".format(self.id, self.name)
+        return f"Tag object ({self.id}:{self.name})"
 
     class Meta:
         ordering = ('name',)
@@ -160,7 +160,7 @@ class Task(models.Model):
                                update_fields=update_fields)
 
     def __str__(self):
-        return "Task object ({}:{})".format(self.id, self.name)
+        return f"Task object ({self.id}:{self.name})"
 
     class Meta:
         ordering = ('id',)
