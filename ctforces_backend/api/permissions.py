@@ -111,6 +111,9 @@ class HasDeleteContestPermission(HasPermissionMixin):
 class HasViewTaskPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_task'
 
+    def has_permission(self, request, view):
+        return True
+
 
 class HasViewPostPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_post'
@@ -121,6 +124,9 @@ class HasViewPostPermission(HasViewPermissionIfPublishedMixin):
 
 class HasViewContestPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_contest'
+    
+    def has_permission(self, request, view):
+        return True
 
 
 class HasModifyTaskHintsPermission(HasPermissionMixin):

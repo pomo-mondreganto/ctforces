@@ -134,6 +134,8 @@ class Task(models.Model):
     cost = models.IntegerField(null=False, blank=False, default=50)
 
     is_published = models.BooleanField(default=False)
+
+    show_on_main_page = models.BooleanField(default=False)
     publication_time = models.DateTimeField(null=True, blank=True)
 
     tags = models.ManyToManyField('TaskTag', related_name='tasks', blank=True)

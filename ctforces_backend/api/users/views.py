@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Count
+from django.db.models import Count, Exists, OuterRef
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -244,16 +244,35 @@ class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
 
     def get_queryset(self):
         if self.request.method == 'GET':
-            return api_models.User.upsolving_annotated.all()
+            return api_models.User.upsolving_annotated.annotate(
+                has_tasks=Exists(
+                    api_models.Task.objects.filter(
+                        author_id=OuterRef('id'),
+                    ),
+                ),
+                has_contests=Exists(
+                    api_models.Contest.objects.filter(
+                        author_id=OuterRef('id'),
+                    ),
+                ),
+                has_posts=Exists(
+                    api_models.Post.objects.filter(
+                        author_id=OuterRef('id'),
+                    ),
+                ),
+            ).all()
         return api_models.User.objects.all()
 
     def get_object(self):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, id=self.request.user.id)
-        obj.can_create_tasks = self.request.user.has_perm('api.add_task')
-        obj.can_create_posts = self.request.user.has_perm('api.add_post')
-        obj.can_create_contests = self.request.user.has_perm('api.add_contest')
-        obj.can_create_taskfiles = self.request.user.has_perm('api.add_taskfile')
+
+        if self.request.method == 'GET':
+            obj.can_create_tasks = self.request.user.has_perm('api.add_task')
+            obj.can_create_posts = self.request.user.has_perm('api.add_post')
+            obj.can_create_contests = self.request.user.has_perm('api.add_contest')
+            obj.can_create_taskfiles = self.request.user.has_perm('api.add_taskfile')
+
         return obj
 
 

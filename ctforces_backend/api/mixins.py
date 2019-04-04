@@ -35,3 +35,11 @@ class PageNumberWithPageSizePagination(PageNumberPagination):
             ('previous', self.get_previous_link()),
             ('results', data)
         ]))
+
+
+class ReadOnlySerializerMixin:
+    def create(self, *args, **kwargs):
+        raise NotImplemented
+
+    def update(self, *args, **kwargs):
+        raise NotImplemented

@@ -2,6 +2,7 @@ from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
 
 from api import fields as api_fields
+from api import mixins as api_mixins
 from api import models as api_models
 from api.tasks import serializers as api_tasks_serializers
 
@@ -63,7 +64,7 @@ class ContestTaskRelationshipUpdateSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer):
+class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
     tags_details = api_tasks_serializers.TaskTagSerializer(many=True, read_only=True, source='tags')
     contest_cost = rest_serializers.IntegerField(read_only=True)
@@ -84,7 +85,7 @@ class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class ContestTaskViewSerializer(rest_serializers.ModelSerializer):
+class ContestTaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
     tags_details = api_tasks_serializers.TaskTagSerializer(many=True, read_only=True, source='tags')
     files_details = api_tasks_serializers.TaskFileViewSerializer(many=True, read_only=True, source='files')
@@ -162,7 +163,7 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
         return instance
 
 
-class ContestPreviewSerializer(rest_serializers.ModelSerializer):
+class ContestPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     registered_count = rest_serializers.IntegerField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
 
@@ -183,7 +184,7 @@ class ContestPreviewSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class ContestViewSerializer(rest_serializers.ModelSerializer):
+class ContestViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     can_edit_contest = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     contest_task_relationship_details = ContestTaskRelationshipMainSerializer(
@@ -217,7 +218,7 @@ class ContestViewSerializer(rest_serializers.ModelSerializer):
         }
 
 
-class ContestScoreboardUserSerializer(rest_serializers.ModelSerializer):
+class ContestScoreboardUserSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     cost_sum = rest_serializers.IntegerField()
     last_contest_solve = rest_serializers.DateTimeField()
 
@@ -231,7 +232,7 @@ class ContestScoreboardUserSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class ContestScoreboardUserMinimalSerializer(rest_serializers.ModelSerializer):
+class ContestScoreboardUserMinimalSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     class Meta:
         model = api_models.User
         fields = (
@@ -240,7 +241,7 @@ class ContestScoreboardUserMinimalSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class ContestScoreboardSerializer(rest_serializers.ModelSerializer):
+class ContestScoreboardSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     task_name = rest_serializers.CharField()
 
     class Meta:

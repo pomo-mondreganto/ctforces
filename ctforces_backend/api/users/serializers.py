@@ -5,6 +5,7 @@ from rest_framework import serializers as rest_serializers
 from rest_framework import validators as rest_validators
 from rest_framework.fields import empty
 
+from api import mixins as api_mixins
 from api import models as api_models
 
 
@@ -102,7 +103,7 @@ class UserPersonalInfoSerializer(rest_serializers.ModelSerializer):
         nested_proxy_field = True
 
 
-class UserBasicSerializer(rest_serializers.ModelSerializer):
+class UserBasicSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     avatar_main = rest_serializers.URLField(source='avatar.main.url')
     avatar_small = rest_serializers.URLField(source='avatar.small.url')
     cost_sum = rest_serializers.IntegerField(read_only=True)
@@ -137,6 +138,13 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
     old_password = rest_serializers.CharField(write_only=True, required=False)
     password = rest_serializers.CharField(write_only=True, required=False)
     personal_info = UserPersonalInfoSerializer(required=False)
+    can_create_tasks = rest_serializers.BooleanField(read_only=True)
+    can_create_posts = rest_serializers.BooleanField(read_only=True)
+    can_create_contests = rest_serializers.BooleanField(read_only=True)
+    can_create_taskfiles = rest_serializers.BooleanField(read_only=True)
+    has_tasks = rest_serializers.BooleanField(read_only=True)
+    has_posts = rest_serializers.BooleanField(read_only=True)
+    has_contests = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
         model = api_models.User
@@ -144,8 +152,15 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
             'id',
             'avatar_main',
             'avatar_small',
+            'can_create_tasks',
+            'can_create_posts',
+            'can_create_contests',
+            'can_create_taskfiles',
             'cost_sum',
             'email',
+            'has_tasks',
+            'has_posts',
+            'has_contests',
             'hide_personal_info',
             'max_rating',
             'old_password',

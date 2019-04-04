@@ -2,6 +2,7 @@ from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
 
 from api import fields as api_fields
+from api import mixins as api_mixins
 from api import models as api_models
 
 
@@ -18,7 +19,7 @@ class TaskTagSerializer(rest_serializers.ModelSerializer):
         return data
 
 
-class TaskPreviewSerializer(rest_serializers.ModelSerializer):
+class TaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
@@ -74,7 +75,7 @@ class TaskFileMainSerializer(rest_serializers.ModelSerializer):
         return attrs
 
 
-class TaskFileViewSerializer(rest_serializers.ModelSerializer):
+class TaskFileViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     class Meta:
         model = api_models.TaskFile
         fields = (
@@ -85,7 +86,7 @@ class TaskFileViewSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class TaskViewSerializer(rest_serializers.ModelSerializer):
+class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
     tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
@@ -192,7 +193,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
         return instance
 
 
-class TaskSubmitSerializer(rest_serializers.ModelSerializer):
+class TaskSubmitSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     class Meta:
         model = api_models.Task
         fields = ('flag',)

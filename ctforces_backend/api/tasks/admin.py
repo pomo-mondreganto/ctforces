@@ -33,7 +33,7 @@ class CustomTaskAdmin(admin.ModelAdmin):
         'flag',
         'cost',
         'solved_count',
-        'is_published',
+        'show_on_main_page',
         'publication_time',
     )
 
@@ -60,6 +60,7 @@ class CustomTaskAdmin(admin.ModelAdmin):
             {
                 'fields': (
                     'is_published',
+                    'show_on_main_page',
                     'publication_time',
                 ),
             }

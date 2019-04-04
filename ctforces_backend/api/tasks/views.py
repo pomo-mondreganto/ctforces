@@ -45,7 +45,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         queryset = super(TaskViewSet, self).get_queryset()
 
         if self.action == 'list' or self.action == 'search_by_tag':
-            queryset = queryset.filter(is_published=True)
+            queryset = queryset.filter(show_on_main_page=True)
 
         return queryset.annotate(
             solved_count=Count(
