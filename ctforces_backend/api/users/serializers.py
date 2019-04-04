@@ -116,6 +116,7 @@ class UserBasicSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlyS
             'avatar_main',
             'avatar_small',
             'cost_sum',
+            'has_participated_in_rated_contest',
             'hide_personal_info',
             'max_rating',
             'personal_info',

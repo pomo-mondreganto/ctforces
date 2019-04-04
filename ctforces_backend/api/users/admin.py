@@ -74,6 +74,8 @@ class CustomUserAdmin(UserAdmin):
                     'rating',
                     'max_rating',
                     'cost_sum',
+                    'has_participated_in_rated_contest',
+                    'show_in_ratings',
                 ),
             }
         ),

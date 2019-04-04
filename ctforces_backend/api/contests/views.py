@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F, Q, Prefetch, IntegerField
+from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F, Prefetch, IntegerField
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
@@ -168,7 +168,9 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             ).values('last_solve')
         )
 
-        users_queryset = instance.participants.annotate(
+        users_queryset = instance.participants.filter(
+            show_in_ratings=True,
+        ).annotate(
             cost_sum=Coalesce(
                 user_cost_sum_subquery,
                 V(0),
@@ -303,26 +305,34 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                     participant=self.request.user.id,
                 ),
             ),
-            solved_count=Count(
-                'contest_task_participant_solved_relationship',
-                filter=Q(
-                    contest_task_participant_solved_relationship__contest_id=contest.id
-                ),
-                distinct=True,
-            ),
             contest_cost=Subquery(
                 api_models.ContestTaskRelationship.objects.filter(
                     contest=contest,
                     task_id=OuterRef('id'),
                 ).values('cost')
             ),
-            ordering_number=Subquery(
-                api_models.ContestTaskRelationship.objects.filter(
-                    contest=contest,
-                    task_id=OuterRef('id'),
-                ).values('ordering_number')
-            ),
-        ).prefetch_related('tags', 'files').select_related('author').order_by(
+        )
+
+        if self.action == 'list':
+            queryset = queryset.annotate(
+                solved_count=api_database_functions.SubqueryCount(
+                    api_models.ContestParticipantRelationship.objects.filter(
+                        contest=contest,
+                        participant__show_in_ratings=True,
+                    ),
+                ),
+                ordering_number=Subquery(
+                    api_models.ContestTaskRelationship.objects.filter(
+                        contest=contest,
+                        task_id=OuterRef('id'),
+                    ).values('ordering_number')
+                ),
+            ).prefetch_related('contest_task_participant_solved_relationship')
+
+        queryset = queryset.prefetch_related(
+            'tags',
+            'files',
+        ).select_related('author').order_by(
             '-ordering_number',
             'contest_cost',
             'id',

@@ -144,16 +144,21 @@ def recalculate_rating(contest_id):
     deltas = rs.calculate()
 
     for i, player in enumerate(participants):
-        get_model('api', 'User').objects.filter(id=player[0]).update(rating=player[2] + deltas[i])
+        get_model('api', 'User').objects.filter(id=player[0]).update(
+            rating=player[2] + deltas[i],
+            has_participated_in_rated_contest=True,
+        )
         get_model('api', 'ContestParticipantRelationship').objects.filter(
             user_id=player[0],
-            contest_id=contest_id
+            contest=contest,
         ).update(
-            delta=deltas[i]
+            delta=deltas[i],
         )
 
         if player[2] + deltas[i] > player[3] or player.contest_participant_relationship.count() == 1:
-            get_model('api', 'User').objects.filter(id=player[0]).update(max_rating=player[2] + deltas[i])
+            get_model('api', 'User').objects.filter(id=player[0]).update(
+                max_rating=player[2] + deltas[i],
+            )
 
 
 @shared_task

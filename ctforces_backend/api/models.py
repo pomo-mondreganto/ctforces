@@ -80,6 +80,10 @@ class User(AbstractUser):
         'last_name',
     )
 
+    has_participated_in_rated_contest = models.BooleanField(default=False)
+
+    show_in_ratings = models.BooleanField(default=True)
+
     last_email_resend = models.DateTimeField(null=True, blank=True)
 
     class Meta:

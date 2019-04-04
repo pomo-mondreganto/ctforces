@@ -200,7 +200,12 @@ class PasswordResetEndpointView(APIView):
         if not user:
             raise ValidationError({'detail': 'No such user.'})
 
-        serializer = api_users_serializers.UserPasswordResetSerializer(data={'password': new_password}, instance=user)
+        serializer = api_users_serializers.UserPasswordResetSerializer(
+            data={
+                'password': new_password
+            },
+            instance=user,
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
@@ -300,7 +305,15 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, url_name='upsolving_top', url_path='upsolving_top', methods=['get'])
     def get_upsolving_top(self, request):
-        users_with_upsolving = self.get_queryset().only('username', 'rating').order_by('-cost_sum', 'last_solve')
+        users_with_upsolving = self.get_queryset().filter(
+            show_in_ratings=True,
+        ).only(
+            'username',
+            'rating',
+        ).order_by(
+            '-cost_sum',
+            'last_solve',
+        )
 
         return api_pagination.get_paginated_response(
             paginator=self.paginator,
@@ -311,7 +324,15 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, url_name='rating_top', url_path='rating_top', methods=['get'])
     def get_rating_top(self, request):
-        users_with_rating = api_models.User.objects.only('username', 'rating').order_by('-rating', 'last_solve')
+        users_with_rating = api_models.User.objects.filter(
+            show_in_ratings=True,
+        ).only(
+            'username',
+            'rating',
+        ).order_by(
+            '-rating',
+            'last_solve',
+        )
 
         return api_pagination.get_paginated_response(
             paginator=self.paginator,
