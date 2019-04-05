@@ -129,6 +129,11 @@ def recalculate_rating(contest_id):
             V(0),
         ),
         last_contest_solve=last_contest_solve_subquery,
+        contests_participated=api_database_functions.SubqueryCount(
+            get_model('api', 'ContestParticipantRelationship').objects.filter(
+                participants=OuterRef('id'),
+            )
+        )
     ).order_by(
         '-cost_sum',
         'last_contest_solve',
@@ -137,6 +142,7 @@ def recalculate_rating(contest_id):
         'cost_sum',
         'rating',
         'max_rating',
+        'contests_participated',
     )
 
     ratings = [player[2] for player in participants]
@@ -155,7 +161,7 @@ def recalculate_rating(contest_id):
             delta=deltas[i],
         )
 
-        if player[2] + deltas[i] > player[3] or player.contest_participant_relationship.count() == 1:
+        if player[2] + deltas[i] > player[3] or player[4] == 1:
             get_model('api', 'User').objects.filter(id=player[0]).update(
                 max_rating=player[2] + deltas[i],
             )
