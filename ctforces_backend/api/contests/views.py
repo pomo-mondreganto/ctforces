@@ -187,35 +187,19 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             request=self.request,
         )
 
-        if users_page is not None:
-            relationship_queryset = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                contest=instance,
-                participant__in=users_page,
-            ).select_related('task').annotate(
-                task_name=F('task__name'),
-            )
+        relationship_queryset = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+            contest=instance,
+            participant__in=users_page,
+        ).select_related('task').annotate(
+            task_name=F('task__name'),
+        )
 
-            users_serializer = api_contests_serializers.ContestScoreboardUserSerializer(
-                instance=users_page,
-                many=True,
-            )
+        users_serializer = api_contests_serializers.ContestScoreboardUserSerializer(
+            instance=users_page,
+            many=True,
+        )
 
-            users_data = users_paginator.get_paginated_response(users_serializer.data).data
-        else:
-            relationship_queryset = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                contest=instance,
-                participant__in=users_queryset,
-            ).select_related('task').annotate(
-                task_name=F('task__name'),
-            )
-            users_page = users_queryset
-
-            users_serializer = api_contests_serializers.ContestScoreboardUserSerializer(
-                instance=users_page,
-                many=True,
-            )
-
-            users_data = users_serializer.data
+        users_data = users_paginator.get_paginated_response(users_serializer.data).data
 
         data_serializer = api_contests_serializers.ContestScoreboardSerializer(
             instance=list(relationship_queryset),
@@ -396,34 +380,38 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
         task = self.get_object()
         contest = self.get_contest()
-        if contest.is_running and not contest.participants.filter(id=self.request.user.id).exists():
+        if contest.is_running and not contest.participants.filter(
+            id=self.request.user.id,
+        ).exists():
             raise PermissionDenied('You are not registered for this contest.')
 
         if api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
             contest=contest,
             task=task,
-            participant=self.request.user.id,
+            participant=self.request.user,
         ).exists():
             raise PermissionDenied('Task already solved.')
 
-        serializer = api_tasks_serializers.TaskSubmitSerializer(data=self.request.data, instance=task)
+        serializer = api_tasks_serializers.TaskSubmitSerializer(
+            data=self.request.data,
+            instance=task,
+        )
+
         if serializer.is_valid(raise_exception=True):
             if contest.is_running:
                 api_models.ContestTaskParticipantSolvedRelationship.objects.create(
                     contest=contest,
                     task=task,
-                    participant=self.request.user.id,
+                    participant=self.request.user,
                 )
 
                 contest.contest_participant_relationship.filter(
-                    participant=self.request.user.id,
+                    participant=self.request.user,
                 ).update(
                     last_solve=timezone.now(),
                 )
 
             task.solved_by.add(self.request.user)
-            api_models.User.objects.filter(id=self.request.user.id).update(
-                last_solve=timezone.now()
-            )
+            self.request.user.last_solve = timezone.now()
 
             return Response('accepted!')
