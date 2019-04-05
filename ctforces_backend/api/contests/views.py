@@ -331,8 +331,9 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if self.action == 'list':
             queryset = queryset.annotate(
                 solved_count=api_database_functions.SubqueryCount(
-                    api_models.ContestParticipantRelationship.objects.filter(
+                    api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
                         contest=contest,
+                        task=OuterRef('id'),
                         participant__show_in_ratings=True,
                     ).select_related('participant'),
                 ),
@@ -388,8 +389,15 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         )
 
         users_solved = api_models.User.objects.filter(
-            id__in=solved_participants_subquery,
+            contest_task_participant_solved_relationship__in=solved_participants_subquery,
             show_in_ratings=True,
+        ).prefetch_related(
+            Prefetch(
+                'contest_task_participant_solved_relationship',
+                queryset=api_models.ContestTaskParticipantSolvedRelationship.objects.only(
+                    'id',
+                ).all(),
+            )
         ).all()
 
         return api_pagination.get_paginated_response(
