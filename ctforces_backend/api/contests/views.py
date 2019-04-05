@@ -311,6 +311,12 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                     task_id=OuterRef('id'),
                 ).values('cost')
             ),
+            ordering_number=Subquery(
+                api_models.ContestTaskRelationship.objects.filter(
+                    contest=contest,
+                    task_id=OuterRef('id'),
+                ).values('ordering_number')
+            ),
         )
 
         if self.action == 'list':
@@ -320,12 +326,6 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                         contest=contest,
                         participant__show_in_ratings=True,
                     ),
-                ),
-                ordering_number=Subquery(
-                    api_models.ContestTaskRelationship.objects.filter(
-                        contest=contest,
-                        task_id=OuterRef('id'),
-                    ).values('ordering_number')
                 ),
             ).prefetch_related('contest_task_participant_solved_relationship')
 
