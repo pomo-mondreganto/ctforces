@@ -13,14 +13,14 @@ const Posts = props => (
             exact
             path="/posts/create/"
             component={PostCreatePage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
-        <PublicRoute exact path="/posts/:id/" component={PostViewPage} key={props.location.pathname} />
+        <PublicRoute exact path="/posts/:id/" component={PostViewPage} key={props.location.pathname + props.location.search} />
         <PrivateRoute
             exact
             path="/posts/:id/edit/"
             component={PostEditPage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
     </Switch>
 );

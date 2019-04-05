@@ -17,16 +17,16 @@ const Tasks = props => (
             exact
             path="/tasks/create/"
             component={TaskCreatePage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
-        <PublicRoute exact path="/tasks/:id/" component={TaskViewPage} key={props.location.pathname} />
-        <PublicRoute exact path="/tasks/:id/solved/" component={TaskSolvedPage} key={props.location.pathname} />
-        <PublicRoute exact path="/tasks/" component={TaskListPage} key={props.location.pathname} />
+        <PublicRoute exact path="/tasks/:id/" component={TaskViewPage} key={props.location.pathname + props.location.search} />
+        <PublicRoute exact path="/tasks/:id/solved/" component={TaskSolvedPage} key={props.location.pathname + props.location.search} />
+        <PublicRoute exact path="/tasks/" component={TaskListPage} key={props.location.pathname + props.location.search} />
         <PrivateRoute
             exact
             path="/tasks/:id/edit/"
             component={TaskEditPage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
     </Switch>
 );

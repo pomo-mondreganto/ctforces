@@ -16,9 +16,7 @@ class LoginPage extends React.Component {
     }
 
     componentDidMount() {
-        console.log('here');
         const { email_sent: emailSent } = qs(this.props.location.search);
-        console.log(emailSent);
         this.setState({ emailSent });
     }
 

@@ -9,15 +9,16 @@ import RatingTopPage from './top_rating_list/Container';
 import UpsolvingTopPage from './top_upsolving_list/Container';
 
 
-const Users = props => (
-    <Switch>
-        <PublicRoute exact path="/users/:username/" component={UserPage} key={props.location.pathname} />
-        <PublicRoute exact path="/users/:username/tasks/" component={TasksListPage} key={props.location.pathname} />
-        <PublicRoute exact path="/users/:username/posts/" component={PostsListPage} key={props.location.pathname} />
-        <PublicRoute exact path="/users/:username/contests/" component={ContestsListPage} key={props.location.pathname} />
-        <PublicRoute exact path="/users/rating/top/" component={RatingTopPage} key={props.location.pathname} />
-        <PublicRoute exact path="/users/upsolving/top/" component={UpsolvingTopPage} key={props.location.pathname} />
-    </Switch>
-);
+const Users = (props) => {
+    console.log(props);
+    return <Switch>
+        <PublicRoute exact path="/users/:username/" component={UserPage} key={props.location.pathname + props.location.search} />
+        <PublicRoute exact path="/users/:username/tasks/" component={TasksListPage} key={props.location.pathname + props.location.search} />
+        <PublicRoute exact path="/users/:username/posts/" component={PostsListPage} key={props.location.pathname + props.location.search} />
+        <PublicRoute exact path="/users/:username/contests/" component={ContestsListPage} key={props.location.pathname + props.location.search} />
+        <PublicRoute exact path="/users/rating/top/" component={RatingTopPage} key={props.location.pathname + props.location.search} />
+        <PublicRoute exact path="/users/upsolving/top/" component={UpsolvingTopPage} key={props.location.pathname + props.location.search} />
+    </Switch>;
+};
 
 export default Users;

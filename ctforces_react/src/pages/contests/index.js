@@ -17,43 +17,43 @@ const Contests = props => (
             exact
             path="/contests/create/"
             component={ContestCreatePage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
         <PublicRoute
             exact
             path="/contests/:id/"
             component={ContestViewPage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
         <PublicRoute
             exact
             path="/contests/:id/scoreboard/"
             component={ContestScoreboardPage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
         <PublicRoute
             exact
             path="/contests/:id/tasks/:task_id/"
             component={ContestTaskPage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
         <PublicRoute
             exact
             path="/contests/:id/tasks/:task_id/solved/"
             component={ContestTaskSolvedPage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
         <PublicRoute
             exact
             path="/contests/"
             component={ContestListPage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
         <PrivateRoute
             exact
             path="/contests/:id/edit/"
             component={ContestEditPage}
-            key={props.location.pathname}
+            key={props.location.pathname + props.location.search}
         />
     </Switch>
 );
