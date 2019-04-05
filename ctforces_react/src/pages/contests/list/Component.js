@@ -89,7 +89,7 @@ const Component = props => (
                                                     </span>
                                                 )}
                                                 {obj.is_registered && (
-                                                    <span className="contest-register">
+                                                    <span className="contest-registered">
                                                         Registered
                                                     </span>
                                                 )}
