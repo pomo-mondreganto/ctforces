@@ -18,6 +18,7 @@ from api import pagination as api_pagination
 from api import permissions as api_permissions
 from api.contests import serializers as api_contests_serializers
 from api.tasks import serializers as api_tasks_serializers
+from api.users import serializers as api_users_serializers
 
 
 class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
@@ -277,11 +278,16 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         ).prefetch_related(
             'tasks',
         ).first()
+
         if not contest:
             raise NotFound(detail='Contest not found.')
 
         if not contest.is_published and not self.request.user.has_perm('view_contest', contest):
-            raise PermissionDenied(detail='You cannot access this contest')
+            raise NotFound(detail='Contest not found.')
+
+        if not contest.is_running and not contest.is_finished:
+            if not self.request.user.has_perm('view_contest', contest):
+                raise PermissionDenied(detail='Contest is not started yet')
 
         if self.action == 'retrieve':
             api_models.ContestParticipantRelationship.objects.filter(
@@ -368,6 +374,30 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return api_contests_serializers.ContestTaskViewSerializer
         return super(ContestTaskViewSet, self).get_serializer_class()
+
+    @action(detail=True,
+            url_name='solved',
+            url_path='solved',
+            methods=['get'])
+    def get_solved(self, *_args, **_kwargs):
+        task = self.get_object()
+        contest = self.get_contest()
+        solved_participants_subquery = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+            task=task,
+            contest=contest,
+        )
+
+        users_solved = api_models.User.objects.filter(
+            id__in=solved_participants_subquery,
+            show_in_ratings=True,
+        ).all()
+
+        return api_pagination.get_paginated_response(
+            paginator=api_pagination.UserDefaultPagination(),
+            queryset=users_solved,
+            serializer_class=api_users_serializers.UserBasicSerializer,
+            request=self.request,
+        )
 
     @action(detail=True,
             url_name='submit',
