@@ -7,6 +7,7 @@ import Layout from 'layouts/sidebar/Container';
 import CardWithTabsComponent from 'components/CardWithTabs/Container';
 import getRank from 'lib/Ranking';
 import convert from 'lib/HumanTime';
+import Markdown from 'components/Markdown/Container';
 
 import UserTopBar from 'snippets_components/UserTopBar';
 
@@ -44,7 +45,7 @@ const Component = props => (
 
                     <hr />
                     <div className="py-2 long-text">
-                        {obj.body}
+                        <Markdown text={obj.body} />
                     </div>
                 </div>
             ))}
