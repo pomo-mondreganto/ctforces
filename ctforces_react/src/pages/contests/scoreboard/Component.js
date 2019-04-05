@@ -64,7 +64,7 @@ const Component = ({
                                 <div key={i} className='users-table-item'>
                                     <span className="ta-c">{i + 1}</span>
                                     <span className="ta-l">
-                                        <LinkContainerNonActive to={`/users/${obj.id}/`}>
+                                        <LinkContainerNonActive to={`/users/${obj.username}/`}>
                                             <a className={getRank(obj.rating)}>
                                                 {obj.username}
                                             </a>
