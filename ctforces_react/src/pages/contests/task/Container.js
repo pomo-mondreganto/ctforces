@@ -4,7 +4,7 @@ import axios from 'axios';
 import Component from './Component';
 
 
-class TaskViewContainer extends React.Component {
+class ContestTaskViewContainer extends React.Component {
     constructor(props) {
         super(props);
 
@@ -14,16 +14,18 @@ class TaskViewContainer extends React.Component {
     }
 
     async componentDidMount() {
-        const { id } = this.props.match.params;
-        const response = await axios.get(`/tasks/${id}/`);
+        const { id, task_id: taskId } = this.props.match.params;
+        const response = await axios.get(`/contests/${id}/tasks/${taskId}/`);
         this.setState({
             task: response.data,
+            contestId: id,
+            taskId,
         });
     }
 
     handleSubmit = async ({ values, actions }) => {
         try {
-            await axios.post(`/tasks/${this.state.task.id}/submit/`, values);
+            await axios.post(`/contests/${this.state.contestId}/tasks/${this.state.taskId}/submit/`, values);
             const { task } = this.state;
             task.is_solved_by_user = true;
             this.setState({ task });
@@ -46,4 +48,4 @@ class TaskViewContainer extends React.Component {
     }
 }
 
-export default TaskViewContainer;
+export default ContestTaskViewContainer;

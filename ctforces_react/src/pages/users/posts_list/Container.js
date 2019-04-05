@@ -10,19 +10,15 @@ class UserPostsPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            user: null,
-        };
+        this.state = {};
     }
 
     async componentDidMount() {
         const { username } = this.props.match.params;
         const { page: currentPage = 1 } = qs(this.props.location.search);
-        const responseUser = await axios.get(`/users/${username}/`);
         const responsePosts = await axios.get(`/users/${username}/posts/?page=${currentPage}`);
         const { page_size: pageSize, count, results: posts } = responsePosts.data;
         this.setState({
-            user: responseUser.data,
             pageSize,
             currentPage,
             count,
@@ -33,7 +29,6 @@ class UserPostsPage extends React.Component {
     render() {
         return (
             <Component
-                user={this.state.user}
                 auth={this.props.auth}
                 username={this.props.match.params.username}
                 posts={this.state.posts}

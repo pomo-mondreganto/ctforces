@@ -18,6 +18,14 @@ axios.defaults.withCredentials = true;
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
+axios.interceptors.response.use(response => response, (error) => {
+    const ret = error;
+    if (ret.response.status === 500) {
+        ret.response.data = { detail: 'Api server is down' };
+    }
+    return Promise.reject(ret);
+});
+
 const store = createStore(rootReducer);
 
 render(

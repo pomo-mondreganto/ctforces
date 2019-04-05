@@ -13,15 +13,10 @@ const Component = props => (
     <CardWithTabs
         title="Rating"
         pagination={
-            <>
-                {
-                    props.users
-                    && <Pagination to="/users/rating/top/"
-                        currentPage={props.currentPage}
-                        count={props.count}
-                        pageSize={props.pageSize} />
-                }
-            </>
+            <Pagination to="/users/rating/top/"
+                currentPage={props.currentPage}
+                count={props.count}
+                pageSize={props.pageSize} />
         }
     >
         <div className="tasks-table">

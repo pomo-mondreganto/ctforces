@@ -9,11 +9,13 @@ import { LinkContainerNonActive } from 'lib/LinkContainer';
 
 import getRank from 'lib/Ranking';
 
+import 'styles/pages/users.scss';
+
 const Component = props => (
     <CardWithTabs
-        title="Upsolving"
+        title="Solved by"
         pagination={
-            <Pagination to="/users/upsolving/top/"
+            <Pagination to={`/tasks/${props.taskId}/solved/`}
                 currentPage={props.currentPage}
                 count={props.count}
                 pageSize={props.pageSize} />
@@ -23,7 +25,7 @@ const Component = props => (
             <div className="users-table-head">
                 <span className="ta-c">#</span>
                 <span className="ta-l">Username</span>
-                <span className="ta-c">Points</span>
+                <span className="ta-c">Rating</span>
             </div>
             <div className="users-table-body">
                 {props.users && props.users.map((obj, i) => (
@@ -37,12 +39,12 @@ const Component = props => (
                                 </a>
                             </LinkContainerNonActive>
                         </span>
-                        <span className="ta-c">{obj.cost_sum}</span>
+                        <span className="ta-c">{obj.rating}</span>
                     </div>
                 ))}
             </div>
         </div>
-    </CardWithTabs >
+    </CardWithTabs>
 );
 
 export default withLayout(Component, Layout);

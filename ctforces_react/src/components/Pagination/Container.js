@@ -6,7 +6,15 @@ class PaginationContainer extends React.Component {
     constructor(props) {
         super(props);
 
-        const pagesCount = Math.ceil(props.count / props.pageSize);
+        this.state = {};
+    }
+
+    recalcState = (props) => {
+        if (props.count === undefined) {
+            return;
+        }
+
+        const pagesCount = Math.max(Math.ceil(props.count / props.pageSize), 1);
         const { currentPage } = props;
         const lastPage = pagesCount;
         const firstPage = 1;
@@ -19,16 +27,32 @@ class PaginationContainer extends React.Component {
             pages.push(i);
         }
 
-        this.state = {
-            pages,
-            left,
-            right,
-            to: props.to,
-        };
+        this.setState({
+            paginationInfo: {
+                pages,
+                left,
+                right,
+                to: props.to,
+            },
+        });
+    }
+
+    componentDidMount() {
+        this.recalcState(this.props);
+    }
+
+    componentDidUpdate(previousProps) {
+        if (previousProps !== this.props) {
+            this.recalcState(this.props);
+        }
     }
 
     render() {
-        return <Component paginationInfo={this.state} />;
+        if (!this.state.paginationInfo) {
+            return null;
+        }
+
+        return <Component paginationInfo={this.state.paginationInfo} />;
     }
 }
 

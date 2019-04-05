@@ -2,7 +2,7 @@ import React from 'react';
 
 import { LinkContainerNonActive } from 'lib/LinkContainer';
 
-import { mediaUrl } from 'config/config';
+import { serverUrl } from 'config/config';
 import CardWithTabs from 'components/CardWithTabs/Container';
 import getRank from 'lib/Ranking';
 
@@ -34,27 +34,33 @@ const Component = (props) => {
                                         </a>
                                     </LinkContainerNonActive>
                                 </li>
-                                <li>
-                                    <LinkContainerNonActive to={`/users/${user.username}/posts/`}>
-                                        <a>
-                                            Blog
-                                        </a>
-                                    </LinkContainerNonActive>
-                                </li>
-                                <li>
-                                    <LinkContainerNonActive to={`/users/${user.username}/tasks/`}>
-                                        <a>
-                                            Tasks
-                                        </a>
-                                    </LinkContainerNonActive>
-                                </li>
-                                <li>
-                                    <LinkContainerNonActive to={`/users/${user.username}/contests/`}>
-                                        <a>
-                                            Contests
-                                        </a>
-                                    </LinkContainerNonActive>
-                                </li>
+                                {user.can_create_posts && (
+                                    <li>
+                                        <LinkContainerNonActive to={`/users/${user.username}/posts/`}>
+                                            <a>
+                                                Blog
+                                            </a>
+                                        </LinkContainerNonActive>
+                                    </li>
+                                )}
+                                {user.can_create_tasks && (
+                                    <li>
+                                        <LinkContainerNonActive to={`/users/${user.username}/tasks/`}>
+                                            <a>
+                                                Tasks
+                                            </a>
+                                        </LinkContainerNonActive>
+                                    </li>
+                                )}
+                                {user.can_create_contests && (
+                                    <li>
+                                        <LinkContainerNonActive to={`/users/${user.username}/contests/`}>
+                                            <a>
+                                                Contests
+                                            </a>
+                                        </LinkContainerNonActive>
+                                    </li>
+                                )}
                                 <li>
                                     <LinkContainerNonActive to={'/settings/general/'}>
                                         <a>
@@ -68,7 +74,7 @@ const Component = (props) => {
                             <img
 
                                 className="p-3"
-                                src={`${mediaUrl}${user.avatar_small}`}
+                                src={`${serverUrl}${user.avatar_small}`}
                             />
                         </div>
                     </div>

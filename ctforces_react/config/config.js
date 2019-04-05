@@ -1,13 +1,17 @@
-let serverUrl = '';
+let url = '';
 
 if (process.env.NODE_ENV === 'development') {
-    serverUrl = 'http://127.0.0.1:8000';
+    url = 'http://127.0.0.1:8000';
 } else {
-    serverUrl = 'http://ctforces.com';
+    url = 'http://ctforces.com';
 }
 
+const serverUrl = url;
+
 const apiUrl = `${serverUrl}/api`;
-const mediaUrl = serverUrl;
+const mediaUrl = `${serverUrl}/media/`;
 const smallWidth = 991;
 
-export { apiUrl, mediaUrl, smallWidth };
+export {
+    serverUrl, apiUrl, mediaUrl, smallWidth,
+};

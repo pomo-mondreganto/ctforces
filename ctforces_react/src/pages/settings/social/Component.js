@@ -27,7 +27,7 @@ const Component = (props) => {
         <section>
             <article>
                 <CardWithTabsComponent
-                    tabs={UserTopBar(props.auth.user.username)}
+                    tabs={UserTopBar(props.auth.user.username, props.auth)}
                 >
                     <Formik
                         initialValues={{
