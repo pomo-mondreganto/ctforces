@@ -27,6 +27,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
     action_permission_classes = {
         'retrieve': (api_permissions.HasViewTaskPermission,),
+        'get_solved': (api_permissions.HasViewTaskPermission,),
         'get_full_task': (api_permissions.HasEditTaskPermission,),
         'create': (api_permissions.HasCreateTaskPermission,),
         'update': (api_permissions.HasEditTaskPermission,),
