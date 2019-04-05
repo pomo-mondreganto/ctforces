@@ -8,6 +8,8 @@ import { LinkContainerNonActive } from 'lib/LinkContainer';
 import Layout from 'layouts/sidebar/Container';
 import withLayout from 'wrappers/withLayout';
 
+import Markdown from 'components/Markdown/Container';
+
 import CardWithTabs from 'components/CardWithTabs/Container';
 
 const Component = ({ post }) => (
@@ -40,7 +42,7 @@ const Component = ({ post }) => (
 
                 <hr />
                 <div className="py-2 long-text">
-                    {post.body}
+                    <Markdown text={post.body} />
                 </div>
             </>
         )}
