@@ -109,10 +109,12 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     )
     def get_solved(self, request, *_args, **_kwargs):
         instance = self.get_object()
-        users_solved = instance.solved_by.all()
+        users_solved = instance.solved_by.filter(
+            show_in_ratings=True,
+        ).all()
 
         return api_pagination.get_paginated_response(
-            paginator=api_pagination.UserDefaultPagination,
+            paginator=api_pagination.UserDefaultPagination(),
             queryset=users_solved,
             serializer_class=api_users_serializers.UserBasicSerializer,
             request=request,
