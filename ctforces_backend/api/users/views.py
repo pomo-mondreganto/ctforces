@@ -363,6 +363,12 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 'solved_by',
                 distinct=True,
             ),
+            is_solved_by_user=Exists(
+                api_models.Task.objects.filter(
+                    id=OuterRef('id'),
+                    solved_by=self.request.user.id,
+                ),
+            ),
         )
 
         return api_pagination.get_paginated_response(
