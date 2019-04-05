@@ -325,7 +325,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                     api_models.ContestParticipantRelationship.objects.filter(
                         contest=contest,
                         participant__show_in_ratings=True,
-                    ),
+                    ).select_related('participant'),
                 ),
             ).prefetch_related('contest_task_participant_solved_relationship')
 
