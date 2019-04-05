@@ -14,6 +14,8 @@ import TextInput from 'components/Form/TextInput/Container';
 import DetailError from 'components/Form/DetailError/Container';
 import CardWithTabs from 'components/CardWithTabs/Container';
 
+import Markdown from 'components/Markdown/Container';
+
 import { LinkContainerNonActive } from 'lib/LinkContainer';
 
 import 'styles/pages/tasks.scss';
@@ -55,7 +57,7 @@ const Component = ({ task, handleSubmit }) => (
                 </div>
                 <hr />
                 <div className="long-text">
-                    {task.description}
+                    <Markdown text={task.description} />
                 </div>
                 <hr />
                 <div>
