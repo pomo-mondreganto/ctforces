@@ -37,11 +37,38 @@ class UserContestsPage extends React.Component {
         });
     }
 
+    register = async (id) => {
+        try {
+            await axios.get(`/contests/${id}/register/`);
+            const upcoming = this.state.upcoming.map((obj) => {
+                if (obj.id === id) {
+                    const ret = obj;
+                    ret.is_registered = true;
+                    return ret;
+                }
+                return obj;
+            });
+            const running = this.state.running.map((obj) => {
+                if (obj.id === id) {
+                    const ret = obj;
+                    ret.is_registered = true;
+                    return ret;
+                }
+                return obj;
+            });
+            this.setState({
+                upcoming,
+                running,
+            });
+        } catch (error) { throw Error('Cant register'); }
+    }
+
     render() {
         return (
             <Component
                 auth={this.props.auth}
                 username={this.props.match.params.username}
+                register={this.register}
                 {...this.state}
             />
         );

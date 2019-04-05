@@ -63,7 +63,7 @@
     
     @extend %table-head;
 
-    grid-template-columns: 1fr 9fr;
+    grid-template-columns: 1fr 8fr 2fr;
 
     > span.ta-l {
         padding-left: 5px;
@@ -97,9 +97,14 @@
 .contests-table-item-finished {
     @extend %table-item;
 
-    grid-template-columns: 1fr 9fr;
+    grid-template-columns: 1fr 8fr 2fr;
 
     > span.ta-l {
         padding-left: 5px;
     }
+}
+
+.contest-register {
+    cursor: pointer;
+    color: green;
 }

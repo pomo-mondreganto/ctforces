@@ -19,25 +19,30 @@ class Countdown extends React.Component {
         const interval = setInterval(() => {
             const remainingTime = moment(this.state.goal) - moment();
             if (remainingTime <= 0) {
+                this.setState({
+                    str: '00:00:00',
+                });
                 this.stop();
+            } else {
+                this.setState({
+                    str: FormatDiffTime(remainingTime),
+                });
             }
-
-            this.setState({
-                str: FormatDiffTime(remainingTime),
-                interval,
-            });
         }, 1000);
+
+        this.setState({ interval });
     }
 
-    componentWillMount() {
+    componentWillUnmount() {
         this.stop();
     }
 
     stop = () => {
         if (this.state.interval !== null) {
-            clearInterval(this.state.inverval);
+            clearInterval(this.state.interval);
             this.setState({
                 interval: null,
+                str: '00:00:00',
             });
         }
     }
