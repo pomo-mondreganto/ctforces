@@ -68,9 +68,9 @@ const Component = props => (
                 CTForces
             </NavbarBrand>
         </LinkContainerNonActive>
-        <NavbarToggler onClick={props.toggleSidebar} className="border-0">
+        {/* <NavbarToggler onClick={props.toggleSidebar} className="border-0">
             icon
-        </NavbarToggler>
+        </NavbarToggler> */}
         <Collapse isOpen={props.isOpen} navbar>
             <Nav navbar className="w-100 pull-left nav-fill mr-auto">
                 <NavItem>
