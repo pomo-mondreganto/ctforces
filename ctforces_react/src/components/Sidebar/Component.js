@@ -35,7 +35,7 @@ const Component = (props) => {
                                         </a>
                                     </LinkContainerNonActive>
                                 </li>
-                                {user.can_create_posts && (
+                                {user.has_posts && (
                                     <li>
                                         <LinkContainerNonActive to={`/users/${user.username}/posts/`}>
                                             <a>
@@ -44,7 +44,7 @@ const Component = (props) => {
                                         </LinkContainerNonActive>
                                     </li>
                                 )}
-                                {user.can_create_tasks && (
+                                {user.has_tasks && (
                                     <li>
                                         <LinkContainerNonActive to={`/users/${user.username}/tasks/`}>
                                             <a>
@@ -53,7 +53,7 @@ const Component = (props) => {
                                         </LinkContainerNonActive>
                                     </li>
                                 )}
-                                {user.can_create_contests && (
+                                {user.has_contests && (
                                     <li>
                                         <LinkContainerNonActive to={`/users/${user.username}/contests/`}>
                                             <a>
