@@ -104,7 +104,10 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ('id',)
+        ordering = (
+            '-created_at',
+            '-id',
+        )
 
 
 class TaskTag(models.Model):
