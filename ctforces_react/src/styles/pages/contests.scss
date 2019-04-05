@@ -41,7 +41,7 @@
     
     @extend %table-head;
 
-    grid-template-columns: 1fr 9fr;
+    grid-template-columns: 1fr 5fr 3fr 2fr;
 
     > span.ta-l {
         padding-left: 5px;
@@ -77,7 +77,7 @@
 .contests-table-item-running {
     @extend %table-item;
 
-    grid-template-columns: 1fr 9fr;
+    grid-template-columns: 1fr 5fr 3fr 2fr;
 
     > span.ta-l {
         padding-left: 5px;

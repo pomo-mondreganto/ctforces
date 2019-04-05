@@ -6,7 +6,7 @@ import withLayout from 'wrappers/withLayout';
 import CardWithTabs from 'components/CardWithTabs/Container';
 import Pagination from 'components/Pagination/Container';
 import { LinkContainerNonActive } from 'lib/LinkContainer';
-import FormatDiffTime from 'lib/FormatDiffTime';
+import Countdown from 'components/Countdown/Container';
 
 import 'styles/pages/contests.scss';
 
@@ -28,6 +28,8 @@ const Component = props => (
                         <div className="contests-table-head-running">
                             <span className="ta-c">#</span>
                             <span className="ta-l">Name</span>
+                            <span className="ta-c">Ends in</span>
+                            <span></span>
                         </div>
                         <div className="contests-table-body">
                             {props.running.map((obj, i) => (
@@ -40,6 +42,12 @@ const Component = props => (
                                             </a>
                                         </LinkContainerNonActive>
                                     </span>
+                                    <span className="ta-c">
+                                        <Countdown
+                                            goal={obj.end_time}
+                                        />
+                                    </span>
+                                    <span className="ta-c">Open</span>
                                 </div>
                             ))}
                         </div>
@@ -54,6 +62,8 @@ const Component = props => (
                         <div className="contests-table-head-upcoming">
                             <span className="ta-c">#</span>
                             <span className="ta-l">Name</span>
+                            <span className="ta-c">Starts in</span>
+                            <spam></spam>
                         </div>
                         <div className="contests-table-body">
                             {props.upcoming.map((obj, i) => (
@@ -66,9 +76,11 @@ const Component = props => (
                                             </a>
                                         </LinkContainerNonActive>
                                     </span>
-                                    <span className="ta-c">{
-                                        FormatDiffTime(obj.start_time)
-                                    }</span>
+                                    <span className="ta-c">
+                                        <Countdown
+                                            goal={obj.start_time}
+                                        />
+                                    </span>
                                     <span className="ta-c">Register</span>
                                 </div>
                             ))}
