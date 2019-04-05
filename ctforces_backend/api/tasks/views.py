@@ -56,7 +56,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
             is_solved_by_user=Exists(
                 api_models.Task.objects.filter(
                     id=OuterRef('id'),
-                    solved_by=self.request.user.id,
+                    solved_by__id=self.request.user.id or -1,
                 )
             ),
         ).prefetch_related('tags', 'files')

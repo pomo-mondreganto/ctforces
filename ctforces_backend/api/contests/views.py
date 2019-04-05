@@ -56,7 +56,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             ).annotate(
                 is_registered=Exists(
                     api_models.ContestParticipantRelationship.objects.filter(
-                        participant=self.request.user,
+                        participant_id=self.request.user.id,
                         contest=OuterRef('id'),
                     )
                 ),
@@ -74,7 +74,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
                 api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
                     contest=OuterRef('contest_id'),
                     task=OuterRef('task_id'),
-                    participant=self.request.user,
+                    participant_id=self.request.user.id,
                 ).only('id')
             )
 
@@ -320,7 +320,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             api_models.ContestParticipantRelationship.objects.filter(
                 contest=contest,
-                participant=self.request.user,
+                participant_id=self.request.user.id,
             ).update(has_opened_contest=True)
 
         return contest
@@ -339,7 +339,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
                     task_id=OuterRef('id'),
                     contest=contest,
-                    participant=self.request.user.id,
+                    participant_id=self.request.user.id,
                 ),
             ),
             contest_cost=Subquery(
@@ -454,7 +454,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
             contest=contest,
             task=task,
-            participant=self.request.user,
+            participant_id=self.request.user.id,
         ).exists():
             raise PermissionDenied('Task already solved.')
 
@@ -468,16 +468,17 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 api_models.ContestTaskParticipantSolvedRelationship.objects.create(
                     contest=contest,
                     task=task,
-                    participant=self.request.user,
+                    participant_id=self.request.user.id,
                 )
 
                 contest.contest_participant_relationship.filter(
-                    participant=self.request.user,
+                    participant_id=self.request.user.id,
                 ).update(
                     last_solve=timezone.now(),
                 )
 
             task.solved_by.add(self.request.user)
             self.request.user.last_solve = timezone.now()
+            self.request.user.save()
 
             return Response('accepted!')

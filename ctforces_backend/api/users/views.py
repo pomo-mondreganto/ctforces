@@ -366,10 +366,10 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             is_solved_by_user=Exists(
                 api_models.Task.objects.filter(
                     id=OuterRef('id'),
-                    solved_by=self.request.user.id,
+                    solved_by__id=self.request.user.id,
                 ),
             ),
-        )
+        ).prefetch_related('tags')
 
         return api_pagination.get_paginated_response(
             paginator=api_pagination.TaskDefaultPagination(),
@@ -388,7 +388,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             queryset = (queryset | get_objects_for_user(request.user, 'view_post', api_models.Post)).distinct()
 
         queryset = queryset.filter(author=user)
-        queryset = queryset.order_by('-id')
+        queryset = queryset.order_by('-id').select_related('author')
 
         return api_pagination.get_paginated_response(
             paginator=api_pagination.PostDefaultPagination(),
@@ -409,7 +409,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         queryset = queryset.filter(author=user).annotate(
             is_registered=Exists(
                 api_models.ContestParticipantRelationship.objects.filter(
-                    participant=self.request.user,
+                    participant_id=self.request.user.id,
                     contest=OuterRef('id'),
                 )
             ),
