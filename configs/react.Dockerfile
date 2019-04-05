@@ -2,6 +2,7 @@ FROM node:11.9.0-alpine
 
 RUN mkdir /app
 ADD ./ctforces_react/package.json /app/package.json
+ADD ./ctforces_react/package-lock.json /app/package-lock.json
 WORKDIR /app
 RUN npm install
 
