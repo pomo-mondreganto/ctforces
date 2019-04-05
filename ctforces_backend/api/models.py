@@ -31,7 +31,7 @@ class UserUpsolvingAnnotatedManager(UserManager):
             cost_sum=Coalesce(
                 Sum(
                     'solved_tasks__cost',
-                    filter=Q(solved_tasks__is_published=True),
+                    filter=Q(solved_tasks__show_on_main_page=True),
                 ),
                 V(0),
             )
