@@ -11,7 +11,7 @@ class SidebarContainer extends React.Component {
     }
 
     async componentDidMount() {
-        const response = await axios.get('/users/rating_top/');
+        const response = await axios.get('/users/rating_top/?page_size=10');
         const { data } = response;
         const { results: users } = data;
         this.setState({
