@@ -37,7 +37,7 @@ const Component = ({ task, handleSubmit }) => (
                         <>
                             {' '}
                             <LinkContainerNonActive
-                                to={`/tasks/${task.id}/edit/`}
+                                to={`/tasks/${task.real_id}/edit/`}
                             >
                                 <FontAwesomeIcon icon={faEdit} className="c-p" />
                             </LinkContainerNonActive>

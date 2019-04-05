@@ -15,9 +15,7 @@ const Component = ({ post }) => (
         {post !== null && (
             <>
                 <div className="th1">
-                    <LinkContainerNonActive to={`/posts/${post.id}/`}>
-                        <a>{post.title}</a>
-                    </LinkContainerNonActive>
+                    {post.title}
                 </div>
                 <div className="mt-3">
                     By {' '}

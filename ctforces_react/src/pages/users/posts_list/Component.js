@@ -15,18 +15,13 @@ import 'styles/pages/posts.scss';
 
 const Component = props => (
     <CardWithTabsComponent
-        tabs={UserTopBar(props.username)}
+        tabs={UserTopBar(props.username, props.auth)}
 
         pagination={
-            <>
-                {
-                    props.posts
-                    && <Pagination to={`/users/${props.username}/posts/`}
-                        currentPage={props.currentPage}
-                        count={props.count}
-                        pageSize={props.pageSize} />
-                }
-            </>
+            <Pagination to={`/users/${props.username}/posts/`}
+                currentPage={props.currentPage}
+                count={props.count}
+                pageSize={props.pageSize} />
         }
     >
         <>

@@ -6,10 +6,10 @@ import SocialSettingsPage from './social/Container';
 import GeneralSettingsPage from './general/Container';
 
 
-const Settings = () => (
+const Settings = props => (
     <Switch>
-        <PrivateRoute exact path="/settings/social/" component={SocialSettingsPage} />
-        <PrivateRoute exact path="/settings/general/" component={GeneralSettingsPage} />
+        <PrivateRoute exact path="/settings/social/" component={SocialSettingsPage} key={props.location.pathname} />
+        <PrivateRoute exact path="/settings/general/" component={GeneralSettingsPage} key={props.location.pathname} />
     </Switch>
 );
 

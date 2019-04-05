@@ -9,14 +9,14 @@ import RatingTopPage from './top_rating_list/Container';
 import UpsolvingTopPage from './top_upsolving_list/Container';
 
 
-const Users = () => (
+const Users = props => (
     <Switch>
-        <PublicRoute exact path="/users/:username/" component={UserPage} />
-        <PublicRoute exact path="/users/:username/tasks/" component={TasksListPage} />
-        <PublicRoute exact path="/users/:username/posts/" component={PostsListPage} />
-        <PublicRoute exact path="/users/:username/contests/" component={ContestsListPage} />
-        <PublicRoute exact path="/users/rating/top/" component={RatingTopPage} />
-        <PublicRoute exact path="/users/upsolving/top/" component={UpsolvingTopPage} />
+        <PublicRoute exact path="/users/:username/" component={UserPage} key={props.location.pathname} />
+        <PublicRoute exact path="/users/:username/tasks/" component={TasksListPage} key={props.location.pathname} />
+        <PublicRoute exact path="/users/:username/posts/" component={PostsListPage} key={props.location.pathname} />
+        <PublicRoute exact path="/users/:username/contests/" component={ContestsListPage} key={props.location.pathname} />
+        <PublicRoute exact path="/users/rating/top/" component={RatingTopPage} key={props.location.pathname} />
+        <PublicRoute exact path="/users/upsolving/top/" component={UpsolvingTopPage} key={props.location.pathname} />
     </Switch>
 );
 

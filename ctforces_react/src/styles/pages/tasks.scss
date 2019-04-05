@@ -1,4 +1,5 @@
 @import '~/styles/lib/components/_table.scss';
+@import '~/styles/lib/_colors.scss';
 
 .tasks-table {
     @extend %table;
@@ -27,4 +28,8 @@
     > span.ta-l {
         padding-left: 5px;
     }
+}
+
+.solved {
+    background-color: $solved-task !important;
 }

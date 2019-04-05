@@ -4,15 +4,16 @@ import axios from 'axios';
 import qs from 'lib/qs';
 import Component from './Component';
 
-class TopUpsolvingContainer extends React.Component {
+class ContestTaskSolvedContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
 
     async componentDidMount() {
+        const { id, task_id: taskId } = this.props.match.params;
         const { page: currentPage = 1 } = qs(this.props.location.search);
-        const response = await axios.get(`/users/upsolving_top/?page=${currentPage}`);
+        const response = await axios.get(`/contests/${id}/tasks/${taskId}/solved/?page=${currentPage}`);
         const { data } = response;
         const { page_size: pageSize, count, results: users } = data;
         this.setState({
@@ -20,11 +21,15 @@ class TopUpsolvingContainer extends React.Component {
             users,
             currentPage,
             pageSize,
+            id,
+            taskId,
         });
     }
 
     render() {
         return <Component
+            taskId={this.state.taskId}
+            contestId={this.state.id}
             users={this.state.users}
             currentPage={this.state.currentPage}
             count={this.state.count}
@@ -32,4 +37,4 @@ class TopUpsolvingContainer extends React.Component {
     }
 }
 
-export default TopUpsolvingContainer;
+export default ContestTaskSolvedContainer;

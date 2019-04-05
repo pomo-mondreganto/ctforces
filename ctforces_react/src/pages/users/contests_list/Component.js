@@ -13,7 +13,7 @@ import 'styles/pages/contests.scss';
 
 const Component = props => (
     <CardWithTabs
-        tabs={UserTopBar(props.username)}
+        tabs={UserTopBar(props.username, props.auth)}
         pagination={
             <>
                 {
@@ -30,13 +30,13 @@ const Component = props => (
             <>
                 <div className="th3 mb-3">Running</div>
                 <div className="contests-table mb-5">
-                    <div className="contests-table-head">
+                    <div className="contests-table-head-running">
                         <span className="ta-c">#</span>
                         <span className="ta-l">Name</span>
                     </div>
                     <div className="contests-table-body">
                         {props.running.map((obj, i) => (
-                            <div key={i} className="contests-table-item">
+                            <div key={i} className="contests-table-item-running">
                                 <span className="ta-c">{i + 1}</span>
                                 <span className="ta-l">
                                     <LinkContainerNonActive to={`/contests/${obj.id}/`}>
@@ -56,13 +56,13 @@ const Component = props => (
             <>
                 <div className="th3 mb-3">Upcoming</div>
                 <div className="contests-table mb-5">
-                    <div className="contests-table-head">
+                    <div className="contests-table-head-upcoming">
                         <span className="ta-c">#</span>
                         <span className="ta-l">Name</span>
                     </div>
                     <div className="contests-table-body">
                         {props.upcoming.map((obj, i) => (
-                            <div key={i} className="contests-table-item">
+                            <div key={i} className="contests-table-item-upcoming">
                                 <span className="ta-c">{i + 1}</span>
                                 <span className="ta-l">
                                     <LinkContainerNonActive to={`/contests/${obj.id}/`}>
@@ -82,13 +82,13 @@ const Component = props => (
             <>
                 <div className="th3 mb-3">Finished</div>
                 <div className="contests-table">
-                    <div className="contests-table-head">
+                    <div className="contests-table-head-finished">
                         <span className="ta-c">#</span>
                         <span className="ta-l">Name</span>
                     </div>
                     <div className="contests-table-body">
                         {props.finished.map((obj, i) => (
-                            <div key={i} className="contests-table-item">
+                            <div key={i} className="contests-table-item-finished">
                                 <span className="ta-c">{i + 1 + props.pageSize * (props.currentPage - 1)}</span>
                                 <span className="ta-l">
                                     <LinkContainerNonActive to={`/contests/${obj.id}/`}>

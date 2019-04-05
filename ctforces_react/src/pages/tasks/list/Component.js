@@ -12,15 +12,10 @@ const Component = props => (
     <CardWithTabs
         title="Tasks"
         pagination={
-            <>
-                {
-                    props.tasks
-                    && <Pagination to={'/tasks/'}
-                        currentPage={props.currentPage}
-                        count={props.count}
-                        pageSize={props.pageSize} />
-                }
-            </>
+            <Pagination to={'/tasks/'}
+                currentPage={props.currentPage}
+                count={props.count}
+                pageSize={props.pageSize} />
         }
     >
         <div className="tasks-table">
@@ -33,7 +28,7 @@ const Component = props => (
             </div>
             <div className="tasks-table-body">
                 {props.tasks && props.tasks.map((obj, i) => (
-                    <div key={i} className="tasks-table-item">
+                    <div key={i} className={`tasks-table-item ${obj.is_solved_by_user ? 'solved' : ''}`}>
                         <span className="ta-c">{i + 1 + props.pageSize * (props.currentPage - 1)}</span>
                         <span className="ta-l">
                             <LinkContainerNonActive to={`/tasks/${obj.id}/`}>
