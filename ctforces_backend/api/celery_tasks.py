@@ -149,7 +149,7 @@ def recalculate_rating(contest_id):
             has_participated_in_rated_contest=True,
         )
         get_model('api', 'ContestParticipantRelationship').objects.filter(
-            user_id=player[0],
+            participant_id=player[0],
             contest=contest,
         ).update(
             delta=deltas[i],
