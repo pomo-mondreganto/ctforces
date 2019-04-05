@@ -1,7 +1,5 @@
-import moment from 'moment';
-
 export default (time) => {
-    let seconds = moment(time).diff(moment(), 'seconds');
+    let seconds = Math.floor(time / 1000);
 
     const days = Math.floor(seconds / 60 / 60 / 24).toString();
 
@@ -17,5 +15,5 @@ export default (time) => {
 
     seconds = seconds.toString();
 
-    return `${days} days ${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
+    return `${days === '0' ? '' : `${days} days `}${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
 };

@@ -7,6 +7,7 @@ import CardWithTabs from 'components/CardWithTabs/Container';
 import getRank from 'lib/Ranking';
 
 import 'styles/components/Sidebar.scss';
+import 'styles/pages/users.scss';
 
 const Component = (props) => {
     const { user } = props.auth;
@@ -79,8 +80,37 @@ const Component = (props) => {
                         </div>
                     </div>
                 </CardWithTabs >
-            )
-            }
+            )}
+            {props.topUsers && (
+                <div className="mt-4">
+                    <CardWithTabs>
+                        <div className="th3 mb-3 ta-c">Top users</div>
+                        <div className="tasks-table">
+                            <div className="users-table-head">
+                                <span className="ta-c">#</span>
+                                <span className="ta-l">Username</span>
+                                <span className="ta-c">Rating</span>
+                            </div>
+                            <div className="users-table-body">
+                                {props.topUsers && props.topUsers.map((obj, i) => (
+
+                                    <div key={i} className="users-table-item">
+                                        <span className="ta-c">{i + 1}</span>
+                                        <span className="ta-l">
+                                            <LinkContainerNonActive to={`/users/${obj.username}/`}>
+                                                <a className={getRank(obj.rating)}>
+                                                    {obj.username}
+                                                </a>
+                                            </LinkContainerNonActive>
+                                        </span>
+                                        <span className="ta-c">{obj.rating}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </CardWithTabs>
+                </div>
+            )}
         </aside >
     );
 };

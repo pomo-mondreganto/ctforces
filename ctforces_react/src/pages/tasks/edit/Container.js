@@ -41,55 +41,55 @@ class TaskEditContainer extends React.Component {
     };
 
     handleSubmit = async ({ values, actions }) => {
-        const tagsNames = values.tags;
-        const tags = [];
-        for (let i = 0; i < tagsNames.length; i += 1) {
-            const tag = tagsNames[i];
-            tags.push(await this.handleTag(tag));
-        }
-
-        const uploadingStatus = {};
-        const uploadPromises = [];
-        for (let i = 0; i < values.files.length; i += 1) {
-            const file = values.files[i];
-            if (file.uploaded) {
-                continue;
-            }
-            const formData = new FormData();
-            formData.append('file_field', file);
-            uploadPromises.push(
-                axios.post('/task_files/', formData, {
-                    onUploadProgress: (progressEvent) => {
-                        uploadingStatus[file.name] = parseInt(
-                            Math.round(
-                                (progressEvent.loaded * 100)
-                                / progressEvent.total,
-                            ),
-                            10,
-                        );
-                        actions.setStatus({
-                            uploading: uploadingStatus,
-                        });
-                    },
-                }),
-            );
-        }
-
-        const data = await Promise.all(uploadPromises);
-        actions.setStatus({});
-        const files = [];
-        for (let i = 0; i < data.length; i += 1) {
-            files.push(data[i].data.id);
-        }
-
-        for (let i = 0; i < values.files.length; i += 1) {
-            const file = values.files[i];
-            if (file.uploaded) {
-                files.push(file.id);
-            }
-        }
-
         try {
+            const tagsNames = values.tags;
+            const tags = [];
+            for (let i = 0; i < tagsNames.length; i += 1) {
+                const tag = tagsNames[i];
+                tags.push(await this.handleTag(tag));
+            }
+
+            const uploadingStatus = {};
+            const uploadPromises = [];
+            for (let i = 0; i < values.files.length; i += 1) {
+                const file = values.files[i];
+                if (file.uploaded) {
+                    continue;
+                }
+                const formData = new FormData();
+                formData.append('file_field', file);
+                uploadPromises.push(
+                    axios.post('/task_files/', formData, {
+                        onUploadProgress: (progressEvent) => {
+                            uploadingStatus[file.name] = parseInt(
+                                Math.round(
+                                    (progressEvent.loaded * 100)
+                                    / progressEvent.total,
+                                ),
+                                10,
+                            );
+                            actions.setStatus({
+                                uploading: uploadingStatus,
+                            });
+                        },
+                    }),
+                );
+            }
+
+            const data = await Promise.all(uploadPromises);
+            actions.setStatus({});
+            const files = [];
+            for (let i = 0; i < data.length; i += 1) {
+                files.push(data[i].data.id);
+            }
+
+            for (let i = 0; i < values.files.length; i += 1) {
+                const file = values.files[i];
+                if (file.uploaded) {
+                    files.push(file.id);
+                }
+            }
+
             const response = await axios.put(`/tasks/${this.state.task.id}/`, {
                 ...values,
                 tags,

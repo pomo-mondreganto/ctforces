@@ -7,9 +7,7 @@ import Component from './Component';
 class TopRatingContainer extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            tasks: null,
-        };
+        this.state = {};
     }
 
     async componentDidMount() {
