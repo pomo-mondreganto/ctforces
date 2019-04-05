@@ -37,6 +37,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         'update': (api_permissions.HasEditContestPermission,),
         'partial_update': (api_permissions.HasEditContestPermission,),
         'destroy': (api_permissions.HasDeleteContestPermission,),
+        'register': (IsAuthenticated,)
     }
 
     klass = api_models.Contest
@@ -50,7 +51,16 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         queryset = super(ContestViewSet, self).get_queryset()
 
         if self.action == 'list':
-            queryset = queryset.filter(is_published=True)
+            queryset = queryset.filter(
+                is_published=True,
+            ).annotate(
+                is_registered=Exists(
+                    api_models.ContestParticipantRelationship.objects.filter(
+                        participant=self.request.user,
+                        contest=OuterRef('id'),
+                    )
+                ),
+            )
 
         if self.action == 'retrieve' or self.action == 'get_full_contest':
             solved_count_subquery = api_database_functions.SubqueryCount(
@@ -225,6 +235,24 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             'users': users_data,
             'main_data': result_data,
         })
+
+    @action(
+        detail=True,
+        url_path='register',
+        url_name='register',
+        methods=['get'],
+    )
+    def register(self, *_args, **_kwargs):
+        contest = self.get_object()
+        if not contest.is_published or not contest.is_registration_open:
+            raise NotFound("Contest doesn't exist or registration isn't open yet")
+
+        api_models.ContestParticipantRelationship.objects.create(
+            contest=contest,
+            participant=self.request.user,
+        )
+
+        return Response('ok')
 
 
 class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
