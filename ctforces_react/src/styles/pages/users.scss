@@ -35,7 +35,7 @@
     
     @extend %table-head;
 
-    grid-template-columns: 1fr 9fr 2fr;
+    grid-template-columns: 1fr 9fr 2.5fr;
 
     > span.ta-l {
         padding-left: 5px;
@@ -49,7 +49,7 @@
 .users-table-item {
     @extend %table-item;
 
-    grid-template-columns: 1fr 9fr 2fr;
+    grid-template-columns: 1fr 9fr 2.5fr;
 
     > span.ta-l {
         padding-left: 5px;
