@@ -182,24 +182,43 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
         users_paginator = api_pagination.UserScoreboardPagination()
 
-        users_page = users_paginator.paginate_queryset(queryset=users_queryset, request=self.request)
-        if users_page is None:
-            users_page = list(users_queryset)
-
-        relationship_queryset = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-            contest=instance,
-            participant__in=users_page,
-        ).select_related('task').annotate(
-            task_name=F('task__name'),
+        users_page = users_paginator.paginate_queryset(
+            queryset=users_queryset,
+            request=self.request,
         )
+
+        if users_page is not None:
+            relationship_queryset = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+                contest=instance,
+                participant__in=users_page,
+            ).select_related('task').annotate(
+                task_name=F('task__name'),
+            )
+
+            users_serializer = api_contests_serializers.ContestScoreboardUserSerializer(
+                instance=users_page,
+                many=True,
+            )
+
+            users_data = users_paginator.get_paginated_response(users_serializer.data).data
+        else:
+            relationship_queryset = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+                contest=instance,
+                participant__in=users_queryset,
+            ).select_related('task').annotate(
+                task_name=F('task__name'),
+            )
+            users_page = users_queryset
+
+            users_serializer = api_contests_serializers.ContestScoreboardUserSerializer(
+                instance=users_page,
+                many=True,
+            )
+
+            users_data = users_serializer.data
 
         data_serializer = api_contests_serializers.ContestScoreboardSerializer(
             instance=list(relationship_queryset),
-            many=True,
-        )
-
-        users_serializer = api_contests_serializers.ContestScoreboardUserSerializer(
-            instance=users_page,
             many=True,
         )
 
@@ -218,7 +237,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         )
 
         return Response({
-            'users': users_serializer.data,
+            'users': users_data,
             'main_data': result_data,
         })
 
