@@ -274,7 +274,7 @@ class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
 
         if self.request.method == 'GET':
             obj.can_create_tasks = self.request.user.has_perm('api.add_task')
-            obj.can_create_posts = self.request.user.has_perm('api.add_post')
+            obj.can_create_posts = True
             obj.can_create_contests = self.request.user.has_perm('api.add_contest')
             obj.can_create_taskfiles = self.request.user.has_perm('api.add_taskfile')
 
