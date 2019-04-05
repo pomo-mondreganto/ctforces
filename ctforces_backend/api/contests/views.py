@@ -51,7 +51,16 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         queryset = super(ContestViewSet, self).get_queryset()
 
         if self.action == 'list':
-            queryset = queryset.filter(is_published=True)
+            queryset = queryset.filter(
+                is_published=True,
+            ).annotate(
+                is_registered=Exists(
+                    api_models.ContestParticipantRelationship.objects.filter(
+                        participant=self.request.user,
+                        contest=OuterRef('id'),
+                    )
+                ),
+            )
 
         if self.action == 'retrieve' or self.action == 'get_full_contest':
             solved_count_subquery = api_database_functions.SubqueryCount(

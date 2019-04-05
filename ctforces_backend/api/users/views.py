@@ -406,7 +406,14 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if contests_type == 'all':
             queryset = (queryset | get_objects_for_user(request.user, 'view_contest', api_models.Contest)).distinct()
 
-        queryset = queryset.filter(author=user)
+        queryset = queryset.filter(author=user).annotate(
+            is_registered=Exists(
+                api_models.ContestParticipantRelationship.objects.filter(
+                    participant=self.request.user,
+                    contest=OuterRef('id'),
+                )
+            ),
+        )
         queryset = queryset.order_by('-id')
 
         upcoming_queryset = queryset.filter(is_running=False, is_finished=False)

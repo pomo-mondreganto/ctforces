@@ -166,6 +166,7 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
 class ContestPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     registered_count = rest_serializers.IntegerField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
+    is_registered = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
         model = api_models.Contest
@@ -175,6 +176,7 @@ class ContestPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.Read
             'end_time',
             'is_finished',
             'is_published',
+            'is_registered',
             'is_registration_open',
             'is_running',
             'is_rated',
