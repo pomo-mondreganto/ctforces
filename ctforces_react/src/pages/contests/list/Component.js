@@ -44,11 +44,19 @@ const Component = props => (
                                         />
                                     </span>
                                     <span className="ta-c">
-                                        <LinkContainerNonActive to={`/contests/${obj.id}/`}>
-                                            <a>
-                                                Open
-                                            </a>
-                                        </LinkContainerNonActive>
+                                        {(obj.is_registered || !obj.is_registration_open) && (
+                                            <LinkContainerNonActive to={`/contests/${obj.id}/`}>
+                                                <a>
+                                                    Open
+                                                </a>
+                                            </LinkContainerNonActive>
+                                        )}
+                                        {!obj.is_registered && obj.is_registration_open && (
+                                            <span className="contest-register"
+                                                onClick={() => props.register(obj.id)}>
+                                                Register
+                                            </span>
+                                        )}
                                     </span>
                                 </div>
                             ))}
