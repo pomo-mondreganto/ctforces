@@ -5,6 +5,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
+from rest_framework import serializers as rest_serializers
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError, Throttled
@@ -445,6 +446,14 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             raise Throttled(detail='You can submit flag 4 times per minute.')
 
         task = self.get_object()
+
+        if self.request.user.has_perm('api.change_task', task):
+            raise rest_serializers.ValidationError(
+                {
+                    'flag': 'You cannot submit that task',
+                },
+            )
+
         contest = self.get_contest()
         if contest.is_running and not contest.participants.filter(
             id=self.request.user.id,

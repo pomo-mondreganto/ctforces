@@ -2,6 +2,7 @@ from django.db.models import Count, Exists, OuterRef
 from django.utils import timezone
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import mixins as rest_mixins
+from rest_framework import serializers as rest_serializers
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
@@ -129,6 +130,13 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     )
     def submit(self, request, *_args, **_kwargs):
         instance = self.get_object()
+        if self.request.user.has_perm('api.change_task', instance):
+            raise rest_serializers.ValidationError(
+                {
+                    'flag': 'You cannot submit that task',
+                },
+            )
+
         serializer = api_tasks_serializers.TaskSubmitSerializer(data=request.data, instance=instance)
 
         if serializer.is_valid(raise_exception=True):
