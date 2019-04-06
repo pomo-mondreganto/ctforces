@@ -178,7 +178,11 @@ def publish_tasks(contest_id):
         logger.info('No such contest')
         return
 
-    contest.tasks.update(show_on_main_page=True, publication_time=timezone.now())
+    contest.tasks.update(
+        show_on_main_page=True,
+        publication_time=timezone.now(),
+        is_published=True,
+    )
 
 
 @shared_task

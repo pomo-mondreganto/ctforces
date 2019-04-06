@@ -100,14 +100,28 @@ class CustomTaskAdmin(admin.ModelAdmin):
         ).select_related('author')
 
     def publish(self, _request, queryset):
-        queryset.update(is_published=True, publication_time=timezone.now())
+        queryset.update(
+            show_on_main_page=True,
+            is_published=True,
+            publication_time=timezone.now(),
+        )
 
-    publish.short_description = "Publish selected tasks"
+    publish.short_description = "Publish selected tasks to main page"
 
-    def unpublish(self, _request, queryset):
-        queryset.update(is_published=False)
+    def unpublish_full(self, _request, queryset):
+        queryset.update(
+            is_published=False,
+            show_on_main_page=False,
+        )
 
-    unpublish.short_description = "Unpublish selected tasks"
+    unpublish_full.short_description = "Unpublish selected tasks both from main page and user"
+
+    def unpublish_main(self, _request, queryset):
+        queryset.update(
+            show_on_main_page=False,
+        )
+
+    unpublish_main.short_description = "Unpublish selected tasks from main page only"
 
     actions = (
         'publish',
