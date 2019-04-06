@@ -13,6 +13,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_extensions.cache.decorators import cache_response
 
 from api import celery_tasks as api_tasks
 from api import models as api_models
@@ -21,6 +22,7 @@ from api.contests import serializers as api_contests_serializers
 from api.posts import serializers as api_posts_serializers
 from api.tasks import serializers as api_tasks_serializers
 from api.token_operations import serialize, deserialize
+from api.users import caching as api_users_caching
 from api.users import serializers as api_users_serializers
 
 
@@ -279,6 +281,10 @@ class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
             obj.can_create_taskfiles = self.request.user.has_perm('api.add_taskfile')
 
         return obj
+
+    @cache_response(key_func=api_users_caching.CurrentUserRetrieveKeyConstructor())
+    def retrieve(self, request, *args, **kwargs):
+        return super(CurrentUserRetrieveUpdateView, self).retrieve(request, *args, **kwargs)
 
 
 class AvatarUploadView(APIView):
