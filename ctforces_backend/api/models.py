@@ -235,6 +235,9 @@ class Contest(models.Model):
     is_finished = models.BooleanField(default=False)
     is_registration_open = models.BooleanField(default=False)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     publish_tasks_after_finished = models.BooleanField(default=True)
     is_rated = models.BooleanField(default=True)
     always_recalculate_rating = models.BooleanField(default=False)
