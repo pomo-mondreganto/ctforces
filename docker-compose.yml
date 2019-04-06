@@ -53,6 +53,7 @@ services:
     volumes:
       - ./configs/nginx:/etc/nginx/conf.d
       - ./configs/nginx.proxy_params:/etc/nginx/proxy_params
+      - ./configs/robots.txt:/var/www/ctforces/robots.txt
       - ./volumes/static:/static:ro
       - ./volumes/socks:/socks
       - ./volumes/media:/media:ro

@@ -1,0 +1,6 @@
+User-agent:*
+Disallow: /admin/
+Disallow: /flower/
+Disallow: /api/
+Disallow: /media/
+Host: https://ctforces.com
