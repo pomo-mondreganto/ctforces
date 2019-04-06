@@ -166,6 +166,17 @@ class CustomContestAdmin(admin.ModelAdmin):
                 'classes': ('collapse',),
             },
         ),
+        (
+            'Auxiliary',
+            {
+                'fields': (
+                    'is_rated',
+                    'publish_tasks_after_finished',
+                    'always_recalculate_rating',
+                ),
+                'classes': ('collapse',),
+            },
+        ),
     )
 
     raw_id_fields = (
