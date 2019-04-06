@@ -81,7 +81,6 @@ class TaskCreateContainer extends React.Component {
         } catch (error) {
             const errorData = error.response.data;
             Object.keys(errorData).forEach((key) => {
-                console.log(key);
                 actions.setFieldError(key, errorData[key]);
                 actions.setFieldTouched(key, true, false);
             });

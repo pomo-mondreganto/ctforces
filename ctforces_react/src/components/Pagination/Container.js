@@ -29,6 +29,7 @@ class PaginationContainer extends React.Component {
 
         this.setState({
             paginationInfo: {
+                currentPage,
                 pages,
                 left,
                 right,

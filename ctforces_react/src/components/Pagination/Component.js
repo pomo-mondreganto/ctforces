@@ -11,8 +11,17 @@ const Component = props => (
         {
 
             <Pagination className="pagination">
-                <PaginationItem disabled={!props.left}>
-                    <PaginationLink previous />
+                <PaginationItem disabled={!props.paginationInfo.left}>
+                    {props.paginationInfo.left ? (
+                        <LinkContainerAuto to={`${props.paginationInfo.to}?page=${
+                            parseInt(props.paginationInfo.currentPage, 10) - 1
+                        }`}>
+                            <PaginationLink previous />
+                        </LinkContainerAuto>
+                    ) : (
+                        <PaginationLink previous />
+                    )}
+
                 </PaginationItem>
                 {props.paginationInfo.pages.map((obj, i) => (
                     <PaginationItem key={i}>
@@ -23,8 +32,12 @@ const Component = props => (
                         </LinkContainerAuto>
                     </PaginationItem>
                 ))}
-                <PaginationItem disabled={!props.right}>
-                    <PaginationLink next />
+                <PaginationItem disabled={!props.paginationInfo.right}>
+                    <LinkContainerAuto to={`${props.paginationInfo.to}?page=${
+                        parseInt(props.paginationInfo.currentPage, 10) + 1
+                    }`}>
+                        <PaginationLink next />
+                    </LinkContainerAuto>
                 </PaginationItem>
             </Pagination>
 
