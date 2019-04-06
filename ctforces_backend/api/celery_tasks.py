@@ -132,6 +132,9 @@ def recalculate_rating(contest_id):
         contests_participated=api_database_functions.SubqueryCount(
             get_model('api', 'ContestParticipantRelationship').objects.filter(
                 participant=OuterRef('id'),
+                contest__id__lte=contest_id,
+                contest__is_rated=True,
+                has_opened_contest=True,
             )
         )
     ).order_by(
