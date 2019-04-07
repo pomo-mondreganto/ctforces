@@ -102,19 +102,6 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'api.User'
 APPEND_SLASH = True
 
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PERMISSIONS_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-}
-
 AUTHENTICATION_BACKENDS = [
     'api.backends.CustomAuthenticationBackend',
     'guardian.backends.ObjectPermissionBackend',
