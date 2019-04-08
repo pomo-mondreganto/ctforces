@@ -59,15 +59,19 @@ const Component = ({ task, handleSubmit }) => (
                     <Markdown text={task.description} />
                 </div>
                 <hr />
-                <div>
-                    Files:
-                    {task.files_details.map((obj, i) => (
-                        <div key={i}>
-                            <a href={`${mediaUrl}${obj.file_field}`}>{obj.name}</a>
+                {task.files && task.files.length > 0 && (
+                    <>
+                        <div>
+                            Files:
+                            {task.files_details.map((obj, i) => (
+                                <div key={i}>
+                                    <a href={`${mediaUrl}${obj.file_field}`}>{obj.name}</a>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                <hr />
+                        <hr />
+                    </>)
+                }
                 <Formik
                     initialValues={{
                         flag: '',
