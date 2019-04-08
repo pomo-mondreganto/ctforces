@@ -59,7 +59,7 @@ const Component = ({ task, handleSubmit }) => (
                     <Markdown text={task.description} />
                 </div>
                 <hr />
-                {task.files && task.files.length > 0 && (
+                {task.files_details.length > 0 && (
                     <>
                         <div>
                             Files:

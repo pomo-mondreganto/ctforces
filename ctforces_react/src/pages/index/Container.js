@@ -37,4 +37,4 @@ class IndexPage extends React.Component {
     }
 }
 
-export default withAuth(IndexPage);
+export default IndexPage;
