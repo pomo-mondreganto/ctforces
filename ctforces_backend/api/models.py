@@ -195,6 +195,9 @@ class TaskHint(models.Model):
 
     body = models.TextField(null=False, blank=True)
 
+    def __str__(self):
+        return f"TaskHint object ({self.id}), task {self.task_id}"
+
 
 class TaskFile(models.Model):
     owner = models.ForeignKey('User', on_delete=models.SET_NULL, related_name='files', null=True, blank=True)
@@ -214,6 +217,9 @@ class TaskFile(models.Model):
 
     class Meta:
         ordering = ('id',)
+
+    def __str__(self):
+        return f"TaskFile object ({self.id}) for task {self.task_id}"
 
 
 class Contest(models.Model):
