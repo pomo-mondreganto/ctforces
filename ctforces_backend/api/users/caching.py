@@ -27,3 +27,5 @@ class UpdatedAtModelKeyBit(bits.KeyBitBase):
 class CurrentUserRetrieveKeyConstructor(KeyConstructor):
     user = bits.UserKeyBit()
     updated_at = UpdatedAtModelKeyBit()
+    headers = bits.HeadersKeyBit()
+    format = bits.FormatKeyBit()
