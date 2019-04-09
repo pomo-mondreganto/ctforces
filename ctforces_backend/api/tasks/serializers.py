@@ -202,6 +202,11 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
         assign_perm('delete_task', instance.author, instance)
         return instance
 
+    def update(self, instance, validated_data):
+        if 'is_published' in validated_data and not validated_data['is_published']:
+            validated_data['show_on_main_page'] = False
+        return super(TaskFullSerializer, self).update(instance, validated_data)
+
 
 class TaskSubmitSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     class Meta:
