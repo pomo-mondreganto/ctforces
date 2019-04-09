@@ -25,8 +25,31 @@ class TaskHintInlineAdmin(admin.TabularInline):
     )
 
 
+class TaskFileInlineAdmin(admin.TabularInline):
+    model = api_models.TaskFile
+    classes = ('collapse',)
+
+    fieldsets = (
+        (
+            'File info',
+            {
+                'fields': (
+                    'id',
+                    'owner',
+                    'name',
+                    'upload_time',
+                    'file_field',
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = ('upload_time',)
+    raw_id_fields = ('owner',)
+
+
 class CustomTaskAdmin(GuardedModelAdmin):
-    inlines = (TaskHintInlineAdmin,)
+    inlines = (TaskHintInlineAdmin, TaskFileInlineAdmin)
     list_display = (
         'id',
         'name',
@@ -129,3 +152,24 @@ class CustomTaskAdmin(GuardedModelAdmin):
         'unpublish_full',
         'unpublish_main',
     )
+
+
+class TaskFileFullAdmin(GuardedModelAdmin):
+    model = api_models.TaskFile
+
+    fieldsets = (
+        (
+            'File info',
+            {
+                'fields': (
+                    'owner',
+                    'name',
+                    'upload_time',
+                    'file_field',
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = ('upload_time',)
+    raw_id_fields = ('owner',)
