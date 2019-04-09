@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db.models import Count
 from django.utils import timezone
+from guardian.admin import GuardedModelAdmin
 
 from api import models as api_models
 
@@ -24,8 +25,31 @@ class TaskHintInlineAdmin(admin.TabularInline):
     )
 
 
-class CustomTaskAdmin(admin.ModelAdmin):
-    inlines = (TaskHintInlineAdmin,)
+class TaskFileInlineAdmin(admin.TabularInline):
+    model = api_models.TaskFile
+    classes = ('collapse',)
+
+    fieldsets = (
+        (
+            'File info',
+            {
+                'fields': (
+                    'id',
+                    'owner',
+                    'name',
+                    'upload_time',
+                    'file_field',
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = ('upload_time',)
+    raw_id_fields = ('owner',)
+
+
+class CustomTaskAdmin(GuardedModelAdmin):
+    inlines = (TaskHintInlineAdmin, TaskFileInlineAdmin)
     list_display = (
         'id',
         'name',
@@ -128,3 +152,24 @@ class CustomTaskAdmin(admin.ModelAdmin):
         'unpublish_full',
         'unpublish_main',
     )
+
+
+class TaskFileFullAdmin(GuardedModelAdmin):
+    model = api_models.TaskFile
+
+    fieldsets = (
+        (
+            'File info',
+            {
+                'fields': (
+                    'owner',
+                    'name',
+                    'upload_time',
+                    'file_field',
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = ('upload_time',)
+    raw_id_fields = ('owner',)

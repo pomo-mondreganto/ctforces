@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db.models import Value as V, Count, OuterRef
 from django.db.models.functions import Coalesce
+from guardian.admin import GuardedModelAdmin
 
 from api import database_functions as api_database_functions
 from api import models as api_models
@@ -103,7 +104,7 @@ class ContestTaskParticipantSolvedInlineAdmin(admin.TabularInline):
     )
 
 
-class CustomContestAdmin(admin.ModelAdmin):
+class CustomContestAdmin(GuardedModelAdmin):
     inlines = (
         ContestTaskInlineAdmin,
         ContestParticipantInlineAdmin,
