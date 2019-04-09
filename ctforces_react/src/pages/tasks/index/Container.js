@@ -1,6 +1,8 @@
 import React from 'react';
 
 import axios from 'axios';
+import { success } from 'lib/toasts';
+import { Redirect } from 'react-router-dom';
 import Component from './Component';
 
 
@@ -10,6 +12,7 @@ class TaskViewContainer extends React.Component {
 
         this.state = {
             task: null,
+            redirect: null,
         };
     }
 
@@ -24,10 +27,11 @@ class TaskViewContainer extends React.Component {
     handleSubmit = async ({ values, actions }) => {
         try {
             await axios.post(`/tasks/${this.state.task.id}/submit/`, values);
-            const { task } = this.state;
-            task.is_solved_by_user = true;
-            this.setState({ task });
+            success('Success!');
             actions.setSubmitting(false);
+            this.setState({
+                redirect: '/tasks/',
+            });
         } catch (error) {
             const errorData = error.response.data;
             Object.keys(errorData).forEach((key) => {
@@ -39,6 +43,10 @@ class TaskViewContainer extends React.Component {
     }
 
     render() {
+        if (this.state.redirect !== null) {
+            return <Redirect to={this.state.redirect} />;
+        }
+
         return <Component
             task={this.state.task}
             handleSubmit={this.handleSubmit}

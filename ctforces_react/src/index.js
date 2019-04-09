@@ -7,6 +7,7 @@ import { createStore } from 'redux';
 import axios from 'axios';
 import { apiUrl } from 'config/config';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import rootReducer from './store';
 import App from './pages';
 
@@ -25,6 +26,8 @@ axios.interceptors.response.use(response => response, (error) => {
     }
     return Promise.reject(ret);
 });
+
+toast.configure();
 
 const store = createStore(rootReducer);
 

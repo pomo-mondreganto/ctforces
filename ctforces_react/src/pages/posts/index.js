@@ -8,21 +8,19 @@ const PostViewPage = lazy(() => import('./index/Container'));
 const PostEditPage = lazy(() => import('./edit/Container'));
 
 
-const Posts = props => (
+const Posts = () => (
     <Suspense fallback={<div>Loading...</div>}>
         <Switch>
             <PrivateRoute
                 exact
                 path="/posts/create/"
                 component={PostCreatePage}
-                key={props.location.pathname + props.location.search}
             />
-            <PublicRoute exact path="/posts/:id/" component={PostViewPage} key={props.location.pathname + props.location.search} />
+            <PublicRoute exact path="/posts/:id/" component={PostViewPage} />
             <PrivateRoute
                 exact
                 path="/posts/:id/edit/"
                 component={PostEditPage}
-                key={props.location.pathname + props.location.search}
             />
         </Switch>
     </Suspense>
