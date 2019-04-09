@@ -182,7 +182,14 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
         users_queryset = instance.participants.filter(
             show_in_ratings=True,
-        ).annotate(
+        )
+
+        if self.request.query_params.get('group_id'):
+            users_queryset = users_queryset.filter(
+                groups__id=self.request.query_params['group_id']
+            )
+
+        users_queryset = users_queryset.annotate(
             cost_sum=Coalesce(
                 user_cost_sum_subquery,
                 V(0),
