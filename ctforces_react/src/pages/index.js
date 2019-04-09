@@ -19,19 +19,19 @@ class App extends React.Component {
     render = () => (
         <Suspense fallback={<div>Loading...</div>}>
             <Switch>
-                <PublicRoute exact path="/" component={IndexPage} />
-                <PublicRoute exact path="/login/" component={LoginPage} />
-                <PublicRoute exact path="/register/" component={RegisterPage} />
-                <PublicRoute path="/users/" component={UsersPage} />
-                <PublicRoute path="/posts/" component={PostsPage} />
-                <PublicRoute path="/tasks/" component={TasksPage} />
-                <PublicRoute path="/contests/" component={ContestsPage} />
+                <PublicRoute exact path="/" component={IndexPage} isRootRoute={true} />
+                <PublicRoute exact path="/login/" component={LoginPage} isRootRoute={true} />
+                <PublicRoute exact path="/register/" component={RegisterPage} isRootRoute={true} />
+                <PublicRoute path="/users/" component={UsersPage} isRootRoute={true} />
+                <PublicRoute path="/posts/" component={PostsPage} isRootRoute={true} />
+                <PublicRoute path="/tasks/" component={TasksPage} isRootRoute={true} />
+                <PublicRoute path="/contests/" component={ContestsPage} isRootRoute={true} />
 
-                <PublicRoute path="/confirm_email/" component={ConfirmEmailPage} />
-                <PublicRoute path="/reset_password/" component={ResetPasswordPage} />
-                <PublicRoute path="/reset_password_confirm/" component={ResetPasswordConfirmPage} />
+                <PublicRoute path="/confirm_email/" component={ConfirmEmailPage} isRootRoute={true} />
+                <PublicRoute path="/reset_password/" component={ResetPasswordPage} isRootRoute={true} />
+                <PublicRoute path="/reset_password_confirm/" component={ResetPasswordConfirmPage} isRootRoute={true} />
 
-                <PrivateRoute path="/settings/" component={SettingsPage} />
+                <PrivateRoute path="/settings/" component={SettingsPage} isRootRoute={true} />
             </Switch>
         </Suspense>
     )

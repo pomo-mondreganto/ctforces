@@ -4,7 +4,9 @@ import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import withAuth from 'wrappers/withAuth';
 import qs from 'lib/qs';
+import getMe from 'lib/getMe';
 import Component from './Component';
+
 
 class LoginPage extends React.Component {
     constructor(props) {
@@ -22,12 +24,8 @@ class LoginPage extends React.Component {
 
     handleSubmit = async ({ values, actions }) => {
         try {
-            const response = await axios.post('/login/', values);
-            this.props.updateAuthUser({
-                requested: true,
-                user: response.data,
-                loggedIn: true,
-            });
+            await axios.post('/login/', values);
+            await getMe(this.props, true);
             if (this.props.location.state && this.props.location.state.from) {
                 this.setState({
                     redirect: this.props.location.state.from,

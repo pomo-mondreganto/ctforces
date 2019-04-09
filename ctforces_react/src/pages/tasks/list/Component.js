@@ -43,7 +43,7 @@ const Component = props => (
                         <span className="ta-c">
                             <span>
                                 {obj.task_tags_details.map((tag, j) => (
-                                    <Button className="btn-sm mr-1 ml-1"
+                                    <Button className="btn-sm mr-1 ml-1 mb-1"
                                         outline color="secondary" key={j}>
                                         {tag.name}
                                     </Button>

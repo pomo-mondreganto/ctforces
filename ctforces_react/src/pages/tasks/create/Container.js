@@ -76,7 +76,7 @@ class TaskCreateContainer extends React.Component {
             });
             const { id } = response.data;
             this.setState({
-                redirect: `/tasks/${id}`,
+                redirect: `/tasks/${id}/`,
             });
         } catch (error) {
             const errorData = error.response.data;
