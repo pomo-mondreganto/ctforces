@@ -125,5 +125,6 @@ class CustomTaskAdmin(admin.ModelAdmin):
 
     actions = (
         'publish',
-        'unpublish',
+        'unpublish_full',
+        'unpublish_main',
     )

@@ -282,7 +282,7 @@ class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
 
         return obj
 
-    @cache_response(key_func=api_users_caching.CurrentUserRetrieveKeyConstructor())
+    @cache_response(timeout=30, key_func=api_users_caching.CurrentUserRetrieveKeyConstructor())
     def retrieve(self, request, *args, **kwargs):
         return super(CurrentUserRetrieveUpdateView, self).retrieve(request, *args, **kwargs)
 

@@ -35,6 +35,6 @@ echo "[+] Starting server..."
 cd /app
 gunicorn --access-logfile /logs/access.log \
  --error-logfile /logs/error.log \
-  --worker-class gevent --worker-connections 768 --timeout 120 \
+  --worker-class gevent --worker-connections 1024 --timeout 60 \
   --bind unix:/socks/ctforces.sock \
   ctforces_backend.wsgi:application
