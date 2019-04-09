@@ -22,8 +22,6 @@ const PrivateRoute = withAuth(
             return null;
         }
 
-        // console.log(rest);
-
         return (
             <Route
                 {...rest}
