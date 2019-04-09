@@ -42,6 +42,6 @@ class PostViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.can_edit_post = request.user.has_perm('change_post')
+        instance.can_edit_post = request.user.has_perm('change_post', instance)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
