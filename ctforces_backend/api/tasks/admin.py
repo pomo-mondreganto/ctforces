@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db.models import Count
 from django.utils import timezone
+from guardian.admin import GuardedModelAdmin
 
 from api import models as api_models
 
@@ -24,7 +25,7 @@ class TaskHintInlineAdmin(admin.TabularInline):
     )
 
 
-class CustomTaskAdmin(admin.ModelAdmin):
+class CustomTaskAdmin(GuardedModelAdmin):
     inlines = (TaskHintInlineAdmin,)
     list_display = (
         'id',

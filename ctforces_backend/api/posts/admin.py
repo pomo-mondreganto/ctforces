@@ -1,8 +1,8 @@
-from django.contrib import admin
 from django.utils import timezone
+from guardian.admin import GuardedModelAdmin
 
 
-class CustomPostAdmin(admin.ModelAdmin):
+class CustomPostAdmin(GuardedModelAdmin):
     list_display = (
         'id',
         'title',
