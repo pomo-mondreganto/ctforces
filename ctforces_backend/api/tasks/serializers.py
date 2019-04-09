@@ -71,8 +71,15 @@ class TaskFileMainSerializer(rest_serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs['name'] = self.filename
-        attrs['owner'] = self.context['request'].user
         return attrs
+
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user
+        instance = super(TaskFileMainSerializer, self).create(validated_data)
+        assign_perm('view_taskfile', instance.owner, instance)
+        assign_perm('change_taskfile', instance.owner, instance)
+        assign_perm('delete_taskfile', instance.owner, instance)
+        return instance
 
 
 class TaskFileViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
@@ -133,11 +140,11 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
     cost = rest_serializers.IntegerField(min_value=1, max_value=9999)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     author_rating = rest_serializers.SlugRelatedField(read_only=True, slug_field='rating', source='author')
-    files = api_fields.CurrentUserFilteredPKRF(
-        filter_field_name='owner',
-        many=True,
+    files = api_fields.CurrentUserPermissionsFilteredPKRF(
         read_only=False,
+        write_only=True,
         queryset=api_models.TaskFile.objects.all(),
+        perms='view_taskfile',
     )
 
     class Meta:
@@ -169,9 +176,6 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
                 'read_only': True,
             },
             'tags': {
-                'write_only': True,
-            },
-            'files': {
                 'write_only': True,
             },
         }
