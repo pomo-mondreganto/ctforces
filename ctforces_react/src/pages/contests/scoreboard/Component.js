@@ -1,6 +1,6 @@
 import React from 'react';
 
-import getRank from 'lib/Ranking';
+import getRank from 'lib/ranking';
 import convert from 'lib/HumanTime';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';

@@ -7,7 +7,7 @@ import CardWithTabs from 'components/CardWithTabs/Container';
 import Pagination from 'components/Pagination/Container';
 import { LinkContainerNonActive } from 'lib/LinkContainer';
 
-import getRank from 'lib/Ranking';
+import getRank from 'lib/ranking';
 
 const Component = props => (
     <CardWithTabs

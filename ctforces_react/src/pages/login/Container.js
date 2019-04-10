@@ -3,7 +3,6 @@ import React from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import withAuth from 'wrappers/withAuth';
-import qs from 'lib/qs';
 import getMe from 'lib/getMe';
 import Component from './Component';
 
@@ -15,11 +14,6 @@ class LoginPage extends React.Component {
         this.state = {
             redirect: null,
         };
-    }
-
-    componentDidMount() {
-        const { email_sent: emailSent } = qs(this.props.location.search);
-        this.setState({ emailSent });
     }
 
     handleSubmit = async ({ values, actions }) => {
@@ -58,7 +52,6 @@ class LoginPage extends React.Component {
         return <Component
             handleSubmit={this.handleSubmit}
             needResend={this.state.needResend}
-            emailSent={this.state.emailSent}
         />;
     }
 }

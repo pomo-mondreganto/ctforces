@@ -5,7 +5,7 @@ import {
 } from 'reactstrap';
 import { mediaUrl } from 'config/config';
 import { Formik, Form, Field } from 'formik';
-import getRank from 'lib/Ranking';
+import getRank from 'lib/ranking';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import Layout from 'layouts/sidebar/Container';

@@ -42,7 +42,14 @@ const Component = props => (
                             <div key={i} className="contests-table-item-running">
                                 <span className="ta-c">{i + 1}</span>
                                 <span className="ta-l">
-                                    {obj.name}
+                                    <span>
+                                        {obj.name}
+                                        {obj.is_rated && (
+                                            <span className="is-rated">
+                                                {' R'}
+                                            </span>
+                                        )}
+                                    </span>
                                 </span>
                                 <span className="ta-c">
                                     <Countdown
@@ -78,7 +85,14 @@ const Component = props => (
                             <div key={i} className="contests-table-item-upcoming">
                                 <span className="ta-c">{i + 1}</span>
                                 <span className="ta-l">
-                                    {obj.name}
+                                    <span>
+                                        {obj.name}
+                                        {obj.is_rated && (
+                                            <span className="is-rated">
+                                                {' R'}
+                                            </span>
+                                        )}
+                                    </span>
                                 </span>
                                 <span className="ta-c">
                                     <Countdown
@@ -123,7 +137,14 @@ const Component = props => (
                             <div key={i} className="contests-table-item-finished">
                                 <span className="ta-c">{i + 1 + props.pageSize * (props.currentPage - 1)}</span>
                                 <span className="ta-l">
-                                    {obj.name}
+                                    <span>
+                                        {obj.name}
+                                        {obj.is_rated && (
+                                            <span className="is-rated">
+                                                {' R'}
+                                            </span>
+                                        )}
+                                    </span>
                                 </span>
                                 <span className="ta-c">
                                     <LinkContainerNonActive to={`/contests/${obj.id}/`}>

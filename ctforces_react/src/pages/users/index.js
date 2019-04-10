@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { Switch } from 'react-router-dom';
-import { PublicRoute } from 'lib/Routes';
+import { PublicRoute } from 'lib/routes';
 
 const ContestsListPage = lazy(() => import('./contests_list/Container'));
 const RatingTopPage = lazy(() => import('./top_rating_list/Container'));

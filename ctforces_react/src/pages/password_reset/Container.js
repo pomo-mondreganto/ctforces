@@ -3,7 +3,9 @@ import React from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import withAuth from 'wrappers/withAuth';
+import { infoT } from 'lib/toasts';
 import Component from './Component';
+
 
 class LoginPage extends React.Component {
     constructor(props) {
@@ -17,6 +19,7 @@ class LoginPage extends React.Component {
     handleSubmit = async ({ values, actions }) => {
         try {
             await axios.post('/request_password_reset/', values);
+            infoT('You have asked for password reset. Check your email');
             this.setState({
                 redirect: '/',
             });

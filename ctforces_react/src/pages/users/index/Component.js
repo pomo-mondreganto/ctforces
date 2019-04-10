@@ -6,7 +6,7 @@ import Layout from 'layouts/sidebar/Container';
 import { serverUrl } from 'config/config';
 import CardWithTabsComponent from 'components/CardWithTabs/Container';
 
-import getRank from 'lib/Ranking';
+import getRank from 'lib/ranking';
 
 import UserTopBar from 'snippets_components/UserTopBar';
 

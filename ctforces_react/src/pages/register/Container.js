@@ -3,7 +3,9 @@ import React from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import withAuth from 'wrappers/withAuth';
+import { infoT } from 'lib/toasts';
 import Component from './Component';
+
 
 class RegisterPage extends React.Component {
     constructor(props) {
@@ -17,8 +19,9 @@ class RegisterPage extends React.Component {
     handleSubmit = async ({ values, actions }) => {
         try {
             await axios.post('/register/', values);
+            infoT('You have to activate your account. Check your email');
             this.setState({
-                redirect: '/login/?email_sent=1',
+                redirect: '/login/',
             });
         } catch (error) {
             const errorData = error.response.data;
