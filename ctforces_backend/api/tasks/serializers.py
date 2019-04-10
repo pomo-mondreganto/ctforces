@@ -145,6 +145,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
         write_only=True,
         queryset=api_models.TaskFile.objects.all(),
         perms='view_taskfile',
+        many=True,
     )
 
     class Meta:
