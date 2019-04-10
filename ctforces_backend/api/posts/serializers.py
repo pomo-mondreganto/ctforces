@@ -12,13 +12,13 @@ class PostMainSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.Post
         fields = (
-            'id',
             'author',
-            'author_username',
             'author_rating',
+            'author_username',
             'body',
             'can_edit_post',
             'created_at',
+            'id',
             'is_published',
             'title',
             'updated_at',

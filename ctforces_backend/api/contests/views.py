@@ -16,7 +16,7 @@ from api import database_functions as api_database_functions
 from api import mixins as api_mixins
 from api import models as api_models
 from api import pagination as api_pagination
-from api import permissions as api_permissions
+from api.contests import permissions as api_contests_permissions
 from api.contests import serializers as api_contests_serializers
 from api.tasks import serializers as api_tasks_serializers
 from api.users import serializers as api_users_serializers
@@ -32,12 +32,12 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
     queryset = api_models.Contest.objects.order_by('-start_time')
 
     action_permission_classes = {
-        'retrieve': (api_permissions.HasViewContestPermission,),
-        'get_full_contest': (api_permissions.HasEditContestPermission,),
-        'create': (api_permissions.HasCreateContestPermission,),
-        'update': (api_permissions.HasEditContestPermission,),
-        'partial_update': (api_permissions.HasEditContestPermission,),
-        'destroy': (api_permissions.HasDeleteContestPermission,),
+        'retrieve': (api_contests_permissions.HasViewContestPermission,),
+        'get_full_contest': (api_contests_permissions.HasEditContestPermission,),
+        'create': (api_contests_permissions.HasCreateContestPermission,),
+        'update': (api_contests_permissions.HasEditContestPermission,),
+        'partial_update': (api_contests_permissions.HasEditContestPermission,),
+        'destroy': (api_contests_permissions.HasDeleteContestPermission,),
         'register': (IsAuthenticated,)
     }
 
@@ -255,6 +255,9 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         if not contest.is_published or not contest.is_registration_open:
             raise NotFound("Contest doesn't exist or registration isn't open yet")
 
+        if self.request.user.has_perm('api.change_contest', contest):
+            raise ValidationError(detail='You cannot register for this contest')
+
         api_models.ContestParticipantRelationship.objects.create(
             contest=contest,
             participant=self.request.user,
@@ -276,10 +279,10 @@ class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
     serializer_class = api_contests_serializers.ContestTaskRelationshipMainSerializer
 
     action_permission_classes = {
-        'create': (api_permissions.HasContestTaskRelationshipPermission,),
-        'update': (api_permissions.HasContestTaskRelationshipPermission,),
-        'partial_update': (api_permissions.HasContestTaskRelationshipPermission,),
-        'destroy': (api_permissions.HasContestTaskRelationshipPermission,),
+        'create': (api_contests_permissions.HasContestTaskRelationshipPermission,),
+        'update': (api_contests_permissions.HasContestTaskRelationshipPermission,),
+        'partial_update': (api_contests_permissions.HasContestTaskRelationshipPermission,),
+        'destroy': (api_contests_permissions.HasContestTaskRelationshipPermission,),
     }
 
     def get_serializer_class(self):
