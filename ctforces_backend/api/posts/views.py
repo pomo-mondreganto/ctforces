@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from api import mixins as api_mixins
 from api import models as api_models
 from api import pagination as api_pagination
-from api import permissions as api_permissions
+from api.posts import permissions as api_posts_permissions
 from api.posts import serializers as api_posts_serializers
 
 
@@ -37,7 +37,7 @@ class PostViewSet(api_mixins.CustomPermissionsViewSetMixin,
     }
 
     action_permission_classes = {
-        'retrieve': (api_permissions.HasViewPostPermission,),
+        'retrieve': (api_posts_permissions.HasViewPostPermission,),
     }
 
     def retrieve(self, request, *args, **kwargs):

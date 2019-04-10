@@ -1,6 +1,7 @@
 import re
 
 from celery import current_app
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core import validators
 from django.db import models
@@ -8,6 +9,7 @@ from django.db.models import Sum, Q, Value as V
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.deconstruct import deconstructible
+from django.utils.functional import cached_property
 from rest_framework_tricks.models.fields import NestedProxyField
 from stdimage.models import StdImageField
 
@@ -88,6 +90,10 @@ class User(AbstractUser):
     show_in_ratings = models.BooleanField(default=True)
 
     last_email_resend = models.DateTimeField(null=True, blank=True)
+
+    @cached_property
+    def is_admin(self):
+        return self.groups.filter(name=settings.ADMIN_GROUP_NAME).exists()
 
     class Meta:
         ordering = ('id',)

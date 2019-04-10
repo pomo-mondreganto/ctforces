@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from api import mixins as api_mixins
 from api import models as api_models
 from api import pagination as api_pagination
-from api import permissions as api_permissions
+from api.tasks import permissions as api_tasks_permissions
 from api.tasks import serializers as api_tasks_serializers
 from api.users import serializers as api_users_serializers
 
@@ -27,13 +27,13 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     queryset = api_models.Task.objects.order_by('-publication_time', '-id').select_related('author')
 
     action_permission_classes = {
-        'retrieve': (api_permissions.HasViewTaskPermission,),
-        'get_solved': (api_permissions.HasViewTaskPermission,),
-        'get_full_task': (api_permissions.HasEditTaskPermission,),
-        'create': (api_permissions.HasCreateTaskPermission,),
-        'update': (api_permissions.HasEditTaskPermission,),
-        'partial_update': (api_permissions.HasEditTaskPermission,),
-        'destroy': (api_permissions.HasDeleteTaskPermission,),
+        'retrieve': (api_tasks_permissions.HasViewTaskPermission,),
+        'get_solved': (api_tasks_permissions.HasViewTaskPermission,),
+        'get_full_task': (api_tasks_permissions.HasEditTaskPermission,),
+        'create': (api_tasks_permissions.HasCreateTaskPermission,),
+        'update': (api_tasks_permissions.HasEditTaskPermission,),
+        'partial_update': (api_tasks_permissions.HasEditTaskPermission,),
+        'destroy': (api_tasks_permissions.HasDeleteTaskPermission,),
     }
 
     klass = api_models.Task
@@ -148,7 +148,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
 class TaskTagViewSet(rest_mixins.CreateModelMixin,
                      rest_viewsets.GenericViewSet):
-    permission_classes = (api_permissions.HasEditTaskPermissionOrReadOnly,)
+    permission_classes = (api_tasks_permissions.HasEditTaskPermissionOrReadOnly,)
     serializer_class = api_tasks_serializers.TaskTagSerializer
     queryset = api_models.TaskTag.objects.all()
 
@@ -170,7 +170,7 @@ class TaskFileViewSet(rest_mixins.RetrieveModelMixin,
                       rest_mixins.CreateModelMixin,
                       rest_viewsets.GenericViewSet):
     parser_classes = (MultiPartParser,)
-    permission_classes = (IsAuthenticated, api_permissions.HasCreateTaskFilePermissionOrReadOnly)
+    permission_classes = (IsAuthenticated, api_tasks_permissions.HasCreateTaskFilePermissionOrReadOnly)
     serializer_class = api_tasks_serializers.TaskFileMainSerializer
     pagination_class = api_pagination.TaskFileDefaultPagination
     lookup_field = 'id'
@@ -190,10 +190,10 @@ class TaskHintViewSet(api_mixins.CustomPermissionsViewSetMixin,
     serializer_class = api_tasks_serializers.TaskHintSerializer
 
     action_permission_classes = {
-        'retrieve': (api_permissions.HasViewTaskHintPermission,),
-        'update': (api_permissions.HasModifyTaskHintsPermission,),
-        'partial_update': (api_permissions.HasModifyTaskHintsPermission,),
-        'destroy': (api_permissions.HasModifyTaskHintsPermission,)
+        'retrieve': (api_tasks_permissions.HasViewTaskHintPermission,),
+        'update': (api_tasks_permissions.HasModifyTaskHintsPermission,),
+        'partial_update': (api_tasks_permissions.HasModifyTaskHintsPermission,),
+        'destroy': (api_tasks_permissions.HasModifyTaskHintsPermission,)
     }
 
     def get_queryset(self):
