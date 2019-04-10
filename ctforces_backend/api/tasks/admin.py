@@ -157,6 +157,18 @@ class CustomTaskAdmin(GuardedModelAdmin):
 class TaskFileFullAdmin(GuardedModelAdmin):
     model = api_models.TaskFile
 
+    list_display = (
+        'id',
+        'name',
+        'owner',
+        'upload_time',
+    )
+
+    list_display_links = (
+        'id',
+        'name',
+    )
+
     fieldsets = (
         (
             'File info',
