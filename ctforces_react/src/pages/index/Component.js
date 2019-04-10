@@ -5,7 +5,7 @@ import Pagination from 'components/Pagination/Container';
 import withLayout from 'wrappers/withLayout';
 import Layout from 'layouts/sidebar/Container';
 import CardWithTabsComponent from 'components/CardWithTabs/Container';
-import getRank from 'lib/Ranking';
+import getRank from 'lib/ranking';
 import convert from 'lib/HumanTime';
 import Markdown from 'components/Markdown/Container';
 

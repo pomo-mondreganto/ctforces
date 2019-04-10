@@ -1,7 +1,7 @@
 import React from 'react';
 
 import axios from 'axios';
-import { success } from 'lib/toasts';
+import { successT } from 'lib/toasts';
 import { Redirect } from 'react-router-dom';
 import Component from './Component';
 
@@ -27,7 +27,7 @@ class TaskViewContainer extends React.Component {
     handleSubmit = async ({ values, actions }) => {
         try {
             await axios.post(`/tasks/${this.state.task.id}/submit/`, values);
-            success('Success!');
+            successT('Success!');
             actions.setSubmitting(false);
             this.setState({
                 redirect: '/tasks/',

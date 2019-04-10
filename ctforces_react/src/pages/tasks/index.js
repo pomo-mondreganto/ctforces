@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { Switch } from 'react-router-dom';
 
-import { PublicRoute, PrivateRoute } from 'lib/Routes';
+import { PublicRoute, PrivateRoute } from 'lib/routes';
 
 import 'styles/pages/tasks.scss';
 import 'styles/components/LongText.scss';

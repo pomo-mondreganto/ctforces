@@ -42,11 +42,6 @@ const Component = props => (
                                 component={TextInput}
                             />
                             <Field component={DetailError} />
-                            {props.emailSent && (
-                                <div className="mb-3">
-                                    <div>You have to activate your account. Check your email</div>
-                                </div>
-                            )}
                             {props.needResend && (
                                 <div className="mb-3">
                                     <LinkContainerNonActive to="/resend_email/">

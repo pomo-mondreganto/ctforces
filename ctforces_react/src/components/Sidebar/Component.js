@@ -4,7 +4,7 @@ import { LinkContainerNonActive } from 'lib/LinkContainer';
 
 import { serverUrl } from 'config/config';
 import CardWithTabs from 'components/CardWithTabs/Container';
-import getRank from 'lib/Ranking';
+import getRank from 'lib/ranking';
 
 import 'styles/components/Sidebar.scss';
 import 'styles/pages/users.scss';

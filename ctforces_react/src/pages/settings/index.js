@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { Switch } from 'react-router-dom';
 
-import { PrivateRoute } from 'lib/Routes';
+import { PrivateRoute } from 'lib/routes';
 
 const SocialSettingsPage = lazy(() => import('./social/Container'));
 const GeneralSettingsPage = lazy(() => import('./general/Container'));
