@@ -38,9 +38,9 @@ const Component = props => (
                                     <span className="ta-l">
                                         {obj.name}
                                         {obj.is_rated && (
-                                            <>
-                                                {' Rated'}
-                                            </>
+                                            <span className="is-rated">
+                                                {' R'}
+                                            </span>
                                         )}
                                     </span>
                                     <span className="ta-c">
@@ -86,6 +86,11 @@ const Component = props => (
                                     <span className="ta-c">{i + 1}</span>
                                     <span className="ta-l">
                                         {obj.name}
+                                        {obj.is_rated && (
+                                            <span className="is-rated">
+                                                {' R'}
+                                            </span>
+                                        )}
                                     </span>
                                     <span className="ta-c">
                                         <Countdown
