@@ -73,11 +73,14 @@ class User(AbstractUser):
 
     upsolving_annotated = UserUpsolvingAnnotatedManager()
 
+    telegram = models.CharField(max_length=255, blank=True)
+
     hide_personal_info = models.BooleanField(default=False)
 
     personal_info = NestedProxyField(
         'first_name',
         'last_name',
+        'telegram',
     )
 
     has_participated_in_rated_contest = models.BooleanField(default=False)
