@@ -31,5 +31,9 @@
 }
 
 .solved {
-    background-color: $solved-task !important;
+    background-color: $solved-task;
+}
+
+.unpublished {
+    background-color: $unpublished-task;
 }
