@@ -255,6 +255,9 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         if not contest.is_published or not contest.is_registration_open:
             raise NotFound("Contest doesn't exist or registration isn't open yet")
 
+        if self.request.user.has_perm('api.change_contest', contest):
+            raise ValidationError(detail='You cannot register for this contest')
+
         api_models.ContestParticipantRelationship.objects.create(
             contest=contest,
             participant=self.request.user,
