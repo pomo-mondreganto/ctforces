@@ -32,7 +32,8 @@ const Component = props => (
             </div>
             <div className="tasks-table-body">
                 {props.tasks && props.tasks.map((obj, i) => (
-                    <div key={i} className={`tasks-table-item ${obj.is_solved_by_user ? 'solved' : ''}`}>
+                    <div key={i} className={`tasks-table-item ${obj.is_solved_by_user ? 'solved' : ''}
+                        ${obj.is_published ? '' : 'unpublished'}`}>
                         <span className="ta-c">{i + 1 + props.pageSize * (props.currentPage - 1)}</span>
                         <span className="ta-l">
                             <LinkContainerNonActive to={`/tasks/${obj.id}/`}>
