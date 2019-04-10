@@ -96,6 +96,7 @@ services:
       dockerfile: configs/react.dev.Dockerfile
     volumes:
       - ./volumes/react_build:/react_build
+      - ./volumes/react_cache:/cache
     restart: on-failure
     container_name: ctforces_react_init
     env_file:
