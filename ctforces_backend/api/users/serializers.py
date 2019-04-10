@@ -13,8 +13,8 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.User
         fields = (
-            'id',
             'email',
+            'id',
             'password',
             'username',
         )
@@ -112,12 +112,12 @@ class UserBasicSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlyS
     class Meta:
         model = api_models.User
         fields = (
-            'id',
             'avatar_main',
             'avatar_small',
             'cost_sum',
             'has_participated_in_rated_contest',
             'hide_personal_info',
+            'id',
             'max_rating',
             'personal_info',
             'rating',
@@ -150,19 +150,19 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.User
         fields = (
-            'id',
             'avatar_main',
             'avatar_small',
-            'can_create_tasks',
-            'can_create_posts',
             'can_create_contests',
+            'can_create_posts',
             'can_create_taskfiles',
+            'can_create_tasks',
             'cost_sum',
             'email',
-            'has_tasks',
-            'has_posts',
             'has_contests',
+            'has_posts',
+            'has_tasks',
             'hide_personal_info',
+            'id',
             'max_rating',
             'old_password',
             'password',

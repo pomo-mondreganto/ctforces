@@ -34,16 +34,16 @@ class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.ContestTaskRelationship
         fields = (
-            'id',
             'contest',
             'cost',
+            'id',
             'is_solved_by_user',
             'main_tag',
             'main_tag_details',
-            'task',
-            'task_name',
             'ordering_number',
             'solved_count',
+            'task',
+            'task_name',
         )
 
         extra_kwargs = {
@@ -57,10 +57,10 @@ class ContestTaskRelationshipUpdateSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.ContestTaskRelationship
         fields = (
-            'id',
             'cost',
-            'ordering_number',
+            'id',
             'main_tag',
+            'ordering_number',
         )
 
 
@@ -77,11 +77,11 @@ class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.
         fields = (
             'author_username',
             'contest_cost',
+            'is_solved_by_user',
             'name',
+            'ordering_number',
             'solved_count',
             'tags_details',
-            'is_solved_by_user',
-            'ordering_number',
         )
 
 
@@ -105,13 +105,13 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.Rea
             'contest_cost',
             'description',
             'files_details',
+            'hints',
             'is_solved_by_user',
             'name',
-            'solved_count',
-            'tags_details',
-            'hints',
             'ordering_number',
             'real_id',
+            'solved_count',
+            'tags_details',
         )
 
     @staticmethod
@@ -131,23 +131,23 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.Contest
         fields = (
-            'id',
             'author',
             'author_username',
             'contest_task_relationship_details',
             'created_at',
-            'updated_at',
             'description',
             'end_time',
+            'id',
             'is_finished',
             'is_published',
-            'is_registration_open',
             'is_rated',
+            'is_registration_open',
             'is_running',
             'name',
+            'publish_tasks_after_finished',
             'registered_count',
             'start_time',
-            'publish_tasks_after_finished',
+            'updated_at',
         )
 
         extra_kwargs = {
@@ -173,15 +173,15 @@ class ContestPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.Read
     class Meta:
         model = api_models.Contest
         fields = (
-            'id',
             'author_username',
             'end_time',
+            'id',
             'is_finished',
             'is_published',
+            'is_rated',
             'is_registered',
             'is_registration_open',
             'is_running',
-            'is_rated',
             'name',
             'registered_count',
             'start_time',
@@ -200,21 +200,21 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
     class Meta:
         model = api_models.Contest
         fields = (
-            'id',
             'author',
             'author_username',
             'can_edit_contest',
             'contest_task_relationship_details',
             'created_at',
-            'updated_at',
             'end_time',
+            'id',
             'is_finished',
             'is_published',
-            'is_registration_open',
             'is_rated',
+            'is_registration_open',
             'is_running',
             'name',
             'start_time',
+            'updated_at',
         )
 
         extra_kwargs = {
@@ -231,10 +231,10 @@ class ContestScoreboardUserSerializer(rest_serializers.ModelSerializer, api_mixi
     class Meta:
         model = api_models.User
         fields = (
-            'id',
-            'username',
             'cost_sum',
+            'id',
             'last_contest_solve',
+            'username',
         )
 
 

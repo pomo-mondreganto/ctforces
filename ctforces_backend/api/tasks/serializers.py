@@ -27,9 +27,9 @@ class TaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
     class Meta:
         model = api_models.Task
         fields = (
-            'id',
             'author',
             'cost',
+            'id',
             'is_published',
             'is_solved_by_user',
             'name',
@@ -45,12 +45,12 @@ class TaskFileMainSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.TaskFile
         fields = (
-            'id',
             'file_field',
+            'id',
             'name',
+            'owner',
             'task_details',
             'upload_time',
-            'owner',
         )
         extra_kwargs = {
             'owner': {
@@ -86,8 +86,8 @@ class TaskFileViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOn
     class Meta:
         model = api_models.TaskFile
         fields = (
-            'id',
             'file_field',
+            'id',
             'name',
             'upload_time',
         )
@@ -112,20 +112,20 @@ class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySe
     class Meta:
         model = api_models.Task
         fields = (
-            'id',
-            'author_username',
             'author_rating',
+            'author_username',
             'can_edit_task',
             'cost',
             'description',
             'files_details',
+            'hints',
+            'id',
             'is_published',
             'is_solved_by_user',
             'name',
             'publication_time',
             'solved_count',
             'tags_details',
-            'hints',
         )
 
     @staticmethod
@@ -151,22 +151,22 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.Task
         fields = (
-            'id',
             'author',
-            'author_username',
             'author_rating',
+            'author_username',
             'cost',
             'description',
             'files',
             'files_details',
             'flag',
+            'hints',
+            'id',
             'is_published',
             'name',
             'publication_time',
             'solved_count',
             'tags',
             'task_tags_details',
-            'hints',
         )
 
         extra_kwargs = {
@@ -242,11 +242,11 @@ class TaskHintSerializer(rest_serializers.ModelSerializer):
         model = api_models.TaskHint
         fields = (
             'author',
-            'author_username',
             'author_rating',
-            'task',
+            'author_username',
             'body',
             'is_published',
+            'task',
         )
 
         extra_kwargs = {
