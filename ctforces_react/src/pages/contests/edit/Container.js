@@ -65,7 +65,7 @@ class ContestCreateContainer extends React.Component {
                 } else {
                     const relationshipId = this.state.old_relationships.filter(
                         relationship => relationship.task === task.id,
-                    )[0];
+                    )[0].id;
                     await axios.put(`/contest_task_relationship/${relationshipId}/`, {
                         ordering_number: i,
                         cost: task.cost,
