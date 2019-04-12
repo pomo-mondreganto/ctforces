@@ -62,6 +62,14 @@ class ContestCreateContainer extends React.Component {
                         cost: task.cost,
                         main_tag: task.main_tag.id,
                     });
+                } else {
+                    await axios.put('/contest_task_relationship/', {
+                        task: task.id,
+                        contest: id,
+                        ordering_number: i,
+                        cost: task.cost,
+                        main_tag: task.main_tag.id,
+                    });
                 }
             }
 
