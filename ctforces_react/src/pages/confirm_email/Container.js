@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import withAuth from 'wrappers/withAuth';
 import qs from 'lib/qs';
+import { infoT } from 'lib/toasts';
 import Component from './Component';
 
 class ConfirmEmailPage extends React.Component {
@@ -22,6 +23,7 @@ class ConfirmEmailPage extends React.Component {
             await axios.post('/confirm_email/', {
                 token,
             });
+            infoT('You have successfully activated your account!');
             this.setState({
                 redirect: '/login/',
             });

@@ -14,6 +14,7 @@ const RegisterPage = lazy(() => import('./register/Container'));
 const SettingsPage = lazy(() => import('./settings'));
 const LoginPage = lazy(() => import('./login/Container'));
 const IndexPage = lazy(() => import('./index/Container'));
+const EmailResend = lazy(() => import('./email_resend/Container'));
 
 class App extends React.Component {
     render = () => (
@@ -27,9 +28,10 @@ class App extends React.Component {
                 <PublicRoute path="/tasks/" component={TasksPage} isRootRoute={true} />
                 <PublicRoute path="/contests/" component={ContestsPage} isRootRoute={true} />
 
-                <PublicRoute path="/confirm_email/" component={ConfirmEmailPage} isRootRoute={true} />
-                <PublicRoute path="/reset_password/" component={ResetPasswordPage} isRootRoute={true} />
-                <PublicRoute path="/reset_password_confirm/" component={ResetPasswordConfirmPage} isRootRoute={true} />
+                <PublicRoute path="/confirm_email/" exact component={ConfirmEmailPage} isRootRoute={true} />
+                <PublicRoute path="/reset_password/" exact component={ResetPasswordPage} isRootRoute={true} />
+                <PublicRoute path="/reset_password_confirm/" exact component={ResetPasswordConfirmPage} isRootRoute={true} />
+                <PublicRoute path="/resend_email/" exact component={EmailResend} isRootRoute={true} />
 
                 <PrivateRoute path="/settings/" component={SettingsPage} isRootRoute={true} />
             </Switch>
