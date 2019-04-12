@@ -4,7 +4,6 @@ import { Formik, Form, Field } from 'formik';
 import {
     Button,
 } from 'reactstrap';
-import { LinkContainerNonActive } from 'lib/LinkContainer';
 import TextInput from 'components/Form/TextInput/Container';
 import DetailError from 'components/Form/DetailError/Container';
 import Layout from 'layouts/sidebar/Container';
