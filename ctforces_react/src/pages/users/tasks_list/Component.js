@@ -16,7 +16,7 @@ const Component = props => (
     <CardWithTabsComponent
         tabs={UserTopBar(props.username, props.auth)}
         pagination={
-            <Pagination to={`/user/${props.username}/tasks/`}
+            <Pagination to={`/users/${props.username}/tasks/`}
                 currentPage={props.currentPage}
                 count={props.count}
                 pageSize={props.pageSize} />
