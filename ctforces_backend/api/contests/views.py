@@ -84,7 +84,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
                 queryset=api_models.ContestTaskRelationship.objects.annotate(
                     solved_count=solved_count_subquery,
                     is_solved_by_user=is_solved_by_user_subquery,
-                ).select_related('task'),
+                ).select_related('task').order_by('ordering_number'),
             )
             queryset = queryset.prefetch_related(prefetch)
 
@@ -382,7 +382,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             'tags',
             'files',
         ).select_related('author').order_by(
-            '-ordering_number',
+            'ordering_number',
             'contest_cost',
             'id',
         )
