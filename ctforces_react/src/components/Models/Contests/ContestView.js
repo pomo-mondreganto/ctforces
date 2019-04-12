@@ -146,15 +146,15 @@ const Component = props => (
                                                     Registered
                                                 </span>
                                             )}
-                                            {props.auth.user && props.auth.user.is_admin && (
-                                                <LinkContainerNonActive to={`/contests/${obj.id}/`}>
-                                                    <a>
-                                                        Edit
-                                                    </a>
-                                                </LinkContainerNonActive>
-                                            )}
                                         </>
                                     ) : 'Closed'}
+                                    {props.auth.user && props.auth.user.is_admin && (
+                                        <LinkContainerNonActive to={`/contests/${obj.id}/`}>
+                                            <a>
+                                                Edit
+                                            </a>
+                                        </LinkContainerNonActive>
+                                    )}
                                 </span>
                             </div>
                         ))}
