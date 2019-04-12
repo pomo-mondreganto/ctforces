@@ -66,7 +66,7 @@ class UserContestsPage extends React.Component {
     render() {
         return (
             <Component
-                auth={this.props.auth}
+                {...this.props}
                 username={this.props.match.params.username}
                 register={this.register}
                 {...this.state}

@@ -75,11 +75,13 @@ const Component = props => (
                                                 modal
                                                 closeOnDocumentClick
                                             >
-                                                <div className="mb-3">Are you sure you want to register for this contest?</div>
-                                                <span className="contest-register"
-                                                    onClick={() => props.register(obj.id)}>
-                                                    Yes, Sure!
-                                                </span>
+                                                <>
+                                                    <div className="mb-3">Are you sure you want to register for this contest?</div>
+                                                    <span className="contest-register"
+                                                        onClick={() => props.register(obj.id)}>
+                                                        Yes, Sure!
+                                                    </span>
+                                                </>
                                             </Popup>
                                             <LinkContainerNonActive to={`/contests/${obj.id}/`}>
                                                 <a>
@@ -143,6 +145,13 @@ const Component = props => (
                                                 <span className="contest-registered">
                                                     Registered
                                                 </span>
+                                            )}
+                                            {props.auth.user && props.auth.user.is_admin && (
+                                                <LinkContainerNonActive to={`/contests/${obj.id}/`}>
+                                                    <a>
+                                                        Edit
+                                                    </a>
+                                                </LinkContainerNonActive>
                                             )}
                                         </>
                                     ) : 'Closed'}

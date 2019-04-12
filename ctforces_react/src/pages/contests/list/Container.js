@@ -2,6 +2,7 @@ import React from 'react';
 
 import axios from 'axios';
 import qs from 'lib/qs';
+import withAuth from 'wrappers/withAuth';
 import Component from './Component';
 
 class ContestListContainer extends React.Component {
@@ -60,8 +61,8 @@ class ContestListContainer extends React.Component {
     }
 
     render() {
-        return <Component {...this.state} register={this.register} />;
+        return <Component {...this.state} {...this.props} register={this.register} />;
     }
 }
 
-export default ContestListContainer;
+export default withAuth(ContestListContainer);
