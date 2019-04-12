@@ -146,6 +146,7 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
     has_tasks = rest_serializers.BooleanField(read_only=True)
     has_posts = rest_serializers.BooleanField(read_only=True)
     has_contests = rest_serializers.BooleanField(read_only=True)
+    is_admin = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
         model = api_models.User
@@ -161,6 +162,7 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
             'has_contests',
             'has_posts',
             'has_tasks',
+            'is_admin',
             'hide_personal_info',
             'id',
             'max_rating',

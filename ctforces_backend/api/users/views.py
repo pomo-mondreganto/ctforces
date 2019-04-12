@@ -279,10 +279,11 @@ class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
             obj.can_create_posts = True
             obj.can_create_contests = self.request.user.has_perm('api.add_contest')
             obj.can_create_taskfiles = self.request.user.has_perm('api.add_taskfile')
+            obj.is_admin = self.request.user.is_admin
 
         return obj
 
-    @cache_response(timeout=30, key_func=api_users_caching.CurrentUserRetrieveKeyConstructor())
+    @cache_response(timeout=86400, key_func=api_users_caching.CurrentUserRetrieveKeyConstructor())
     def retrieve(self, request, *args, **kwargs):
         return super(CurrentUserRetrieveUpdateView, self).retrieve(request, *args, **kwargs)
 
