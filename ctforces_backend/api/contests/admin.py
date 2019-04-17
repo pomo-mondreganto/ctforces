@@ -80,35 +80,10 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
     )
 
 
-class ContestTaskParticipantSolvedInlineAdmin(admin.TabularInline):
-    model = api_models.ContestTaskParticipantSolvedRelationship
-    classes = ('collapse',)
-    fieldsets = (
-        (
-            'Main info',
-            {
-                'fields': (
-                    'id',
-                    'participant',
-                    'contest',
-                    'task',
-                ),
-            },
-        ),
-    )
-
-    raw_id_fields = (
-        'participant',
-        'contest',
-        'task',
-    )
-
-
 class CustomContestAdmin(GuardedModelAdmin):
     inlines = (
         ContestTaskInlineAdmin,
         ContestParticipantInlineAdmin,
-        ContestTaskParticipantSolvedInlineAdmin
     )
 
     list_display = (
@@ -198,3 +173,30 @@ class CustomContestAdmin(GuardedModelAdmin):
         return super(CustomContestAdmin, self).get_queryset(request).annotate(
             registered_count=Count('participants', distinct=True),
         ).prefetch_related('tasks', 'participants')
+
+
+class ContestTaskParticipantSolvedAdmin(admin.ModelAdmin):
+    list_display_links = (
+        'id',
+    )
+
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'participant',
+                    'contest',
+                    'task',
+                ),
+            },
+        ),
+    )
+
+    def get_queryset(self, request):
+        return super(ContestTaskParticipantSolvedAdmin, self).get_queryset(request).select_related(
+            'participant',
+            'contest',
+            'task',
+        )
