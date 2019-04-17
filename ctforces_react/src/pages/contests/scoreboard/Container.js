@@ -14,10 +14,17 @@ class ContestViewContainer extends React.Component {
     }
 
     async componentDidMount() {
-        const { page: currentPage = 1, group_id: groupId } = qs(this.props.location.search);
+        const {
+            page: currentPage = 1,
+            group_id: groupId,
+            page_size: pageSizeQ,
+        } = qs(this.props.location.search);
         const { id } = this.props.match.params;
         const responseContest = await axios.get(`/contests/${id}/`);
-        const responseScoreboard = await axios.get(`/contests/${id}/scoreboard/?page=${currentPage}${groupId ? `&group_id=${groupId}` : ''}`);
+        const responseScoreboard = await axios.get(
+            `/contests/${id}/scoreboard/?page=${currentPage}${groupId ? `&group_id=${groupId}` : ''}${pageSizeQ ? `&page_size=${pageSizeQ}` : ''}
+        `,
+        );
         const {
             count,
             page_size: pageSize,
