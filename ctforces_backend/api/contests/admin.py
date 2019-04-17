@@ -175,6 +175,64 @@ class CustomContestAdmin(GuardedModelAdmin):
         ).prefetch_related('tasks', 'participants')
 
 
+class InputFilter(admin.SimpleListFilter):
+    def queryset(self, request, queryset):
+        return super(InputFilter, self).queryset(request, queryset)
+
+    template = 'admin/input_filter.html'
+
+    def lookups(self, request, model_admin):
+        return (),
+
+    def choices(self, changelist):
+        all_choice = next(super().choices(changelist))
+        all_choice['query_parts'] = (
+            (k, v)
+            for k, v in changelist.get_filters_params().items()
+            if k != self.parameter_name
+        )
+        yield all_choice
+
+
+class UserIDFilter(InputFilter):
+    parameter_name = 'participant_id'
+
+    title = 'User id'
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            user_id = self.value()
+            return queryset.filter(
+                participant_id=user_id,
+            )
+
+
+class ContestIDFilter(InputFilter):
+    parameter_name = 'contest_id'
+
+    title = 'Contest id'
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            contest_id = self.value()
+            return queryset.filter(
+                contest_id=contest_id,
+            )
+
+
+class TaskIDFilter(InputFilter):
+    parameter_name = 'task_id'
+
+    title = 'Task id'
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            task_id = self.value()
+            return queryset.filter(
+                task_id=task_id,
+            )
+
+
 class ContestTaskParticipantSolvedAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -185,6 +243,12 @@ class ContestTaskParticipantSolvedAdmin(admin.ModelAdmin):
 
     list_display_links = (
         'id',
+    )
+
+    list_filter = (
+        UserIDFilter,
+        TaskIDFilter,
+        ContestIDFilter,
     )
 
     fieldsets = (
