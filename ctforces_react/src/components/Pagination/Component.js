@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 
+import queryString from 'query-string';
+
 import { LinkContainerAuto } from 'lib/LinkContainer';
 
 import 'styles/components/Pagination.scss';
@@ -15,7 +17,7 @@ const Component = props => (
                     {props.paginationInfo.left ? (
                         <LinkContainerAuto to={`${props.paginationInfo.to}?page=${
                             parseInt(props.paginationInfo.currentPage, 10) - 1
-                        }`}>
+                        }&${queryString.stringify(props.params)}`}>
                             <PaginationLink previous />
                         </LinkContainerAuto>
                     ) : (
@@ -25,7 +27,7 @@ const Component = props => (
                 </PaginationItem>
                 {props.paginationInfo.pages.map((obj, i) => (
                     <PaginationItem key={i}>
-                        <LinkContainerAuto to={`${props.paginationInfo.to}?page=${obj}`}>
+                        <LinkContainerAuto to={`${props.paginationInfo.to}?page=${obj}&${queryString.stringify(props.params)}`}>
                             <PaginationLink>
                                 {obj}
                             </PaginationLink>
@@ -35,7 +37,7 @@ const Component = props => (
                 <PaginationItem disabled={!props.paginationInfo.right}>
                     <LinkContainerAuto to={`${props.paginationInfo.to}?page=${
                         parseInt(props.paginationInfo.currentPage, 10) + 1
-                    }`}>
+                    }&${queryString.stringify(props.params)}`}>
                         <PaginationLink next />
                     </LinkContainerAuto>
                 </PaginationItem>

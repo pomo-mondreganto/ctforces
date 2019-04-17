@@ -1,4 +1,6 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
+import qs from 'lib/qs';
 
 import Component from './Component';
 
@@ -39,6 +41,13 @@ class PaginationContainer extends React.Component {
     }
 
     componentDidMount() {
+        const params = qs(this.props.location.search);
+        if (params.page !== undefined) {
+            delete params.page;
+        }
+        this.setState({
+            params,
+        });
         this.recalcState(this.props);
     }
 
@@ -53,8 +62,8 @@ class PaginationContainer extends React.Component {
             return null;
         }
 
-        return <Component paginationInfo={this.state.paginationInfo} />;
+        return <Component paginationInfo={this.state.paginationInfo} params={this.state.params} />;
     }
 }
 
-export default PaginationContainer;
+export default withRouter(PaginationContainer);
