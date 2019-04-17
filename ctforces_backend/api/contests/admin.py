@@ -179,7 +179,7 @@ class InputFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         return super(InputFilter, self).queryset(request, queryset)
 
-    template = 'admin/input_filter.html'
+    template = 'admin_templates/input_filter.html'
 
     def lookups(self, request, model_admin):
         return (),
