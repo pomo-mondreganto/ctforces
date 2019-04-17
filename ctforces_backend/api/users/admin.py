@@ -35,6 +35,7 @@ class ContestParticipantFullInlineAdmin(admin.TabularInline):
     readonly_fields = (
         'delta',
         'last_solve',
+        'contest',
     )
 
     raw_id_fields = (
