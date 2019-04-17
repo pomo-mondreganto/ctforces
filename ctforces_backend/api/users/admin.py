@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.helpers import ActionForm
 from django.contrib.auth.admin import UserAdmin
@@ -12,7 +13,39 @@ class UserAdminActionForm(ActionForm):
     contest_id = forms.IntegerField(required=False)
 
 
+class ContestParticipantFullInlineAdmin(admin.TabularInline):
+    model = api_models.ContestParticipantRelationship
+    classes = ('collapse',)
+
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'last_solve',
+                    'delta',
+                    'contest',
+                    'has_opened_contest',
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = (
+        'last_solve',
+    )
+
+    raw_id_fields = (
+        'contest',
+    )
+
+
 class CustomUserAdmin(UserAdmin):
+    inlines = (
+        ContestParticipantFullInlineAdmin,
+    )
+
     action_form = UserAdminActionForm
 
     list_display = (
