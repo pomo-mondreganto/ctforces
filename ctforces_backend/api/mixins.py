@@ -1,8 +1,4 @@
-from collections import OrderedDict
-
 from guardian.shortcuts import get_objects_for_user
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
 
 
 class CustomPermissionsViewSetMixin:
@@ -24,17 +20,6 @@ class CustomPermissionsQuerysetViewSetMixin:
         if not self.klass:
             raise AssertionError('Need to specify class to fetch permissions for (klass)')
         return get_objects_for_user(self.request.user, self.action_permissions_querysets[self.action], self.klass)
-
-
-class PageNumberWithPageSizePagination(PageNumberPagination):
-    def get_paginated_response(self, data):
-        return Response(OrderedDict([
-            ('count', self.page.paginator.count),
-            ('page_size', self.page_size),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('results', data)
-        ]))
 
 
 class ReadOnlySerializerMixin:

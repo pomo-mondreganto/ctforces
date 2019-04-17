@@ -2,7 +2,6 @@ from django.urls import re_path, include
 from rest_framework.routers import SimpleRouter
 from rest_framework_nested.routers import NestedSimpleRouter
 
-from api import views as api_other_views
 from api.contests import views as api_contests_views
 from api.posts import views as api_posts_views
 from api.tasks import views as api_tasks_views
@@ -22,7 +21,6 @@ contests_router = NestedSimpleRouter(router, 'contests', lookup='contest')
 contests_router.register('tasks', api_contests_views.ContestTaskViewSet)
 
 urlpatterns = [
-    re_path('^$', api_other_views.test_view, name='test_view'),
     re_path('^', include(router.urls)),
     re_path('^', include(contests_router.urls)),
 
