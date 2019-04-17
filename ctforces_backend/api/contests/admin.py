@@ -80,35 +80,10 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
     )
 
 
-class ContestTaskParticipantSolvedInlineAdmin(admin.TabularInline):
-    model = api_models.ContestTaskParticipantSolvedRelationship
-    classes = ('collapse',)
-    fieldsets = (
-        (
-            'Main info',
-            {
-                'fields': (
-                    'id',
-                    'participant',
-                    'contest',
-                    'task',
-                ),
-            },
-        ),
-    )
-
-    raw_id_fields = (
-        'participant',
-        'contest',
-        'task',
-    )
-
-
 class CustomContestAdmin(GuardedModelAdmin):
     inlines = (
         ContestTaskInlineAdmin,
         ContestParticipantInlineAdmin,
-        ContestTaskParticipantSolvedInlineAdmin
     )
 
     list_display = (
@@ -198,3 +173,101 @@ class CustomContestAdmin(GuardedModelAdmin):
         return super(CustomContestAdmin, self).get_queryset(request).annotate(
             registered_count=Count('participants', distinct=True),
         ).prefetch_related('tasks', 'participants')
+
+
+class InputFilter(admin.SimpleListFilter):
+    def queryset(self, request, queryset):
+        return super(InputFilter, self).queryset(request, queryset)
+
+    template = 'admin_templates/input_filter.html'
+
+    def lookups(self, request, model_admin):
+        return (),
+
+    def choices(self, changelist):
+        all_choice = next(super().choices(changelist))
+        all_choice['query_parts'] = (
+            (k, v)
+            for k, v in changelist.get_filters_params().items()
+            if k != self.parameter_name
+        )
+        yield all_choice
+
+
+class UserIDFilter(InputFilter):
+    parameter_name = 'participant_id'
+
+    title = 'User id'
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            user_id = self.value()
+            return queryset.filter(
+                participant_id=user_id,
+            )
+
+
+class ContestIDFilter(InputFilter):
+    parameter_name = 'contest_id'
+
+    title = 'Contest id'
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            contest_id = self.value()
+            return queryset.filter(
+                contest_id=contest_id,
+            )
+
+
+class TaskIDFilter(InputFilter):
+    parameter_name = 'task_id'
+
+    title = 'Task id'
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            task_id = self.value()
+            return queryset.filter(
+                task_id=task_id,
+            )
+
+
+class ContestTaskParticipantSolvedAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'participant',
+        'contest',
+        'task',
+    )
+
+    list_display_links = (
+        'id',
+    )
+
+    list_filter = (
+        UserIDFilter,
+        TaskIDFilter,
+        ContestIDFilter,
+    )
+
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'participant',
+                    'contest',
+                    'task',
+                ),
+            },
+        ),
+    )
+
+    def get_queryset(self, request):
+        return super(ContestTaskParticipantSolvedAdmin, self).get_queryset(request).select_related(
+            'participant',
+            'contest',
+            'task',
+        )
