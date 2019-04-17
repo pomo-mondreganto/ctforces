@@ -176,6 +176,13 @@ class CustomContestAdmin(GuardedModelAdmin):
 
 
 class ContestTaskParticipantSolvedAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'participant',
+        'contest',
+        'task',
+    )
+
     list_display_links = (
         'id',
     )
