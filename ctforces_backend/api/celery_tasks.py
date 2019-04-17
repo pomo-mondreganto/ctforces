@@ -22,7 +22,7 @@ def process_stdimage(file_name, variations, storage):
     obj.save()
 
 
-@shared_task()
+@shared_task
 def start_contest(contest_id):
     logger.info(f'Request to contest_id {contest_id}')
 
@@ -38,7 +38,7 @@ def start_contest(contest_id):
     contest.save()
 
 
-@shared_task()
+@shared_task
 def end_contest(contest_id):
     logger.info(f'Request to end contest_id {contest_id}')
 
