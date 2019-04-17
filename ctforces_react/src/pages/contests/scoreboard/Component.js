@@ -62,7 +62,7 @@ const Component = ({
                         <div className="users-table-body">
                             {scoreboard && scoreboard.map((obj, i) => (
                                 <div key={i} className='users-table-item'>
-                                    <span className="ta-c">{i + 1}</span>
+                                    <span className="ta-c">{i + 1 + pageSize * (currentPage - 1)}</span>
                                     <span className="ta-l">
                                         <LinkContainerNonActive to={`/users/${obj.username}/`}>
                                             <a className={getRank(obj.rating)}>

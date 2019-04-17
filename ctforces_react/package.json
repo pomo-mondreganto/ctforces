@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "parcel serve --port 3000 --host 127.0.0.1 --no-autoinstall --cache-dir ./.cache src/index.html",
-        "build": "parcel build --no-source-maps --no-autoinstall --cache-dir /cache/.cache src/index.html"
+        "build": "parcel build --no-source-maps --no-autoinstall src/index.html"
     },
     "author": "xmikasax",
     "license": "ISC",
