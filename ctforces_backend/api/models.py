@@ -295,6 +295,9 @@ class Contest(models.Model):
 
         super(Contest, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return f"Contest object ({self.id}:{self.name})"
+
 
 class ContestTaskRelationship(models.Model):
     contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_task_relationship')
