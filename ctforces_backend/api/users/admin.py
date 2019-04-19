@@ -171,14 +171,16 @@ class CustomUserAdmin(UserAdmin):
         if not contest:
             raise forms.ValidationError('Invalid contest')
 
-        already_registered = contest.participants.all().order_by().only('id')
-        queryset = queryset.order_by().only('id').difference(already_registered)
+        to_register_ids = set(queryset.all().values_list('id', flat=True))
+        already_registered = set(contest.participants.all().values_list('id', flat=True))
+
+        to_register_ids = list(to_register_ids.difference(already_registered))
 
         api_models.ContestParticipantRelationship.objects.bulk_create([
             api_models.ContestParticipantRelationship(
                 contest_id=contest.id,
-                participant_id=user.id,
-            ) for user in queryset.all()
+                participant_id=user_id,
+            ) for user_id in to_register_ids
         ])
         self.message_user(
             request,
