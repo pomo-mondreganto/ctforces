@@ -171,6 +171,9 @@ class CustomUserAdmin(UserAdmin):
         if not contest:
             raise forms.ValidationError('Invalid contest')
 
+        already_registered = contest.participants.all()
+        queryset = queryset.difference(already_registered)
+
         api_models.ContestParticipantRelationship.objects.bulk_create([
             api_models.ContestParticipantRelationship(
                 contest=contest,
