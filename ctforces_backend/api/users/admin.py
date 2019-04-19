@@ -167,17 +167,17 @@ class CustomUserAdmin(UserAdmin):
         except ValueError:
             raise forms.ValidationError('Invalid contest_id')
 
-        contest = api_models.Contest.objects.filter(id=contest_id).first()
+        contest = api_models.Contest.objects.filter(id=contest_id).only('id').first()
         if not contest:
             raise forms.ValidationError('Invalid contest')
 
-        already_registered = contest.participants.all()
-        queryset = queryset.difference(already_registered)
+        already_registered = contest.participants.all().only('id')
+        queryset = queryset.only('id').difference(already_registered)
 
         api_models.ContestParticipantRelationship.objects.bulk_create([
             api_models.ContestParticipantRelationship(
-                contest=contest,
-                participant=user,
+                contest_id=contest.id,
+                participant_id=user.id,
             ) for user in queryset.all()
         ])
         self.message_user(
