@@ -11,7 +11,6 @@ const ContestScoreboardPage = lazy(() => import('./scoreboard/Container'));
 const ContestTaskPage = lazy(() => import('./task/Container'));
 const ContestTaskSolvedPage = lazy(() => import('./task_solved/Container'));
 
-
 const Contests = () => (
     <Suspense fallback={<div>Loading...</div>}>
         <Switch>
@@ -40,11 +39,7 @@ const Contests = () => (
                 path="/contests/:id/tasks/:task_id/solved/"
                 component={ContestTaskSolvedPage}
             />
-            <PublicRoute
-                exact
-                path="/contests/"
-                component={ContestListPage}
-            />
+            <PublicRoute exact path="/contests/" component={ContestListPage} />
             <PrivateRoute
                 exact
                 path="/contests/:id/edit/"
