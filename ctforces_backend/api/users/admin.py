@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.helpers import ActionForm
 from django.contrib.auth.admin import UserAdmin
@@ -12,7 +13,41 @@ class UserAdminActionForm(ActionForm):
     contest_id = forms.IntegerField(required=False)
 
 
+class ContestParticipantFullInlineAdmin(admin.TabularInline):
+    model = api_models.ContestParticipantRelationship
+    classes = ('collapse',)
+
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'last_solve',
+                    'delta',
+                    'contest',
+                    'has_opened_contest',
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = (
+        'delta',
+        'last_solve',
+        'contest',
+    )
+
+    raw_id_fields = (
+        'contest',
+    )
+
+
 class CustomUserAdmin(UserAdmin):
+    inlines = (
+        ContestParticipantFullInlineAdmin,
+    )
+
     action_form = UserAdminActionForm
 
     list_display = (
@@ -132,15 +167,20 @@ class CustomUserAdmin(UserAdmin):
         except ValueError:
             raise forms.ValidationError('Invalid contest_id')
 
-        contest = api_models.Contest.objects.filter(id=contest_id).first()
+        contest = api_models.Contest.objects.filter(id=contest_id).only('id').first()
         if not contest:
             raise forms.ValidationError('Invalid contest')
 
+        to_register_ids = set(queryset.all().values_list('id', flat=True))
+        already_registered = set(contest.participants.all().values_list('id', flat=True))
+
+        to_register_ids = list(to_register_ids.difference(already_registered))
+
         api_models.ContestParticipantRelationship.objects.bulk_create([
             api_models.ContestParticipantRelationship(
-                contest=contest,
-                participant=user,
-            ) for user in queryset.all()
+                contest_id=contest.id,
+                participant_id=user_id,
+            ) for user_id in to_register_ids
         ])
         self.message_user(
             request,
