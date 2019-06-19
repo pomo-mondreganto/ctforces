@@ -19,6 +19,7 @@ class ContestTaskInlineAdmin(admin.TabularInline):
                     'task',
                     'cost',
                     'ordering_number',
+                    'main_tag',
                 ),
             },
         ),
