@@ -166,6 +166,8 @@ class CustomContestAdmin(GuardedModelAdmin):
         'participants',
     )
 
+    save_as = True
+
     @staticmethod
     def registered_count(obj):
         return obj.registered_count
