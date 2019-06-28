@@ -21,7 +21,7 @@ class Command(BaseCommand):
         contest_ids = api_models.Contest.objects.filter(
             is_finished=True,
             is_rated=True
-        ).all().values_list('id', flat=True)
+        ).order_by('id').values_list('id', flat=True)
 
         self.stdout.write(f'Got {len(contest_ids)} contests')
 
