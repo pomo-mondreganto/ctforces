@@ -134,7 +134,7 @@ class TaskTag(models.Model):
     )
 
     def __str__(self):
-        return f"Tag object ({self.id}:{self.name})"
+        return f"Tag {self.name} ({self.id})"
 
     class Meta:
         ordering = ('name',)

@@ -114,6 +114,15 @@ class CustomTaskAdmin(GuardedModelAdmin):
         'author',
     )
 
+    search_fields = (
+        'name',
+        'flag',
+    )
+
+    list_filter = (
+        'tags',
+    )
+
     @staticmethod
     def solved_count(obj):
         return obj.solved_count
