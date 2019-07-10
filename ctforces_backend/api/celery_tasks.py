@@ -2,7 +2,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.core.mail import send_mail
-from django.db.models import IntegerField, Value as V, Subquery, OuterRef
+from django.db.models import IntegerField, Value as V, Subquery, OuterRef, Q
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from stdimage.utils import render_variations
@@ -22,11 +22,17 @@ def process_stdimage(file_name, variations, storage):
     obj.save()
 
 
-@shared_task
-def start_contest(contest_id):
-    logger.info(f'Request to contest_id {contest_id}')
+@shared_task(bind=True)
+def start_contest(task, contest_id):
+    task_id = task.request.id
 
-    contest = get_model('api', 'Contest').objects.filter(id=contest_id).first()
+    query_filter = Q(celery_start_task_id=task_id)
+    if contest_id:
+        query_filter &= Q(id=contest_id)
+
+    logger.info(f'Request to start contest_id {contest_id}, task {task_id}')
+
+    contest = get_model('api', 'Contest').objects.filter(query_filter).first()
 
     if not contest:
         logger.info('Contest not staring, no such contest')
@@ -38,11 +44,17 @@ def start_contest(contest_id):
     contest.save()
 
 
-@shared_task
-def end_contest(contest_id):
-    logger.info(f'Request to end contest_id {contest_id}')
+@shared_task(bind=True)
+def end_contest(task, contest_id):
+    task_id = task.request.id
 
-    contest = get_model('api', 'Contest').objects.filter(id=contest_id).first()
+    query_filter = Q(celery_end_task_id=task_id)
+    if contest_id:
+        query_filter &= Q(id=contest_id)
+
+    logger.info(f'Request to end contest_id {contest_id}, task {task_id}')
+
+    contest = get_model('api', 'Contest').objects.filter(query_filter).first()
 
     if not contest:
         logger.info('Contest not ending, no such contest')
