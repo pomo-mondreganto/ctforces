@@ -15,7 +15,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.8.1",
         "@fortawesome/react-fontawesome": "^0.1.4",
         "@matejmazur/react-katex": "^3.0.2",
-        "axios": "^0.18.0",
+        "axios": "^0.18.1",
         "bootstrap": "^4.3.1",
         "formik": "^1.5.2",
         "katex": "^0.10.1",
