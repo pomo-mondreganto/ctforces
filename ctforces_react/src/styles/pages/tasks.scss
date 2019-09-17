@@ -1,0 +1,39 @@
+@import '~/styles/lib/components/_table.scss';
+@import '~/styles/lib/_colors.scss';
+
+.tasks-table {
+    @extend %table;
+}
+
+.tasks-table-head {
+    
+    @extend %table-head;
+
+    grid-template-columns: 1fr 9fr 1.5fr 4fr 2fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}
+
+.tasks-table-body {
+    @extend %table-body;
+}
+
+.tasks-table-item {
+    @extend %table-item;
+
+    grid-template-columns: 1fr 9fr 1.5fr 4fr 2fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}
+
+.solved {
+    background-color: $solved-task;
+}
+
+.unpublished {
+    background-color: $unpublished-task;
+}

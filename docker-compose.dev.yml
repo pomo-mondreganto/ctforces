@@ -1,0 +1,103 @@
+version: "2.2"
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: ./configs/django.Dockerfile
+    volumes:
+      - ./volumes/static:/static
+      - ./volumes/media:/media
+      - ./volumes/socks:/socks
+      - ./volumes/server_logs:/logs
+    depends_on:
+      - postgres
+      - redis
+    restart: on-failure
+    container_name: ctforces_django
+    env_file:
+      - ./configs/environment.dev.env
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./configs/celery.Dockerfile
+    volumes:
+      - ./volumes/celery:/celery
+      - ./volumes/media:/media
+    depends_on:
+      - rabbitmq
+    restart: on-failure
+    container_name: ctforces_celery
+    env_file:
+      - configs/environment.dev.env
+
+  flower:
+    build:
+      context: .
+      dockerfile: configs/flower.dev.Dockerfile
+    volumes:
+      - ./volumes/celery:/celery
+      - ./volumes/media:/media
+      - ./volumes/socks:/socks
+    depends_on:
+      - rabbitmq
+      - celery
+    restart: on-failure
+    container_name: ctforces_flower
+    env_file:
+      - configs/environment.dev.env
+
+  nginx:
+    image: nginx:1.15.9-alpine
+    volumes:
+      - ./configs/nginx_dev:/etc/nginx/conf.d
+      - ./configs/nginx.proxy_params:/etc/nginx/proxy_params
+      - ./volumes/static:/static:ro
+      - ./volumes/socks:/socks
+      - ./volumes/media:/media:ro
+      - ./volumes/react_build:/react_build:ro
+    depends_on:
+      - django
+      - react_init
+    ports:
+      - "8000:80"
+    restart: on-failure
+    container_name: ctforces_nginx
+
+  postgres:
+    build:
+      context: .
+      dockerfile: configs/postgres.Dockerfile
+    volumes:
+      - ./volumes/db/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: on-failure
+    container_name: ctforces_postgres
+    env_file:
+      - ./configs/environment.dev.env
+
+  redis:
+    image: redis:5.0.3-alpine
+    container_name: ctforces_redis
+
+  rabbitmq:
+    hostname: rabbitmq
+    image: rabbitmq:3.7.14-management-alpine
+    restart: on-failure
+    container_name: ctforces_rabbitmq
+    env_file:
+      - configs/environment.dev.env
+
+  react_init:
+    build:
+      context: .
+      dockerfile: configs/react.dev.Dockerfile
+    volumes:
+      - ./volumes/react_build:/react_build
+      - ./volumes/react_cache:/cache
+    restart: on-failure
+    container_name: ctforces_react_init
+    env_file:
+      - configs/environment.dev.env

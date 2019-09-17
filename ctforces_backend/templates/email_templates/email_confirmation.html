@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>CTForces account confirmation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body style="margin: 0; padding: 0;">
+<table cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td>
+            <table align="center" cellpadding="30" cellspacing="0" width="600">
+                <tr>
+                    <td>
+                        <img src="https://image.ibb.co/nfZ2Ny/cat.gif" alt="CTForces logo" width="300" height="65"
+                             style="display: block; margin-left: auto; margin-right: auto;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;">
+                        Welcome to CTForces, {{ username }}!<br/><br/>
+                        To confirm your email, open this link:
+                        <a
+                            href="{{ email_url }}/confirm_email/?token={{ token }}">
+                            {{ email_url }}/confirm_email/?token={{ token }}</a> in your browser or
+                        press the button below.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table align="center" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td bgcolor="#EB7035" style="padding: 12px 18px 12px 18px; border-radius: 3px">
+                                    <a href="{{ email_url }}/confirm_email/?token={{ token }}"
+                                       style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; display: inline-block;">Press
+                                        to confirm your email</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

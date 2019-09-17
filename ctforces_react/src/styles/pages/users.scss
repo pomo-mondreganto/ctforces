@@ -1,0 +1,57 @@
+@import '~/styles/lib/components/_table.scss';
+
+#profile {
+    display: grid;
+
+    grid:
+        'profile-info profile-avatar' 1fr
+        / 1.5fr 1fr;
+
+    #info {
+        grid-area: profile-info;
+    }
+
+    #avatar {
+        grid-area: profile-avatar;
+
+        display: grid;
+
+        align-items: center;
+        justify-content: center;
+
+        > img {
+            max-height: 300px;
+            width: 100%;
+            object-fit: contain;
+        }
+    }
+}
+
+.users-table {
+    @extend %table;
+}
+
+.users-table-head {
+    
+    @extend %table-head;
+
+    grid-template-columns: 1fr 9fr 2.5fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}
+
+.users-table-body {
+    @extend %table-body;
+}
+
+.users-table-item {
+    @extend %table-item;
+
+    grid-template-columns: 1fr 9fr 2.5fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}

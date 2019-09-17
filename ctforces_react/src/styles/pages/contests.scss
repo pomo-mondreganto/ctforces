@@ -1,0 +1,118 @@
+@import '~/styles/lib/components/_table.scss';
+
+.task-add-preview {
+    display: grid;
+
+    grid: 'task-add-info' 2fr
+          'task-add-buttons' auto
+          / 1fr;
+}
+
+.task-add-info {
+    grid-area: task-add-info;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-column-gap: 15px;
+}
+
+.task-add-buttons {
+    grid-area: task-add-buttons;
+
+    display: grid;
+
+    grid: 'add . remove' 1fr
+          / 25% 1fr 25%;
+}
+
+.task-add-button-add {
+    grid-area: add;
+}
+
+.task-add-button-remove {
+    grid-area: remove;
+}
+
+.contests-table {
+    @extend %table;
+}
+
+.contests-table-head-running {
+    
+    @extend %table-head;
+
+    grid-template-columns: 1fr 5fr 3fr 2fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}
+
+.contests-table-head-upcoming {
+    
+    @extend %table-head;
+
+    grid-template-columns: 1fr 5fr 3fr 2fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}
+
+.contests-table-head-finished {
+    
+    @extend %table-head;
+
+    grid-template-columns: 1fr 8fr 2fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}
+
+.contests-table-body {
+    @extend %table-body;
+}
+
+.contests-table-item-running {
+    @extend %table-item;
+
+    grid-template-columns: 1fr 5fr 3fr 2fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}
+
+.contests-table-item-upcoming {
+    @extend %table-item;
+
+    grid-template-columns: 1fr 5fr 3fr 2fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}
+
+.contests-table-item-finished {
+    @extend %table-item;
+
+    grid-template-columns: 1fr 8fr 2fr;
+
+    > span.ta-l {
+        padding-left: 5px;
+    }
+}
+
+.contest-register {
+    cursor: pointer;
+    color: orange;
+}
+
+.contest-registered {
+    color: green;
+}
+
+.is-rated {
+    color: red;
+}

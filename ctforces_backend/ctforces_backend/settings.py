@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
-from ctforces_backend.local_settings import *
+from .local_settings import *
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -23,12 +23,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
-    'drf_yasg'
+    'django_extensions',
+    'django_redis',
+    'stdimage',
+    'guardian',
+    'corsheaders',
+    'rest_framework_tricks',
+    'rest_framework_nested',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -41,8 +48,7 @@ ROOT_URLCONF = 'ctforces_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,7 +86,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -94,3 +100,34 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'api.User'
+APPEND_SLASH = True
+
+AUTHENTICATION_BACKENDS = [
+    'api.backends.CustomAuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
+]
+
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULT_SERIALIZER = 'pickle'
+CELERY_ACCEPT_CONTENT = ['pickle']
+CELERY_IMPORTS = [
+    'api.celery_tasks'
+]
+
+GUARDIAN_RAISE_403 = True
+
+"""
+    2.5MB - 2621440
+    5MB - 5242880
+    10MB - 10485760
+    20MB - 20971520
+    50MB - 52428800
+    100MB 104857600
+    250MB - 214958080
+    500MB - 429916160
+"""
+MAX_FILE_SIZE = 20971520
+FILE_UPLOAD_MAX_MEMORY_SIZE = 20971520
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
