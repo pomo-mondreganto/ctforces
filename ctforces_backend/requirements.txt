@@ -41,7 +41,7 @@ MarkupSafe==1.1.1
 parso==0.4.0
 pexpect==4.6.0
 pickleshare==0.7.5
-Pillow==6.0.0
+Pillow==6.2.0
 progressbar2==3.39.3
 prompt-toolkit==2.0.7
 psycopg2==2.8
