@@ -1,9 +1,8 @@
 from django.contrib import admin
-from django.db.models import Value as V, Count, OuterRef
+from django.db.models import Value as V, Count
 from django.db.models.functions import Coalesce
 from guardian.admin import GuardedModelAdmin
 
-from api import database_functions as api_database_functions
 from api import models as api_models
 
 
@@ -17,9 +16,19 @@ class ContestTaskInlineAdmin(admin.TabularInline):
                 'fields': (
                     'id',
                     'task',
-                    'cost',
                     'ordering_number',
                     'main_tag',
+                ),
+            },
+        ),
+        (
+            'Scoring',
+            {
+                'fields': (
+                    'cost',
+                    'min_cost',
+                    'max_cost',
+                    'decay_value',
                 ),
             },
         ),
@@ -28,14 +37,17 @@ class ContestTaskInlineAdmin(admin.TabularInline):
             {
                 'fields': (
                     'solved_count',
+                    'solved_by',
                 )
             }
         )
     )
 
     readonly_fields = ('solved_count',)
+
     raw_id_fields = (
         'task',
+        'solved_by',
     )
 
     @staticmethod
@@ -45,12 +57,7 @@ class ContestTaskInlineAdmin(admin.TabularInline):
     def get_queryset(self, request):
         return super(ContestTaskInlineAdmin, self).get_queryset(request).annotate(
             solved_count=Coalesce(
-                api_database_functions.SubqueryCount(
-                    api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                        contest_id=OuterRef('contest_id'),
-                        task_id=OuterRef('task_id'),
-                    )
-                ),
+                Count('solved_by'),
                 V(0),
             )
         )
@@ -117,6 +124,7 @@ class CustomContestAdmin(GuardedModelAdmin):
                     'name',
                     'description',
                     'author',
+                    'dynamic_scoring',
                 ),
             },
         ),

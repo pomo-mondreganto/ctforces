@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-from django.db.models import Count, Value as V, Subquery, OuterRef, Exists, F, Prefetch, IntegerField
-from django.db.models.functions import Coalesce
+from django.db.models import Count, Value as V, OuterRef, Exists, F, Q, Prefetch, IntegerField
+from django.db.models.functions import Coalesce, Ceil, Greatest
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
@@ -64,25 +64,21 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             )
 
         if self.action == 'retrieve' or self.action == 'get_full_contest':
-            solved_count_subquery = api_database_functions.SubqueryCount(
-                api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                    contest=OuterRef('contest_id'),
-                    task=OuterRef('task_id'),
-                ).only('id')
-            )
-
             is_solved_by_user_subquery = Exists(
-                api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+                api_models.ContestTaskRelationship.objects.filter(
                     contest=OuterRef('contest_id'),
                     task=OuterRef('task_id'),
-                    participant_id=self.request.user.id,
-                ).only('id')
+                    solved_by__id__exact=self.request.user.id
+                )
             )
 
             prefetch = Prefetch(
                 'contest_task_relationship',
                 queryset=api_models.ContestTaskRelationship.objects.annotate(
-                    solved_count=solved_count_subquery,
+                    solved_count=Coalesce(
+                        Count('solved_by', distinct=True),
+                        V(0),
+                    ),
                     is_solved_by_user=is_solved_by_user_subquery,
                 ).select_related('task', 'main_tag').order_by('ordering_number'),
             )
@@ -143,77 +139,32 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         serializer = api_contests_serializers.ContestFullSerializer(instance=instance)
         return Response(serializer.data)
 
-    @action(
-        detail=True,
-        url_path='scoreboard',
-        url_name='scoreboard',
-        methods=['get'],
-    )
-    def get_scoreboard(self, _request, *_args, **_kwargs):
-        instance = self.get_object()
+    @staticmethod
+    def get_scoreboard_for_users_page(paginator, users_page, contest):
+        user_ids = list(map(lambda x: x.id, users_page))
 
-        # TODO: consider caching the whole scoreboard for N secs
-        # TODO: consider using group by (similar to contest task) to fetch users top
-        contest_cost_subquery = Subquery(
-            api_models.ContestTaskRelationship.objects.filter(
-                contest_id=instance.id,
-                task_id=OuterRef('task_id'),
-            ).values('cost'),
-            output_field=IntegerField(),
+        relationship_queryset = api_models.ContestTaskRelationship.objects.filter(
+            contest=contest,
+        ).prefetch_related(
+            Prefetch(
+                'solved_by',
+                queryset=api_models.User.objects.filter(id__in=user_ids).only('id'),
+            )
+        ).annotate(
+            task_name=F('task__name'),
         )
 
-        user_cost_sum_subquery = api_database_functions.SubquerySum(
-            api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                contest_id=instance.id,
-                participant_id=OuterRef('id'),
-            ).annotate(
-                cost=Coalesce(
-                    contest_cost_subquery,
-                    V(0),
-                )
-            ).values('cost'),
-            output_field=IntegerField(),
-            field_name='cost',
-        )
-
-        last_contest_solve_subquery = Subquery(
-            api_models.ContestParticipantRelationship.objects.filter(
-                contest=instance,
-                participant=OuterRef('id'),
-            ).values('last_solve')
-        )
-
-        users_queryset = instance.participants.filter(
-            show_in_ratings=True,
-        )
-
-        if self.request.query_params.get('group_id'):
-            users_queryset = users_queryset.filter(
-                groups__id=self.request.query_params['group_id']
+        formatted_data = defaultdict(list)
+        for relation in relationship_queryset:
+            formatted_data[relation.task_name].extend(
+                map(lambda x: x.id, relation.solved_by.all()),
             )
 
-        users_queryset = users_queryset.annotate(
-            cost_sum=Coalesce(
-                user_cost_sum_subquery,
-                V(0),
-            ),
-            last_contest_solve=last_contest_solve_subquery,
-        ).order_by('-cost_sum', 'last_contest_solve').only(
-            'username',
-        )
-
-        users_paginator = api_pagination.UserScoreboardPagination()
-
-        users_page = users_paginator.paginate_queryset(
-            queryset=users_queryset,
-            request=self.request,
-        )
-
-        relationship_queryset = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-            contest=instance,
-            participant__in=users_page,
-        ).select_related('task').annotate(
-            task_name=F('task__name'),
+        result_data = list(
+            dict(
+                task_name=key,
+                solved_participants=value
+            ) for key, value in formatted_data.items()
         )
 
         users_serializer = api_contests_serializers.ContestScoreboardUserSerializer(
@@ -221,31 +172,94 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             many=True,
         )
 
-        users_data = users_paginator.get_paginated_response(users_serializer.data).data
-
-        data_serializer = api_contests_serializers.ContestScoreboardSerializer(
-            instance=list(relationship_queryset),
-            many=True,
-        )
-
-        solved_tasks_data = data_serializer.data
-
-        reformatted_data = defaultdict(list)
-
-        for element in solved_tasks_data:
-            reformatted_data[element['task_name']].append(element['participant_id'])
-
-        result_data = list(
-            dict(
-                task_name=key,
-                solved_participants=value
-            ) for key, value in reformatted_data.items()
-        )
+        users_data = paginator.get_paginated_response(users_serializer.data).data
 
         return Response({
             'users': users_data,
             'main_data': result_data,
         })
+
+    def get_ordered_scoreboard_users_page(self, contest):
+        relation_filter = Q(contest=contest, participant__show_in_ratings=True)
+
+        participants = []
+        if contest.dynamic_scoring:
+            user_cost_sum_subquery = api_database_functions.SubquerySum(
+                api_models.ContestTaskRelationship.objects.filter(
+                    contest=contest,
+                ).annotate(
+                    solved_count=Coalesce(
+                        Count(
+                            'solved_by',
+                            distinct=True,
+                        ),
+                        V(0),
+                    ),
+                ).filter(
+                    solved_by__id__exact=OuterRef('participant_id'),
+                ).annotate(
+                    current_cost=Greatest(
+                        Ceil(
+                            (F('min_cost') - F('max_cost')) /
+                            (F('decay_value') * F('decay_value')) *
+                            (F('solved_count') * F('solved_count')) +
+                            F('max_cost')
+                        ),
+                        F('min_cost'),
+                    ),
+                ).values('current_cost'),
+                output_field=IntegerField(),
+                field_name='current_cost',
+            )
+
+        else:
+            user_cost_sum_subquery = api_database_functions.SubquerySum(
+                api_models.ContestTaskRelationship.objects.filter(
+                    contest=contest,
+                    solved_by__id__exact=OuterRef('id'),
+                ).values('cost'),
+                output_field=IntegerField(),
+                field_name='cost',
+            )
+
+        relations = api_models.ContestParticipantRelationship.objects.filter(
+            relation_filter,
+        ).select_related(
+            'participant',
+        ).annotate(
+            cost_sum=Coalesce(user_cost_sum_subquery, V(0)),
+        ).only(
+            'participant',
+            'last_solve',
+        ).order_by('-cost_sum', 'last_solve')
+
+        for relation in relations:
+            participant = relation.participant
+            participant.cost_sum = relation.cost_sum
+            participant.last_contest_solve = relation.last_solve
+            participants.append(participant)
+
+        users_paginator = api_pagination.UserScoreboardPagination()
+        users_page = users_paginator.paginate_queryset(
+            queryset=participants,
+            request=self.request,
+        )
+
+        return self.get_scoreboard_for_users_page(
+            paginator=users_paginator,
+            users_page=users_page,
+            contest=contest,
+        )
+
+    @action(
+        detail=True,
+        url_path='scoreboard',
+        url_name='scoreboard',
+        methods=['get'],
+    )
+    def get_scoreboard(self, _request, *_args, **_kwargs):
+        contest = self.get_object()
+        return self.get_ordered_scoreboard_users_page(contest)
 
     @action(
         detail=True,
@@ -352,9 +366,9 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         )
 
         all_solved_by_user = set(
-            api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+            api_models.ContestTaskRelationship.objects.filter(
                 contest=contest,
-                participant_id=self.request.user.id,
+                solved_by__id__exact=self.request.user.id,
             ).values_list('task_id', flat=True)
         )
 
@@ -371,13 +385,16 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             tasks.append(task)
 
         if self.action == 'list':
-            counts = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+            counts = api_models.ContestTaskRelationship.objects.filter(
                 contest=contest,
-            ).values_list(
-                'contest_id',
-                'task_id',
             ).annotate(
-                solved_count=Coalesce(Count('participant_id', distinct=True), V(0)),
+                solved_count=Coalesce(
+                    Count(
+                        'solved_by',
+                        distinct=True,
+                    ),
+                    V(0),
+                ),
             )
 
             per_task_solves = {count[1]: count[2] for count in counts}
@@ -420,17 +437,14 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_solved(self, *_args, **_kwargs):
         task = self.get_object()
         contest = self.get_contest()
-        solved_participants_queryset = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+        solved_participants_queryset = api_models.ContestTaskRelationship.objects.get(
             task=task,
             contest=contest,
-            participant__show_in_ratings=True,
-        ).select_related('participant')
-
-        users_solved = list(map(lambda x: x.participant, solved_participants_queryset))
+        ).solved_by.filter(show_in_ratings=True).all()
 
         return api_pagination.get_paginated_response(
             paginator=api_pagination.UserDefaultPagination(),
-            queryset=users_solved,
+            queryset=solved_participants_queryset,
             serializer_class=api_users_serializers.UserBasicSerializer,
             request=self.request,
         )
@@ -459,11 +473,12 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         ).exists():
             raise PermissionDenied('You are not registered for this contest.')
 
-        if api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+        relation = api_models.ContestTaskRelationship.objects.get(
             contest=contest,
             task=task,
-            participant_id=self.request.user.id,
-        ).exists():
+        )
+
+        if relation.solved_by.filter(id=self.request.user.id).exists():
             raise PermissionDenied('Task already solved.')
 
         serializer = api_tasks_serializers.TaskSubmitSerializer(
@@ -473,11 +488,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
         if serializer.is_valid(raise_exception=True):
             if contest.is_running:
-                api_models.ContestTaskParticipantSolvedRelationship.objects.create(
-                    contest=contest,
-                    task=task,
-                    participant_id=self.request.user.id,
-                )
+                relation.solved_by.add(self.request.user)
 
                 contest.contest_participant_relationship.filter(
                     participant_id=self.request.user.id,
