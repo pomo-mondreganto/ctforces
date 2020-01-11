@@ -49,6 +49,9 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         if self.action == 'list' or self.action == 'search_by_tag':
             queryset = queryset.filter(show_on_main_page=True)
 
+        if self.action == 'retrieve' or self.action == 'get_full_task':
+            queryset = queryset.prefetch_related('files')
+
         return queryset.annotate(
             solved_count=Count(
                 'solved_by',
@@ -60,7 +63,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
                     solved_by__id=self.request.user.id or -1,
                 )
             ),
-        ).prefetch_related('tags', 'files')
+        ).prefetch_related('tags')
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -134,6 +137,14 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
             raise rest_serializers.ValidationError(
                 {
                     'flag': 'You cannot submit that task',
+                },
+            )
+
+        # to avoid updating last_solve incorrectly later
+        if instance.solved_by.filter(id=request.user.id).exists():
+            raise rest_serializers.ValidationError(
+                {
+                    'flag': 'You already submitted this task',
                 },
             )
 

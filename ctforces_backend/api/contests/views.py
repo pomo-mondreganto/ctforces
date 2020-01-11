@@ -84,7 +84,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
                 queryset=api_models.ContestTaskRelationship.objects.annotate(
                     solved_count=solved_count_subquery,
                     is_solved_by_user=is_solved_by_user_subquery,
-                ).select_related('task').order_by('ordering_number'),
+                ).select_related('task', 'main_tag').order_by('ordering_number'),
             )
             queryset = queryset.prefetch_related(prefetch)
 
@@ -106,9 +106,10 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         return obj
 
     def list(self, request, *args, **kwargs):
-        upcoming_queryset = self.get_queryset().filter(is_running=False, is_finished=False)
-        running_queryset = self.get_queryset().filter(is_running=True)
-        finished_queryset = self.get_queryset().filter(is_finished=True)
+        all_contests = self.get_queryset()
+        upcoming_queryset = list(filter(lambda x: not x.is_running and not x.is_finished, all_contests))
+        running_queryset = list(filter(lambda x: x.is_running, all_contests))
+        finished_queryset = list(filter(lambda x: x.is_finished, all_contests))
 
         upcoming = self.get_serializer(upcoming_queryset, many=True).data
         running = self.get_serializer(running_queryset, many=True).data
@@ -151,6 +152,8 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
     def get_scoreboard(self, _request, *_args, **_kwargs):
         instance = self.get_object()
 
+        # TODO: consider caching the whole scoreboard for N secs
+        # TODO: consider using group by (similar to contest task) to fetch users top
         contest_cost_subquery = Subquery(
             api_models.ContestTaskRelationship.objects.filter(
                 contest_id=instance.id,
@@ -296,6 +299,7 @@ class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
         return super(ContestTaskRelationshipViewSet, self).get_serializer(*args, **kwargs)
 
 
+# TODO: contest task listing & individual tasks can be cached (logged in as a key bit)
 class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = api_contests_serializers.ContestTaskPreviewSerializer
@@ -339,55 +343,49 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         contest = self.get_contest()
 
-        contest_task_relationship_subquery = api_models.ContestTaskRelationship.objects.filter(
+        contest_task_relationship_query = api_models.ContestTaskRelationship.objects.filter(
             contest=contest
+        ).prefetch_related('task__tags').select_related('task__author').order_by(
+            'ordering_number',
+            'cost',
+            'task_id',
         )
 
-        queryset = api_models.Task.objects.filter(
-            contest_task_relationship__in=contest_task_relationship_subquery
-        ).annotate(
-            is_solved_by_user=Exists(
-                api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                    task_id=OuterRef('id'),
-                    contest=contest,
-                    participant_id=self.request.user.id,
-                ),
-            ),
-            contest_cost=Subquery(
-                api_models.ContestTaskRelationship.objects.filter(
-                    contest=contest,
-                    task_id=OuterRef('id'),
-                ).values('cost')
-            ),
-            ordering_number=Subquery(
-                api_models.ContestTaskRelationship.objects.filter(
-                    contest=contest,
-                    task_id=OuterRef('id'),
-                ).values('ordering_number')
-            ),
+        all_solved_by_user = set(
+            api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+                contest=contest,
+                participant_id=self.request.user.id,
+            ).values_list('task_id', flat=True)
         )
+
+        tasks = []
+        for relation in contest_task_relationship_query:
+            task = relation.task
+
+            if task.id in all_solved_by_user:
+                task.is_solved_by_user = True
+
+            task.contest_cost = relation.cost
+            task.ordering_number = relation.ordering_number
+
+            tasks.append(task)
 
         if self.action == 'list':
-            queryset = queryset.annotate(
-                solved_count=api_database_functions.SubqueryCount(
-                    api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                        contest=contest,
-                        task=OuterRef('id'),
-                        participant__show_in_ratings=True,
-                    ).select_related('participant'),
-                ),
-            ).prefetch_related('contest_task_participant_solved_relationship')
+            counts = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+                contest=contest,
+            ).values_list(
+                'contest_id',
+                'task_id',
+            ).annotate(
+                solved_count=Coalesce(Count('participant_id', distinct=True), V(0)),
+            )
 
-        queryset = queryset.prefetch_related(
-            'tags',
-            'files',
-        ).select_related('author').order_by(
-            'ordering_number',
-            'contest_cost',
-            'id',
-        )
+            per_task_solves = {count[1]: count[2] for count in counts}
 
-        return queryset
+            for task in tasks:
+                task.solved_count = per_task_solves.get(task.id, 0)
+
+        return tasks
 
     def get_object(self):
         task_number = self.kwargs.get('task_number')
@@ -398,10 +396,10 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 raise ValueError()
         except ValueError:
             raise ValidationError(detail='Invalid task_number.')
-        queryset = self.get_queryset()[task_number - 1:task_number]
-        task = queryset.first()
 
-        if not task:
+        try:
+            task = self.get_queryset()[task_number - 1]
+        except IndexError:
             raise NotFound('No such task.')
 
         if self.action == 'retrieve' and self.request.user.has_perm('change_task', task):
@@ -422,22 +420,13 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_solved(self, *_args, **_kwargs):
         task = self.get_object()
         contest = self.get_contest()
-        solved_participants_subquery = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
+        solved_participants_queryset = api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
             task=task,
             contest=contest,
-        )
+            participant__show_in_ratings=True,
+        ).select_related('participant')
 
-        users_solved = api_models.User.objects.filter(
-            contest_task_participant_solved_relationship__in=solved_participants_subquery,
-            show_in_ratings=True,
-        ).prefetch_related(
-            Prefetch(
-                'contest_task_participant_solved_relationship',
-                queryset=api_models.ContestTaskParticipantSolvedRelationship.objects.only(
-                    'id',
-                ).all(),
-            )
-        ).all()
+        users_solved = list(map(lambda x: x.participant, solved_participants_queryset))
 
         return api_pagination.get_paginated_response(
             paginator=api_pagination.UserDefaultPagination(),

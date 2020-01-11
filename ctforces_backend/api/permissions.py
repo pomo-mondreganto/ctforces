@@ -14,7 +14,7 @@ class HasPermissionMixin(permissions.BasePermission):
         if self.permission_name is None:
             raise AssertionError('You must specify permission_name')
 
-        if request.user.is_admin:
+        if not request.user.is_anonymous and request.user.is_admin:
             return True
 
         return request.user.has_perm(self.permission_name)
@@ -30,7 +30,7 @@ class HasPermissionOrReadOnlyMixin(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        if request.user.is_admin:
+        if not request.user.is_anonymous and request.user.is_admin:
             return True
 
         return request.user.has_perm(self.permission_name, obj)
@@ -42,7 +42,7 @@ class HasPermissionOrReadOnlyMixin(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        if request.user.is_admin:
+        if not request.user.is_anonymous and request.user.is_admin:
             return True
 
         return request.user.has_perm(self.permission_name)
@@ -58,7 +58,7 @@ class HasViewPermissionIfPublishedMixin(HasPermissionMixin):
         if getattr(obj, self.is_published_field_name):
             return True
 
-        if request.user.is_admin:
+        if not request.user.is_anonymous and request.user.is_admin:
             return True
 
         return request.user.has_perm(self.permission_name, obj)
