@@ -1,7 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: 'Montserrat', sans-serif;
 }
 
 @import '@/styles/components/button.scss';
+@import '@/styles/components/defaultForm.scss';

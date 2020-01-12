@@ -44,6 +44,7 @@ export default {
 }
 
 .logo {
+    color: $black;
     font-size: 1.5em;
     margin-left: 0.5em;
     flex-grow: 2;

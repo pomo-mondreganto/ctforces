@@ -1,5 +1,6 @@
 import Index from '@/views/Index';
 import Login from '@/views/Login';
+import Register from '@/views/Register';
 
 const routes = [
     {
@@ -15,7 +16,7 @@ const routes = [
     {
         path: '/register/',
         name: 'register',
-        component: Index,
+        component: Register,
     },
 ];
 

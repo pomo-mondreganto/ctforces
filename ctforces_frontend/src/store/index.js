@@ -6,20 +6,31 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         user: null,
+        userRequested: false,
     },
     mutations: {
         SET_USER: (state, user) => {
             state.user = user;
+            state.userRequested = true;
         },
     },
     actions: {
-        GET_ME: async function(context) {
+        UPDATE_USER: async function(context) {
             try {
                 const r = await this.$http.get('/me/');
                 context.commit('SET_USER', r.data);
             } catch {
                 context.commit('SET_USER', null);
             }
+        },
+        GET_USER: async function(context) {
+            if (context.state.userRequested) {
+                return context.state.user;
+            }
+
+            await context.dispatch('UPDATE_USER');
+
+            return context.state.user;
         },
     },
     modules: {},

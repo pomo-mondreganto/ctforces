@@ -1,14 +1,15 @@
 <template>
-    <button v-if="user !== null" class="lb" @click="logout">
-        Logout
-    </button>
-    <button v-else @click="registerRedirect" class="btn rb">
+    <button v-if="isNull(user)" @click="registerRedirect" class="btn rb">
         Register
+    </button>
+    <button v-else class="btn rb" @click="logout">
+        Logout
     </button>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import { isNull } from '@/utils/types';
 
 export default {
     computed: mapState(['user']),
@@ -18,8 +19,16 @@ export default {
         },
         logout: async function() {
             await this.$http.post('/logout/');
-            await this.$store.dispatch('GET_ME');
+            await this.$store.dispatch('UPDATE_USER');
+
+            if (this.$route.meta.auth) {
+                this.$router.push({
+                    name: 'login',
+                    query: { redirect: this.$route.name },
+                });
+            }
         },
+        isNull,
     },
 };
 </script>

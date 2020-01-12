@@ -5,7 +5,7 @@
 <script>
 export default {
     mounted: async function() {
-        await this.$store.dispatch('GET_ME');
+        await this.$store.dispatch('UPDATE_USER');
     },
 };
 </script>

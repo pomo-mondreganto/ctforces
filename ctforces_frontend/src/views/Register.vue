@@ -1,14 +1,23 @@
 <template>
     <layout>
         <card>
-            <f-header text="Login" />
-            <form class="def-form" @submit.prevent="login">
+            <f-header text="Register" />
+            <form class="def-form" @submit.prevent="register">
                 <f-input
                     type="text"
                     name="login"
                     v-model="username"
                     :errors="errors['username']"
                     placeholder="Username"
+                    required
+                />
+                <f-input
+                    type="email"
+                    name="email"
+                    v-model="email"
+                    :errors="errors['email']"
+                    placeholder="Email"
+                    required
                 />
                 <f-input
                     type="password"
@@ -16,9 +25,10 @@
                     v-model="password"
                     :errors="errors['password']"
                     placeholder="Password"
+                    required
                 />
                 <f-detail :errors="errors['detail']" />
-                <input type="submit" value="Login" class="btn" />
+                <input type="submit" value="Register" class="btn" />
             </form>
         </card>
     </layout>
@@ -32,7 +42,6 @@ import FHeader from '@/components/Form/Header';
 import FDetail from '@/components/Form/Detail';
 
 import parse from '@/utils/errorParser';
-import { isUndefined } from '@/utils/types';
 
 export default {
     components: {
@@ -45,24 +54,20 @@ export default {
     data: function() {
         return {
             username: null,
+            email: null,
             password: null,
             errors: {},
         };
     },
     methods: {
-        login: async function() {
+        register: async function() {
             try {
-                await this.$http.post('/login/', {
+                await this.$http.post('/register/', {
                     username: this.username,
+                    email: this.email,
                     password: this.password,
                 });
-                await this.$store.dispatch('UPDATE_USER');
-
-                if (!isUndefined(this.$route.query.redirect)) {
-                    this.$router.push({ name: this.$route.query.redirect });
-                } else {
-                    this.$router.push({ name: 'index' });
-                }
+                this.$router.push({ name: 'login' });
             } catch (error) {
                 this.errors = parse(error.response.data);
             }

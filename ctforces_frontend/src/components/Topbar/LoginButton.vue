@@ -1,14 +1,15 @@
 <template>
-    <button v-if="user !== null" class="lb">
-        {{ user.username }}
-    </button>
-    <button v-else @click="loginRedirect" class="btn lb">
+    <button v-if="isNull(user)" @click="loginRedirect" class="btn lb">
         Login
+    </button>
+    <button v-else class="btn lb">
+        {{ user.username }}
     </button>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import { isNull } from '@/utils/types';
 
 export default {
     computed: mapState(['user']),
@@ -16,6 +17,7 @@ export default {
         loginRedirect: function() {
             this.$router.push({ name: 'login' }).catch(() => {});
         },
+        isNull,
     },
 };
 </script>
