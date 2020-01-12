@@ -256,6 +256,7 @@ class Contest(models.Model):
     publish_tasks_after_finished = models.BooleanField(default=True)
     is_rated = models.BooleanField(default=True)
     always_recalculate_rating = models.BooleanField(default=False)
+    dynamic_scoring = models.BooleanField(default=False)
 
     celery_start_task_id = models.CharField(max_length=50, null=True, blank=True)
     celery_end_task_id = models.CharField(max_length=50, null=True, blank=True)
@@ -311,7 +312,17 @@ class ContestTaskRelationship(models.Model):
     )
 
     cost = models.IntegerField(default=0)
+    min_cost = models.IntegerField(default=0)
+    max_cost = models.IntegerField(default=0)
+    decay_value = models.IntegerField(default=1)
+
     ordering_number = models.IntegerField(default=0)
+
+    solved_by = models.ManyToManyField(
+        'User',
+        related_name='solved_contest_tasks',
+        blank=True,
+    )
 
     class Meta:
         ordering = (
@@ -338,31 +349,4 @@ class ContestParticipantRelationship(models.Model):
         unique_together = (
             'contest',
             'participant',
-        )
-
-
-class ContestTaskParticipantSolvedRelationship(models.Model):
-    contest = models.ForeignKey(
-        'Contest',
-        on_delete=models.CASCADE,
-        related_name='contest_task_participant_solved_relationship'
-    )
-
-    participant = models.ForeignKey(
-        'User',
-        on_delete=models.CASCADE,
-        related_name='contest_task_participant_solved_relationship'
-    )
-
-    task = models.ForeignKey(
-        'Task',
-        on_delete=models.CASCADE,
-        related_name='contest_task_participant_solved_relationship'
-    )
-
-    class Meta:
-        unique_together = (
-            'contest',
-            'participant',
-            'task',
         )

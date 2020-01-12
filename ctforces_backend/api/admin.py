@@ -11,7 +11,3 @@ admin.site.register(api_models.Task, api_tasks_admin.CustomTaskAdmin)
 admin.site.register(api_models.TaskFile, api_tasks_admin.TaskFileFullAdmin)
 admin.site.register(api_models.Post, api_posts_admin.CustomPostAdmin)
 admin.site.register(api_models.Contest, api_contests_admin.CustomContestAdmin)
-admin.site.register(
-    api_models.ContestTaskParticipantSolvedRelationship,
-    api_contests_admin.ContestTaskParticipantSolvedAdmin,
-)

@@ -103,7 +103,6 @@ class CustomTaskAdmin(GuardedModelAdmin):
     )
 
     filter_horizontal = (
-        'solved_by',
         'tags',
     )
 

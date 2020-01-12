@@ -2,8 +2,8 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.core.mail import send_mail
-from django.db.models import IntegerField, Value as V, Subquery, OuterRef, Q
-from django.db.models.functions import Coalesce
+from django.db.models import IntegerField, Value as V, OuterRef, Q, Count, F
+from django.db.models.functions import Coalesce, Ceil, Greatest
 from django.utils import timezone
 from stdimage.utils import render_variations
 
@@ -86,91 +86,88 @@ def recalculate_rating(contest_id):
         logger.info('No such contest')
         return
 
-    contest_cost_subquery = Subquery(
-        get_model('api', 'ContestTaskRelationship').objects.filter(
-            contest_id=contest.id,
-            task_id=OuterRef('task_id'),
-        ).values('cost'),
-        output_field=IntegerField(),
-    )
-
-    user_cost_sum_subquery = api_database_functions.SubquerySum(
-        get_model('api', 'ContestTaskParticipantSolvedRelationship').objects.filter(
-            contest_id=contest.id,
-            participant_id=OuterRef('id'),
-        ).annotate(
-            cost=Coalesce(
-                contest_cost_subquery,
-                V(0),
-            )
-        ).values('cost'),
-        output_field=IntegerField(),
-        field_name='cost',
-    )
-
-    last_contest_solve_subquery = Subquery(
-        get_model('api', 'ContestParticipantRelationship').objects.filter(
-            contest=contest,
-            participant=OuterRef('id'),
-        ).values('last_solve')
-    )
-
-    participants = contest.participants.all()
-
+    relation_filter = Q(contest=contest, participant__show_in_ratings=True)
     if not contest.always_recalculate_rating:
-        participants = participants.annotate(
-            has_opened_contest=Subquery(
-                get_model('api', 'ContestParticipantRelationship').objects.filter(
-                    contest=contest,
-                    participant=OuterRef('id'),
-                ).values('has_opened_contest'),
-            ),
-        ).filter(has_opened_contest=True)
+        relation_filter &= Q(has_opened_contest=True)
 
-    participants = participants.annotate(
-        cost_sum=Coalesce(
-            user_cost_sum_subquery,
-            V(0),
-        ),
-        last_contest_solve=last_contest_solve_subquery,
-        contests_participated=api_database_functions.SubqueryCount(
-            get_model('api', 'ContestParticipantRelationship').objects.filter(
-                participant=OuterRef('id'),
-                contest__id__lte=contest_id,
-                contest__is_rated=True,
-                has_opened_contest=True,
-            )
+    participants = []
+    if contest.dynamic_scoring:
+        user_cost_sum_subquery = api_database_functions.SubquerySum(
+            get_model('api', 'ContestTaskRelationship').objects.filter(
+                contest=contest,
+            ).annotate(
+                solved_count=Coalesce(
+                    Count(
+                        'solved_by',
+                        distinct=True,
+                    ),
+                    V(0),
+                ),
+            ).filter(
+                solved_by__id__exact=OuterRef('participant_id'),
+            ).annotate(
+                current_cost=Greatest(
+                    Ceil(
+                        (F('min_cost') - F('max_cost')) /
+                        (F('decay_value') * F('decay_value')) *
+                        (F('solved_count') * F('solved_count')) +
+                        F('max_cost')
+                    ),
+                    F('min_cost'),
+                ),
+            ).values('current_cost'),
+            output_field=IntegerField(),
+            field_name='current_cost',
         )
-    ).order_by(
-        '-cost_sum',
-        'last_contest_solve',
-    ).values_list(
-        'id',
-        'cost_sum',
-        'rating',
-        'max_rating',
-        'contests_participated',
-    )
 
-    ratings = [player[2] for player in participants]
+    else:
+        user_cost_sum_subquery = api_database_functions.SubquerySum(
+            get_model('api', 'ContestParticipantRelationship').objects.filter(
+                contest=contest,
+                solved_by__id__exact=OuterRef('id'),
+            ).values('cost'),
+            output_field=IntegerField(),
+            field_name='cost',
+        )
+
+    relations = get_model('api', 'ContestParticipantRelationship').objects.filter(
+        relation_filter,
+    ).select_related(
+        'participant',
+    ).annotate(
+        cost_sum=Coalesce(user_cost_sum_subquery, V(0)),
+    ).only(
+        'participant',
+        'last_solve',
+    ).order_by('-cost_sum', 'last_solve')
+
+    for relation in relations:
+        participant = relation.participant
+        participant.cost_sum = relation.cost_sum
+        participant.last_contest_solve = relation.last_solve
+        participants.append(participant)
+
+    logger.info("Got user list for rating recalculation: ", participants)
+
+    ratings = [player.rating for player in participants]
     rs = RatingSystem(ratings)
     deltas = rs.calculate()
 
     for i, player in enumerate(participants):
-        get_model('api', 'User').objects.filter(id=player[0]).update(
-            rating=player[2] + deltas[i],
+        get_model('api', 'User').objects.filter(id=player.id).update(
+            rating=player.rating + deltas[i],
             has_participated_in_rated_contest=True,
         )
         get_model('api', 'ContestParticipantRelationship').objects.filter(
-            participant_id=player[0],
+            participant_id=player.id,
             contest=contest,
         ).update(
             delta=deltas[i],
         )
 
-        if player[2] + deltas[i] > player[3] or player[4] == 1:
-            get_model('api', 'User').objects.filter(id=player[0]).update(
-                max_rating=player[2] + deltas[i],
+        if player.rating + deltas[i] > player.max_rating or not player.has_participated_in_rated_contest:
+            get_model('api', 'User').objects.filter(id=player.id).update(
+                max_rating=player.rating + deltas[i],
             )
 
 

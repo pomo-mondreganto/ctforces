@@ -40,6 +40,9 @@ class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
             'is_solved_by_user',
             'main_tag',
             'main_tag_details',
+            'max_cost',
+            'min_cost',
+            'decay_value',
             'ordering_number',
             'solved_count',
             'task',
@@ -136,6 +139,7 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
             'contest_task_relationship_details',
             'created_at',
             'description',
+            'dynamic_scoring',
             'end_time',
             'id',
             'is_finished',
@@ -174,6 +178,7 @@ class ContestPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.Read
         model = api_models.Contest
         fields = (
             'author_username',
+            'dynamic_scoring',
             'end_time',
             'id',
             'is_finished',
@@ -205,6 +210,7 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
             'can_edit_contest',
             'contest_task_relationship_details',
             'created_at',
+            'dynamic_scoring',
             'end_time',
             'id',
             'is_finished',
@@ -244,15 +250,4 @@ class ContestScoreboardUserMinimalSerializer(rest_serializers.ModelSerializer, a
         fields = (
             'id',
             'username',
-        )
-
-
-class ContestScoreboardSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
-    task_name = rest_serializers.CharField()
-
-    class Meta:
-        model = api_models.ContestTaskParticipantSolvedRelationship
-        fields = (
-            'participant_id',
-            'task_name',
         )
