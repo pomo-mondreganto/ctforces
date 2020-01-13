@@ -179,10 +179,10 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             'main_data': result_data,
         })
 
-    def get_ordered_scoreboard_users_page(self, contest):
+    @staticmethod
+    def get_scoreboard_relations_queryset(contest):
         relation_filter = Q(contest=contest, participant__show_in_ratings=True)
 
-        participants = []
         if contest.dynamic_scoring:
             user_cost_sum_subquery = api_database_functions.SubquerySum(
                 api_models.ContestTaskRelationship.objects.filter(
@@ -233,21 +233,27 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
             'last_solve',
         ).order_by('-cost_sum', 'last_solve')
 
-        for relation in relations:
+        return relations
+
+    def get_ordered_scoreboard_users_page(self, contest):
+        relations_queryset = self.get_scoreboard_relations_queryset(contest)
+
+        users_paginator = api_pagination.UserScoreboardPagination()
+        relations_page = users_paginator.paginate_queryset(
+            queryset=relations_queryset,
+            request=self.request,
+        )
+
+        participants = []
+        for relation in relations_page:
             participant = relation.participant
             participant.cost_sum = relation.cost_sum
             participant.last_contest_solve = relation.last_solve
             participants.append(participant)
 
-        users_paginator = api_pagination.UserScoreboardPagination()
-        users_page = users_paginator.paginate_queryset(
-            queryset=participants,
-            request=self.request,
-        )
-
         return self.get_scoreboard_for_users_page(
             paginator=users_paginator,
-            users_page=users_page,
+            users_page=participants,
             contest=contest,
         )
 
@@ -260,6 +266,17 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
     def get_scoreboard(self, _request, *_args, **_kwargs):
         contest = self.get_object()
         return self.get_ordered_scoreboard_users_page(contest)
+
+    @action(
+        detail=True,
+        url_path='ctftime_scoreboard',
+        url_path='ctftime_scoreboard',
+        methods=['get'],
+    )
+    def get_ctftime_scoreboard(self, _request, *_args, **_kwargs):
+        contest = self.get_object()
+        relations_queryset = self.get_scoreboard_relations_queryset(contest)
+        # TODO: format it for CTFtime scoreboard
 
     @action(
         detail=True,
