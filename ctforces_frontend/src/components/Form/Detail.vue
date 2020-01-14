@@ -1,6 +1,6 @@
 <template>
     <div class="group" v-if="invalid">
-        <div v-for="error in errors" :key="error" class="error">
+        <div v-for="error of errors" :key="error" class="error">
             {{ error }}
         </div>
     </div>
@@ -25,9 +25,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.group {
+    width: 100%;
+}
+
 .error {
     color: $red;
     margin-top: 0.3em;
     font-size: 0.8em;
+    width: 100%;
 }
 </style>

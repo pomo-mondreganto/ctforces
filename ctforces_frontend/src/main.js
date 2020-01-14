@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Fragment from 'vue-fragment';
+import Toasted from 'vue-toasted';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -29,6 +30,11 @@ Vue.prototype.$http = axios;
 store.$http = axios;
 
 Vue.use(Fragment.Plugin);
+Vue.use(Toasted, {
+    position: 'bottom-right',
+    duration: 2000,
+    keepOnHover: true,
+});
 
 new Vue({
     router,

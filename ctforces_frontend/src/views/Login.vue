@@ -1,8 +1,8 @@
 <template>
-    <layout>
-        <card>
-            <f-header text="Login" />
-            <form class="def-form" @submit.prevent="login">
+    <card>
+        <f-header text="Login" />
+        <form class="def-form mt-3" @submit.prevent="login">
+            <div class="ff">
                 <f-input
                     type="text"
                     name="login"
@@ -10,6 +10,8 @@
                     :errors="errors['username']"
                     placeholder="Username"
                 />
+            </div>
+            <div class="ff">
                 <f-input
                     type="password"
                     name="password"
@@ -17,15 +19,18 @@
                     :errors="errors['password']"
                     placeholder="Password"
                 />
+            </div>
+            <div class="ff">
                 <f-detail :errors="errors['detail']" />
+            </div>
+            <div class="ff">
                 <input type="submit" value="Login" class="btn" />
-            </form>
-        </card>
-    </layout>
+            </div>
+        </form>
+    </card>
 </template>
 
 <script>
-import Layout from '@/layouts/Master';
 import Card from '@/components/Card/Index';
 import FInput from '@/components/Form/Input';
 import FHeader from '@/components/Form/Header';
@@ -36,7 +41,6 @@ import { isUndefined } from '@/utils/types';
 
 export default {
     components: {
-        Layout,
         FInput,
         Card,
         FHeader,

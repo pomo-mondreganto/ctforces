@@ -9,7 +9,7 @@
         />
         <label class="label">{{ placeholder }}</label>
         <div v-if="invalid">
-            <div v-for="error in errors" :key="error" class="error">
+            <div v-for="error of errors" :key="error" class="error">
                 {{ error }}
             </div>
         </div>
@@ -38,7 +38,7 @@ export default {
 
 <style lang="scss" scoped>
 $height-input: 2.2em;
-$height-label: 1.2em;
+$height-label: 0.9em;
 $border: 0.05em;
 
 .group {

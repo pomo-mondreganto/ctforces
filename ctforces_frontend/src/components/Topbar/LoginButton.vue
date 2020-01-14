@@ -1,5 +1,5 @@
 <template>
-    <button v-if="isNull(user)" @click="loginRedirect" class="btn lb">
+    <button v-if="isNull(user)" @click="loginRedirect" class="btn lb log">
         Login
     </button>
     <button v-else class="btn lb">
@@ -24,11 +24,13 @@ export default {
 
 <style lang="scss" scoped>
 .lb {
-    color: $green;
+    color: $white;
+    background-color: $green;
     border-color: $green;
 }
-.lb:hover {
-    color: $dark;
-    border-color: $dark;
+
+.lb.log {
+    background-color: $bluebtn;
+    border-color: $bluebtn;
 }
 </style>

@@ -1,15 +1,3 @@
 <template>
-    <layout>
-        <div>123</div>
-    </layout>
+    <div>123</div>
 </template>
-
-<script>
-import Layout from '@/layouts/Master';
-
-export default {
-    components: {
-        Layout,
-    },
-};
-</script>
