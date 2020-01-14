@@ -11,13 +11,17 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError, Throttled
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_extensions.cache.decorators import cache_response
 
 from api import database_functions as api_database_functions
 from api import mixins as api_mixins
 from api import models as api_models
 from api import pagination as api_pagination
-from api.contests import permissions as api_contests_permissions
-from api.contests import serializers as api_contests_serializers
+from api.contests import (
+    permissions as api_contests_permissions,
+    serializers as api_contests_serializers,
+    caching as api_contests_caching,
+)
 from api.tasks import serializers as api_tasks_serializers
 from api.users import serializers as api_users_serializers
 
@@ -267,16 +271,30 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         contest = self.get_object()
         return self.get_ordered_scoreboard_users_page(contest)
 
+    @cache_response(
+        60,
+        key_func=api_contests_caching.CTFTimeScoreboardKeyConstructor(),
+    )
     @action(
         detail=True,
         url_path='ctftime_scoreboard',
-        url_path='ctftime_scoreboard',
+        url_name='ctftime_scoreboard',
         methods=['get'],
     )
     def get_ctftime_scoreboard(self, _request, *_args, **_kwargs):
         contest = self.get_object()
         relations_queryset = self.get_scoreboard_relations_queryset(contest)
-        # TODO: format it for CTFtime scoreboard
+
+        standings = []
+        for i, relation in enumerate(relations_queryset):
+            standings.append({
+                'pos': i + 1,
+                'team': relation.participant.username,
+                'score': relation.cost_sum,
+                'lastAccept': int(relation.last_solve.timestamp()),
+            })
+
+        return Response({'standings': standings})
 
     @action(
         detail=True,
