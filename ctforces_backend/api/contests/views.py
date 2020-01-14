@@ -272,7 +272,7 @@ class ContestViewSet(api_mixins.CustomPermissionsViewSetMixin,
         return self.get_ordered_scoreboard_users_page(contest)
 
     @cache_response(
-        60,
+        timeout=60,
         key_func=api_contests_caching.CTFTimeScoreboardKeyConstructor(),
     )
     @action(
@@ -348,7 +348,6 @@ class ContestTaskRelationshipViewSet(api_mixins.CustomPermissionsViewSetMixin,
         return super(ContestTaskRelationshipViewSet, self).get_serializer(*args, **kwargs)
 
 
-# TODO: contest task listing & individual tasks can be cached (logged in as a key bit)
 class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = api_contests_serializers.ContestTaskPreviewSerializer
