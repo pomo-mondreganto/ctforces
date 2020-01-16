@@ -1,16 +1,22 @@
 <template>
-    <router-view />
+    <master>
+        <router-view />
+    </master>
 </template>
 
 <script>
+import Master from '@/layouts/Master';
+
 export default {
-    mounted: async function() {
+    created: async function() {
         await this.$store.dispatch('UPDATE_USER');
+    },
+    components: {
+        Master,
     },
 };
 </script>
 
 <style lang="scss">
-@import './styles/reset.css';
 @import './styles/main.scss';
 </style>

@@ -9,7 +9,7 @@
                 <sidebar />
             </div>
         </container>
-        <footer class="tac">
+        <footer class="ta-c mt-2">
             Powered by <span class="team">C4T BuT S4D</span> CTF team
         </footer>
     </div>

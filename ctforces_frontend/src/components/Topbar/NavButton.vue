@@ -1,5 +1,5 @@
 <template>
-    <span @click="go" :class="['menu-nav', 'tac', active ? 'active' : '']">{{
+    <span @click="go" :class="['menu-nav', 'ta-c', active ? 'active' : '']">{{
         this.text
     }}</span>
 </template>

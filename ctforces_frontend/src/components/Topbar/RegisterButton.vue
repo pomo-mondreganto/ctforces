@@ -2,7 +2,7 @@
     <button v-if="isNull(user)" @click="registerRedirect" class="btn rb">
         Register
     </button>
-    <button v-else class="btn rb" @click="logout">
+    <button v-else class="btn rb out" @click="logout">
         Logout
     </button>
 </template>
@@ -35,11 +35,13 @@ export default {
 
 <style lang="scss" scoped>
 .rb {
-    color: $red;
-    border-color: $red;
+    color: $white;
+    background-color: $darklight;
+    border-color: $darklight;
 }
-.rb:hover {
-    color: $dark;
-    border-color: $dark;
+
+.rb.out {
+    background-color: $red;
+    border-color: $red;
 }
 </style>

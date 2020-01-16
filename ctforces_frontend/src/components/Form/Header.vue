@@ -1,7 +1,5 @@
 <template>
-    <h1 class="header tac">
-        {{ text }}
-    </h1>
+    <h1 class="header ta-c">{{ text }}</h1>
 </template>
 
 <script>

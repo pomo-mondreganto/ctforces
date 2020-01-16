@@ -3,8 +3,8 @@
         <div class="logo vc" @click="indexRedirect">CTForces</div>
         <div class="navigation vc">
             <nav-button to="index" text="Home" />
-            <nav-button to="contests" text="Contests" />
-            <nav-button to="tasks" text="Tasks" />
+            <nav-button to="contest_list" text="Contests" />
+            <nav-button to="task_list" text="Tasks" />
             <nav-button to="upsolving" text="Upsolving" />
             <nav-button to="rating" text="Rating" />
         </div>
@@ -48,17 +48,20 @@ export default {
     font-size: 1.5em;
     margin-left: 0.5em;
     flex-grow: 2;
+    flex-basis: 0;
     padding: 0.3em;
     cursor: pointer;
 }
 
 .navigation {
-    flex-grow: 20;
+    flex-grow: 10;
+    flex-basis: 0;
 }
 
 .logreg {
     display: flex;
     flex-grow: 3;
+    flex-basis: 0;
 
     .btn {
         flex-grow: 1;
