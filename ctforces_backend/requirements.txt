@@ -64,6 +64,7 @@ Pygments==2.5.2
 pygraphviz==1.5
 pyparsing==2.4.6
 python-dateutil==2.8.1
+python-http-client==3.2.1
 python-utils==2.3.0
 pytz==2019.3
 PyYAML==5.2
@@ -74,6 +75,7 @@ rsa==3.4.2
 ruamel.yaml==0.16.5
 ruamel.yaml.clib==0.2.0
 s3transfer==0.3.0
+sendgrid==6.1.0
 six==1.13.0
 sqlparse==0.3.0
 strict-rfc3339==0.7

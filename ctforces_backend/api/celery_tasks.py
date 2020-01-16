@@ -1,10 +1,13 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.apps import apps
+from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import IntegerField, Value as V, OuterRef, Q, Count, F
 from django.db.models.functions import Coalesce, Ceil, Greatest
 from django.utils import timezone
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from stdimage.utils import render_variations
 
 from api import database_functions as api_database_functions
@@ -188,6 +191,24 @@ def publish_tasks(contest_id):
 
 @shared_task
 def send_users_mail(subject, message, html_message, from_email, recipient_list):
+    message = Mail(
+        from_email=from_email,
+        to_emails=recipient_list,
+        subject=subject,
+        html_content=html_message,
+        plain_text_content=message,
+    )
+    try:
+        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        sg.send(message)
+    except Exception as e:
+        logger.error(f"Error sending message using sendgrid: {str(e)}")
+        logger.warning("Falling back to the Gmail sending...")
+        send_users_mail_legacy.delay(subject, message, html_message, from_email, recipient_list)
+
+
+@shared_task
+def send_users_mail_legacy(subject, message, html_message, from_email, recipient_list):
     send_mail(
         subject=subject,
         message=message,
