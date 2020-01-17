@@ -49,7 +49,7 @@ class UserCreateView(CreateAPIView):
 
         api_tasks.send_users_mail.delay(
             subject='CTForces account confirmation',
-            message=message_plain,
+            text_message=message_plain,
             from_email='noreply@ctforces.com',
             recipient_list=[user_email],
             html_message=message_html,
@@ -122,7 +122,7 @@ class ActivationEmailResendView(APIView):
 
         api_tasks.send_users_mail.delay(
             subject='CTForces account confirmation',
-            message=message_plain,
+            text_message=message_plain,
             from_email='noreply@ctforces.com',
             recipient_list=[email],
             html_message=message_html,
@@ -172,7 +172,7 @@ class PasswordResetRequestView(APIView):
 
         api_tasks.send_users_mail.delay(
             subject='CTForces password reset',
-            message=message_plain,
+            text_message=message_plain,
             from_email='noreply@ctforces.com',
             recipient_list=[email],
             html_message=message_html,
