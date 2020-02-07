@@ -54,10 +54,8 @@ export default {
             }
         },
         getPos: function(pos) {
-            if (pos === 'c') {
-                return 'jc-c';
-            } else if (pos === 'l') {
-                return 'jc-l';
+            if (!isUndefined(pos)) {
+              return `jc-${pos}`;
             }
         },
         header: function({ grow = 1, pos = 'c' }) {

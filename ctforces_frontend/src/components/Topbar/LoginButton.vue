@@ -1,8 +1,8 @@
 <template>
-    <button v-if="isNull(user)" @click="loginRedirect" class="btn lb log">
+    <button v-if="isNull(user)" @click="loginRedirect" class="btn login-button">
         Login
     </button>
-    <button v-else class="btn lb">
+    <button v-else class="btn profile-button">
         {{ user.username }}
     </button>
 </template>
@@ -23,13 +23,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.lb {
+.login-button {
     color: $white;
     background-color: $green;
     border-color: $green;
 }
 
-.lb.log {
+.profile-button {
     background-color: $bluebtn;
     border-color: $bluebtn;
 }

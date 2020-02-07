@@ -1,8 +1,8 @@
 <template>
-    <button v-if="isNull(user)" @click="registerRedirect" class="btn rb">
+    <button v-if="isNull(user)" @click="registerRedirect" class="btn register-button">
         Register
     </button>
-    <button v-else class="btn rb out" @click="logout">
+    <button v-else class="btn logout-button out" @click="logout">
         Logout
     </button>
 </template>
@@ -34,13 +34,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.rb {
+.register-button {
     color: $white;
     background-color: $darklight;
     border-color: $darklight;
 }
 
-.rb.out {
+.logout-button {
     background-color: $red;
     border-color: $red;
 }
