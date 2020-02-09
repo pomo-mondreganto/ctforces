@@ -1,5 +1,5 @@
 <template>
-    <div class="table">
+    <div class="table" v-if="!isNull(data)">
         <div class="table-head">
             <div
                 v-for="field of fields"
@@ -21,7 +21,7 @@
                     <component
                         :is="getComponent(field)"
                         :row="row"
-                        :field="row[getFieldName(field)]"
+                        :fieldName="getFieldName(field)"
                     />
                 </div>
             </div>
@@ -32,6 +32,7 @@
 <script>
 import { isUndefined } from '@/utils/types';
 import Text from './Text';
+import { isNull } from '@/utils/types';
 
 export default {
     props: {
@@ -39,6 +40,7 @@ export default {
         data: Array,
     },
     methods: {
+        isNull,
         getComponent: function(field) {
             if (!isUndefined(field.comp)) {
                 return field.comp;

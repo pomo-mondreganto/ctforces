@@ -19,4 +19,5 @@ export default {
 
 <style lang="scss">
 @import './styles/main.scss';
+@import '~simplemde/dist/simplemde.min.css';
 </style>

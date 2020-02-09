@@ -1,5 +1,9 @@
 <template>
-    <button v-if="isNull(user)" @click="registerRedirect" class="btn register-button">
+    <button
+        v-if="isNull(user)"
+        @click="registerRedirect"
+        class="btn register-button"
+    >
         Register
     </button>
     <button v-else class="btn logout-button out" @click="logout">
@@ -38,10 +42,14 @@ export default {
     color: $white;
     background-color: $darklight;
     border-color: $darklight;
+    margin-left: 0.5em;
+    flex: 1 1 0;
 }
 
 .logout-button {
     background-color: $red;
     border-color: $red;
+    margin-left: 0.5em;
+    flex: 1 1 0;
 }
 </style>

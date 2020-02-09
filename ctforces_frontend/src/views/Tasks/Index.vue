@@ -52,12 +52,13 @@
                 </div>
             </form>
         </div>
+        <f-detail :errors="errors['detail']" />
     </card>
 </template>
 
 <script>
 import Card from '@/components/Card/Index';
-import { isNull } from '@/utils/types';
+import { isNull, isUndefined } from '@/utils/types';
 import User from '@/components/User/Index';
 import Tag from '@/components/Tag/Index';
 import { mediaUrl } from '@/config';
@@ -80,8 +81,8 @@ export default {
         try {
             const r = await this.$http.get(`/tasks/${id}`);
             this.task = r.data;
-        } catch {
-            console.error('TODO: api is down');
+        } catch (error) {
+            this.errors = parse(error.response.data);
         }
     },
     data: function() {
@@ -104,6 +105,7 @@ export default {
             } catch (error) {
                 this.errors = parse(error.response.data);
                 if (
+                    !isUndefined(this.errors['flag']) &&
                     this.errors['flag'].length > 0 &&
                     this.errors['flag'][0] === 'Invalid flag.'
                 ) {

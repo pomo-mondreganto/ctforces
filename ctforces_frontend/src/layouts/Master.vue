@@ -44,14 +44,8 @@ export default {
         flex-flow: row nowrap;
 
         & > :nth-child(1) {
-            flex-grow: 2.2;
-            flex-basis: 0;
+            flex: 2.2 1 0;
             margin-right: 3em;
-        }
-
-        & > :nth-child(2) {
-            flex-grow: 1;
-            flex-basis: 0;
         }
     }
 }

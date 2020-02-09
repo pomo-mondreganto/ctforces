@@ -1,6 +1,6 @@
 <template>
     <card>
-        <f-header text="Rating" />
+        <f-header text="Rating" v-if="!isNull(users)" />
         <div class="mt-1" v-if="!isNull(users)">
             <f-table
                 :fields="[
@@ -13,7 +13,6 @@
                         name: 'Name',
                         pos: 'l',
                         grow: 11,
-                        key: 'udata',
                         comp: UserComp,
                     },
                     {
@@ -26,6 +25,7 @@
                 :data="users"
             />
         </div>
+        <f-detail :errors="errors['detail']" />
     </card>
 </template>
 
@@ -33,15 +33,18 @@
 import Card from '@/components/Card/Index';
 import FHeader from '@/components/Form/Header';
 import FTable from '@/components/Table/Index';
-import User from '@/components/User/Index';
+import FDetail from '@/components/Form/Detail';
+import User from './helpers/User';
 
 import { isNull } from '@/utils/types';
+import parse from '@/utils/errorParser';
 
 export default {
     components: {
         Card,
         FHeader,
         FTable,
+        FDetail,
     },
     methods: {
         isNull,
@@ -50,24 +53,21 @@ export default {
         return {
             users: null,
             UserComp: User,
+            errors: {},
         };
     },
     created: async function() {
         const { page = 1 } = this.$route;
         try {
-            const resp = await this.$http.get(
-                `/users/rating_top/?page=${page}`
-            );
-            this.users = resp.data.results.map((user, index) => {
+            const r = await this.$http.get(`/users/rating_top/?page=${page}`);
+            this.users = r.data.results.map((user, index) => {
                 return {
                     '#': index,
-                    udata: { username: user.username, rating: user.rating },
-                    rating: user.rating,
+                    ...user,
                 };
             });
-            console.log(this.users);
-        } catch {
-            console.error('TODO: api is down');
+        } catch (error) {
+            this.errors = parse(error.response.data);
         }
     },
 };

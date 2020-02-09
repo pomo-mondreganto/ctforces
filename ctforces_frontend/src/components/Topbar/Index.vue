@@ -63,15 +63,6 @@ export default {
     flex-grow: 3;
     flex-basis: 0;
 
-    .btn {
-        flex-grow: 1;
-        flex-basis: 0;
-    }
-
-    .rb {
-        margin-left: 0.5em;
-    }
-
     margin-right: 0.5em;
 }
 </style>
