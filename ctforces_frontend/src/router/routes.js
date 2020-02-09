@@ -3,6 +3,7 @@ import Login from '@/views/Login';
 import Register from '@/views/Register';
 import TaskList from '@/views/Tasks/List';
 import TaskIndex from '@/views/Tasks/Index';
+import Rating from '@/views/Rating';
 
 const routes = [
     {
@@ -29,6 +30,11 @@ const routes = [
         path: '/tasks/:id',
         name: 'task_index',
         component: TaskIndex,
+    },
+    {
+        path: '/rating/',
+        name: 'rating',
+        component: Rating,
     },
 ];
 

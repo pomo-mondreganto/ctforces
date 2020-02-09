@@ -10,6 +10,8 @@ export default {
     },
     methods: {
         getClass: function() {
+            console.log(this.rating);
+            console.log(this.username);
             return 'red';
         },
     },
