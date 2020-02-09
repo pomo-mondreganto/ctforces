@@ -88,7 +88,7 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
     )
 
 
-class CustomContestAdmin(GuardedModelAdmin):
+class ContestAdmin(GuardedModelAdmin):
     inlines = (
         ContestTaskInlineAdmin,
         ContestParticipantInlineAdmin,
@@ -181,7 +181,7 @@ class CustomContestAdmin(GuardedModelAdmin):
         return obj.registered_count
 
     def get_queryset(self, request):
-        return super(CustomContestAdmin, self).get_queryset(request).annotate(
+        return super(ContestAdmin, self).get_queryset(request).annotate(
             registered_count=Count('participants', distinct=True),
         ).prefetch_related('tasks', 'participants')
 

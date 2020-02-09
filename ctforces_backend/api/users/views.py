@@ -18,7 +18,6 @@ from rest_framework_extensions.cache.decorators import cache_response
 from api import celery_tasks as api_tasks
 from api import models as api_models
 from api import pagination as api_pagination
-from api.contests import serializers as api_contests_serializers
 from api.posts import serializers as api_posts_serializers
 from api.tasks import serializers as api_tasks_serializers
 from api.token_operations import serialize, deserialize
@@ -403,47 +402,3 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             serializer_class=api_posts_serializers.PostMainSerializer,
             request=request,
         )
-
-    @action(detail=True, url_name='contests', url_path='contests', methods=['get'])
-    def get_users_contests(self, request, **_kwargs):
-        contests_type = request.query_params.get('type', 'all')
-        user = self.get_object()
-        queryset = api_models.Contest.objects.filter(is_published=True)
-
-        if contests_type == 'all':
-            queryset = (queryset | get_objects_for_user(request.user, 'view_contest', api_models.Contest)).distinct()
-
-        queryset = queryset.filter(author=user).annotate(
-            is_registered=Exists(
-                api_models.ContestParticipantRelationship.objects.filter(
-                    participant_id=self.request.user.id,
-                    contest=OuterRef('id'),
-                )
-            ),
-        )
-        queryset = queryset.order_by('-id')
-
-        upcoming_queryset = queryset.filter(is_running=False, is_finished=False)
-        running_queryset = queryset.filter(is_running=True)
-        finished_queryset = queryset.filter(is_finished=True)
-
-        upcoming = api_contests_serializers.ContestPreviewSerializer(upcoming_queryset, many=True).data
-        running = api_contests_serializers.ContestPreviewSerializer(running_queryset, many=True).data
-
-        paginator, finished = api_pagination.get_paginated_data(
-            api_pagination.ContestDefaultPagination(),
-            finished_queryset,
-            api_contests_serializers.ContestPreviewSerializer,
-            request,
-        )
-
-        if paginator:
-            finished = paginator.get_paginated_response(finished).data
-
-        response_data = {
-            'upcoming': upcoming,
-            'running': running,
-            'finished': finished,
-        }
-
-        return Response(response_data)

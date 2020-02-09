@@ -1,43 +1,22 @@
-import re
-
 from celery import current_app
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, UserManager
-from django.core import validators
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import Sum, Q, Value as V
-from django.db.models.functions import Coalesce
 from django.utils import timezone
-from django.utils.deconstruct import deconstructible
 from django.utils.functional import cached_property
 from rest_framework_tricks.models.fields import NestedProxyField
 from stdimage.models import StdImageField
 
 from api import celery_tasks
-from api.models_auxiliary import CustomImageSizeValidator, CustomUploadTo, stdimage_processor, CustomFileField
-
-
-@deconstructible
-class CustomASCIIUsernameValidator(validators.RegexValidator):
-    regex = r'^[\w_-]{5,25}$'
-    message = (
-        'Username needs to contain from 5 to 25 English letters, '
-        'numbers, and -/_ characters'
-    )
-    flags = re.ASCII
-
-
-class UserUpsolvingAnnotatedManager(UserManager):
-    def get_queryset(self):
-        return super(UserUpsolvingAnnotatedManager, self).get_queryset().annotate(
-            cost_sum=Coalesce(
-                Sum(
-                    'solved_tasks__cost',
-                    filter=Q(solved_tasks__show_on_main_page=True),
-                ),
-                V(0),
-            )
-        )
+from .auxiliary import (
+    CustomImageSizeValidator,
+    CustomUploadTo,
+    stdimage_processor,
+    CustomFileField,
+    CustomASCIIUsernameValidator,
+    TagNameValidator,
+    UserUpsolvingAnnotatedManager,
+)
 
 
 class User(AbstractUser):
@@ -48,6 +27,11 @@ class User(AbstractUser):
     max_rating = models.IntegerField(default=2000)
 
     updated_at = models.DateTimeField(auto_now=True)
+    last_solve = models.DateTimeField(default=timezone.now)
+
+    has_participated_in_rated_contest = models.BooleanField(default=False)
+    show_in_ratings = models.BooleanField(default=True)
+    last_email_resend = models.DateTimeField(null=True, blank=True)
 
     avatar = StdImageField(
         variations={
@@ -71,25 +55,15 @@ class User(AbstractUser):
         blank=False, null=False
     )
 
-    last_solve = models.DateTimeField(default=timezone.now)
-
     upsolving_annotated = UserUpsolvingAnnotatedManager()
 
     telegram = models.CharField(max_length=255, blank=True)
-
     hide_personal_info = models.BooleanField(default=False)
-
     personal_info = NestedProxyField(
         'first_name',
         'last_name',
         'telegram',
     )
-
-    has_participated_in_rated_contest = models.BooleanField(default=False)
-
-    show_in_ratings = models.BooleanField(default=True)
-
-    last_email_resend = models.DateTimeField(null=True, blank=True)
 
     @cached_property
     def is_admin(self):
@@ -102,6 +76,25 @@ class User(AbstractUser):
         )
 
         default_manager_name = 'objects'
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=255, null=False, blank=False)
+    join_token = models.CharField(max_length=255, null=False, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    captain = models.ForeignKey(
+        'User',
+        on_delete=models.SET_NULL,
+        related_name='teams_captain',
+        null=True, blank=True,
+    )
+
+    participants = models.ManyToManyField(
+        'User',
+        related_name='teams',
+        blank=True,
+    )
 
 
 class Post(models.Model):
@@ -125,12 +118,7 @@ class TaskTag(models.Model):
     name = models.CharField(
         max_length=15,
         unique=True,
-        validators=[
-            validators.RegexValidator(
-                regex='^[a-z0-9]+(-[a-z0-9]+)*[a-z0-9]+$',
-                message='Name must consist of words (lowercase letters and digits), divided my single dash',
-            ),
-        ],
+        validators=[TagNameValidator],
     )
 
     def __str__(self):
@@ -269,10 +257,10 @@ class Contest(models.Model):
     )
 
     participants = models.ManyToManyField(
-        'User',
-        related_name='contest_participated',
+        'Team',
+        related_name='contests_participated',
         through='ContestParticipantRelationship',
-        blank=True
+        blank=True,
     )
 
     def reset_start_action(self):
@@ -298,55 +286,3 @@ class Contest(models.Model):
 
     def __str__(self):
         return f"Contest object ({self.id}:{self.name})"
-
-
-class ContestTaskRelationship(models.Model):
-    contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_task_relationship')
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='contest_task_relationship')
-    main_tag = models.ForeignKey(
-        'TaskTag',
-        on_delete=models.SET_NULL,
-        related_name='contest_task_relationship_main',
-        null=True,
-        blank=False,
-    )
-
-    cost = models.IntegerField(default=0)
-    min_cost = models.IntegerField(default=0)
-    max_cost = models.IntegerField(default=0)
-    decay_value = models.IntegerField(default=1)
-
-    ordering_number = models.IntegerField(default=0)
-
-    solved_by = models.ManyToManyField(
-        'User',
-        related_name='solved_contest_tasks',
-        blank=True,
-    )
-
-    class Meta:
-        ordering = (
-            '-ordering_number',
-            'cost',
-            'id',
-        )
-
-        unique_together = (
-            'contest',
-            'task',
-        )
-
-
-class ContestParticipantRelationship(models.Model):
-    contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_participant_relationship')
-    participant = models.ForeignKey('User', on_delete=models.CASCADE, related_name='contest_participant_relationship')
-
-    last_solve = models.DateTimeField(default=timezone.now)
-    delta = models.IntegerField(null=True, blank=True)
-    has_opened_contest = models.BooleanField(default=False)
-
-    class Meta:
-        unique_together = (
-            'contest',
-            'participant',
-        )
