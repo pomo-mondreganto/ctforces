@@ -1,5 +1,5 @@
 <template>
-    <span :class="getClass(rating)">{{ username }}</span>
+    <span :class="getClass(rating)" @click="go(username)">{{ username }}</span>
 </template>
 
 <script>
@@ -10,15 +10,25 @@ export default {
     },
     methods: {
         getClass: function() {
-            console.log(this.rating);
-            console.log(this.username);
-            return 'red';
+            return ['red', 'user'];
+        },
+        go: function() {
+            this.$router
+                .push({
+                    name: 'profile',
+                    params: { username: this.username },
+                })
+                .catch(() => {});
         },
     },
 };
 </script>
 
 <style lang="scss" scoped>
+.user {
+    cursor: pointer;
+}
+
 .red {
     color: $red;
 }

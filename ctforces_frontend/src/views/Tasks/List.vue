@@ -1,6 +1,6 @@
 <template>
     <card>
-        <f-header text="Tasks" />
+        <f-header text="Tasks" v-if="!isNull(tasks)" />
         <div class="mt-1" v-if="!isNull(tasks)">
             <f-table
                 :fields="[
@@ -27,6 +27,7 @@
                 :data="tasks"
             />
         </div>
+        <f-detail :errors="errors['detail']" />
     </card>
 </template>
 
@@ -34,19 +35,23 @@
 import Card from '@/components/Card/Index';
 import FHeader from '@/components/Form/Header';
 import FTable from '@/components/Table/Index';
+import FDetail from '@/components/Form/Detail';
 import { isNull } from '@/utils/types';
-import Tags from './TaskTags';
-import TaskLink from './TaskLink';
-import TaskSolvedLink from './TaskSolvedLink';
+import Tags from './helpers/TaskTags';
+import TaskLink from './helpers/TaskLink';
+import TaskSolvedLink from './helpers/TaskSolvedLink';
+import parse from '@/utils/errorParser';
 
 export default {
     components: {
         Card,
         FHeader,
         FTable,
+        FDetail,
     },
     methods: {
         isNull,
+        parse,
     },
     data: function() {
         return {
@@ -54,6 +59,7 @@ export default {
             TagsComp: Tags,
             TaskLinkComp: TaskLink,
             TaskSolvedLinkComp: TaskSolvedLink,
+            errors: {},
         };
     },
     created: async function() {
@@ -63,8 +69,8 @@ export default {
             this.tasks = r.data.results.map((row, index) => {
                 return { '#': index, ...row };
             });
-        } catch {
-            console.error('TODO: api is down');
+        } catch (error) {
+            this.errors = parse(error.response.data);
         }
     },
 };

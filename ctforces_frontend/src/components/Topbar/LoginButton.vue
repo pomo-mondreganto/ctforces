@@ -27,10 +27,12 @@ export default {
     color: $white;
     background-color: $green;
     border-color: $green;
+    flex: 1 1 0;
 }
 
 .profile-button {
     background-color: $bluebtn;
     border-color: $bluebtn;
+    flex: 1 1 0;
 }
 </style>

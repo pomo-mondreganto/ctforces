@@ -13,3 +13,9 @@ export default {
     },
 };
 </script>
+
+<style lang="scss" scoped>
+.sidebar {
+    flex: 1 1 0;
+}
+</style>

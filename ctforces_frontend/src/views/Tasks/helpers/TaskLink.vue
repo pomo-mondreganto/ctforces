@@ -1,11 +1,11 @@
 <template>
-    <router-link :to="url">{{ field }}</router-link>
+    <router-link :to="url">{{ row[fieldName] }}</router-link>
 </template>
 
 <script>
 export default {
     props: {
-        field: String,
+        fieldName: String,
         row: Object,
     },
     computed: {
