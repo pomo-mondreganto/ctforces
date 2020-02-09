@@ -34,7 +34,7 @@ import Card from '@/components/Card/Index';
 import FHeader from '@/components/Form/Header';
 import FTable from '@/components/Table/Index';
 import FDetail from '@/components/Form/Detail';
-import User from './helpers/User';
+import User from '@/components/Table/User';
 
 import { isNull } from '@/utils/types';
 import parse from '@/utils/errorParser';

@@ -37,9 +37,9 @@ import FHeader from '@/components/Form/Header';
 import FTable from '@/components/Table/Index';
 import FDetail from '@/components/Form/Detail';
 import { isNull } from '@/utils/types';
-import Tags from './helpers/TaskTags';
-import TaskLink from './helpers/TaskLink';
-import TaskSolvedLink from './helpers/TaskSolvedLink';
+import Tags from './TaskTags';
+import TaskLink from './TaskLink';
+import TaskSolvedLink from './TaskSolvedLink';
 import parse from '@/utils/errorParser';
 
 export default {

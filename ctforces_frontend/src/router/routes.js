@@ -1,10 +1,15 @@
-import Index from '@/views/Index';
-import Login from '@/views/Login';
-import Register from '@/views/Register';
-import TaskList from '@/views/Tasks/List';
-import TaskIndex from '@/views/Tasks/Index';
-import Rating from '@/views/Users/Rating';
-import TaskCreate from '@/views/Tasks/Create';
+import Index from '@/views/Index/Index/Index';
+import Login from '@/views/Index/Login/Index';
+import Register from '@/views/Index/Register/Index';
+
+import TaskList from '@/views/Tasks/List/Index';
+import TaskIndex from '@/views/Tasks/Index/Index';
+import TaskCreate from '@/views/Tasks/Create/Index';
+
+import Rating from '@/views/Users/Rating/Index';
+import Upsolving from '@/views/Users/Upsolving/Index';
+
+import Profile from '@/views/Users/Profile/Index/Index';
 
 const routes = [
     {
@@ -31,6 +36,9 @@ const routes = [
         path: '/tasks/create/',
         name: 'task_create',
         component: TaskCreate,
+        meta: {
+            auth: true,
+        },
     },
     {
         path: '/tasks/:id',
@@ -41,6 +49,16 @@ const routes = [
         path: '/rating/',
         name: 'rating',
         component: Rating,
+    },
+    {
+        path: '/upsolving/',
+        name: 'upsolving',
+        component: Upsolving,
+    },
+    {
+        path: '/users/:username',
+        name: 'profile',
+        component: Profile,
     },
 ];
 

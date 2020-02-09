@@ -2,7 +2,7 @@
     <button v-if="isNull(user)" @click="loginRedirect" class="btn login-button">
         Login
     </button>
-    <button v-else class="btn profile-button">
+    <button v-else class="btn profile-button" @click="go(user.username)">
         {{ user.username }}
     </button>
 </template>
@@ -16,6 +16,9 @@ export default {
     methods: {
         loginRedirect: function() {
             this.$router.push({ name: 'login' }).catch(() => {});
+        },
+        go: function(username) {
+            this.$router.push({ name: 'profile', params: { username } });
         },
         isNull,
     },
