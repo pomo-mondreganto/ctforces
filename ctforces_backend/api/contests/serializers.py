@@ -1,13 +1,122 @@
+from django.db import transaction
+from django.db.utils import IntegrityError
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
+from rest_framework.exceptions import ValidationError
+from rest_framework.validators import UniqueTogetherValidator
 
 from api import fields as api_fields
 from api import mixins as api_mixins
 from api import models as api_models
 from api.tasks import serializers as api_tasks_serializers
+from api.teams import serializers as api_teams_serializers
+from api.users import serializers as api_users_serializers
 
 
-class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
+class CPRSerializer(rest_serializers.ModelSerializer):
+    participant = api_fields.CurrentUserPermissionsFilteredPKRF(
+        read_only=False,
+        write_only=False,
+        queryset=api_models.Team.objects.all(),
+        perms='register_team',
+    )
+
+    registered_users_details = api_users_serializers.UserMinimalSerializer(
+        many=True,
+        read_only=True,
+        source='registered_users',
+    )
+
+    rating = rest_serializers.IntegerField(read_only=True)
+
+    participant_details = api_teams_serializers.TeamMinimalSerializer(
+        read_only=True,
+        source='participant',
+    )
+
+    class Meta:
+        model = api_models.ContestParticipantRelationship
+        fields = (
+            'id',
+            'contest',
+            'participant',
+            'rating',
+            'participant_details',
+            'registered_users',
+            'registered_users_details',
+        )
+        extra_kwargs = {
+            'registered_users': {
+                'write_only': True,
+            },
+        }
+        validators = [
+            UniqueTogetherValidator(
+                queryset=api_models.ContestParticipantRelationship.objects.all(),
+                fields=['contest', 'participant'],
+                message='Team is already registered',
+            ),
+        ]
+
+    def validate_contest(self, contest):
+        if not contest.is_published or not contest.is_registration_open:
+            raise ValidationError("Contest doesn't exist or registration isn't open yet")
+
+        if self.context['request'].user.has_perm('api.change_contest', contest):
+            raise ValidationError('You cannot register for this contest')
+        return contest
+
+    def validate(self, attrs):
+        team = attrs['participant']
+        members = team.participants.only('id')
+        diff = set(attrs['registered_users']).difference(set(members))
+        if diff:
+            raise ValidationError({'registered_users': f'You can\'t register users {diff}'})
+        return attrs
+
+    def update(self, instance, validated_data):
+        validated_data.pop('contest', None)
+        current_registrations = set(instance.registered_users.values_list('id', flat=True))
+        new_registrations = set(map(lambda x: x.id, validated_data['registered_users']))
+        to_delete = current_registrations.difference(new_registrations)
+        to_create = new_registrations.difference(current_registrations)
+        to_create_helpers = list(
+            api_models.CPRHelper(contest=instance.contest, user_id=user_id, cpr=instance)
+            for user_id in to_create
+        )
+
+        try:
+            with transaction.atomic():
+                api_models.CPRHelper.objects.bulk_create(to_create_helpers)
+                api_models.CPRHelper.objects.filter(contest=instance.contest, user__id__in=to_delete).delete()
+                new_instance = super(CPRSerializer, self).update(instance, validated_data)
+        except IntegrityError:
+            raise ValidationError({'detail': "User is already registered in another team"})
+
+        return new_instance
+
+    def create(self, validated_data):
+        new_registrations = set(map(lambda x: x.id, validated_data['registered_users']))
+
+        try:
+            with transaction.atomic():
+                instance = super(CPRSerializer, self).create(validated_data)
+                to_create_helpers = list(
+                    api_models.CPRHelper(
+                        contest=validated_data['contest'],
+                        user_id=user_id,
+                        cpr=instance,
+                    )
+                    for user_id in new_registrations
+                )
+                api_models.CPRHelper.objects.bulk_create(to_create_helpers)
+        except IntegrityError:
+            raise ValidationError({'detail': "User is already registered in another team"})
+
+        return instance
+
+
+class CTRMainSerializer(rest_serializers.ModelSerializer):
     solved_count = rest_serializers.IntegerField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     task_name = rest_serializers.SlugRelatedField(read_only=True, slug_field='name', source='task')
@@ -56,7 +165,7 @@ class ContestTaskRelationshipMainSerializer(rest_serializers.ModelSerializer):
         }
 
 
-class ContestTaskRelationshipUpdateSerializer(rest_serializers.ModelSerializer):
+class CTRUpdateSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.ContestTaskRelationship
         fields = (
@@ -127,7 +236,7 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.Rea
 class ContestFullSerializer(rest_serializers.ModelSerializer):
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     registered_count = rest_serializers.IntegerField(read_only=True)
-    contest_task_relationship_details = ContestTaskRelationshipMainSerializer(
+    contest_task_relationship_details = CTRMainSerializer(
         many=True,
         read_only=True,
         source='contest_task_relationship',
@@ -153,7 +262,6 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
             'publish_tasks_after_finished',
             'registered_count',
             'start_time',
-            'team_only',
             'updated_at',
         )
 
@@ -193,14 +301,13 @@ class ContestPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.Read
             'name',
             'registered_count',
             'start_time',
-            'team_only',
         )
 
 
 class ContestViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     can_edit_contest = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
-    contest_task_relationship_details = ContestTaskRelationshipMainSerializer(
+    contest_task_relationship_details = CTRMainSerializer(
         many=True,
         read_only=True,
         source='contest_task_relationship',
@@ -224,7 +331,6 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
             'is_running',
             'name',
             'start_time',
-            'team_only',
             'updated_at',
         )
 
@@ -238,6 +344,11 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
 class ContestScoreboardParticipantSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     cost_sum = rest_serializers.IntegerField()
     last_contest_solve = rest_serializers.DateTimeField()
+    registered_users = api_users_serializers.UserMinimalSerializer(
+        many=True,
+        read_only=True,
+    )
+    rating = rest_serializers.IntegerField(read_only=True)
 
     class Meta:
         model = api_models.Team
@@ -246,6 +357,8 @@ class ContestScoreboardParticipantSerializer(rest_serializers.ModelSerializer, a
             'id',
             'last_contest_solve',
             'name',
+            'registered_users',
+            'rating',
         )
 
 

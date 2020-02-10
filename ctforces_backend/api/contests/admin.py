@@ -74,6 +74,7 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
                     'id',
                     'participant',
                     'last_solve',
+                    'registered_users',
                 ),
             },
         ),
@@ -85,6 +86,7 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
 
     raw_id_fields = (
         'participant',
+        'registered_users',
     )
 
 

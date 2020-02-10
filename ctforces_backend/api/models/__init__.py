@@ -12,4 +12,5 @@ from api.models.objects import (
 from api.models.relations import (
     ContestTaskRelationship,
     ContestParticipantRelationship,
+    CPRHelper,
 )

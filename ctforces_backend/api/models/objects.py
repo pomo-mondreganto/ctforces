@@ -96,6 +96,12 @@ class Team(models.Model):
         blank=True,
     )
 
+    class Meta:
+        ordering = ('id',)
+        permissions = (
+            ('register_team', 'Can register teams for a contest'),
+        )
+
 
 class Post(models.Model):
     author = models.ForeignKey('User', on_delete=models.SET_NULL, related_name='posts', null=True, blank=True)

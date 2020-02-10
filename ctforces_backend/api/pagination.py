@@ -8,6 +8,8 @@ from rest_framework.response import Response
 
 
 class PageNumberWithPageSizePagination(PageNumberPagination):
+    page_query_param = 'page_size'
+
     def get_paginated_response(self, data):
         return Response(OrderedDict([
             ('count', self.page.paginator.count),
@@ -48,37 +50,41 @@ class PageNumberWithPageSizePagination(PageNumberPagination):
 class UserDefaultPagination(PageNumberWithPageSizePagination):
     page_size = 20
     max_page_size = 100
-    page_size_query_param = 'page_size'
+
+
+class TeamDefaultPagination(PageNumberWithPageSizePagination):
+    page_size = 20
+    max_page_size = 50
 
 
 class ScoreboardPagination(PageNumberWithPageSizePagination):
     page_size = 20
     max_page_size = 100
-    page_size_query_param = 'page_size'
 
 
 class TaskDefaultPagination(PageNumberWithPageSizePagination):
     page_size = 30
     max_page_size = 50
-    page_size_query_param = 'page_size'
 
 
 class TaskFileDefaultPagination(PageNumberWithPageSizePagination):
     page_size = 30
     max_page_size = 50
-    page_size_query_param = 'page_size'
 
 
 class PostDefaultPagination(PageNumberWithPageSizePagination):
     page_size = 10
     max_page_size = 20
-    page_size_query_param = 'page_size'
+
+
+class ContestRegistrationsPagination(PageNumberWithPageSizePagination):
+    page_size = 30
+    max_page_size = 50
 
 
 class ContestDefaultPagination(PageNumberWithPageSizePagination):
     page_size = 10
     max_page_size = 20
-    page_size_query_param = 'page_size'
 
 
 def get_paginated_data(paginator, queryset, serializer_class, request):

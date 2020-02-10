@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
+from api.models.auxiliary import CTRCurrentCostManager
+
 
 class ContestTaskRelationship(models.Model):
     contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_task_relationship')
@@ -26,6 +28,10 @@ class ContestTaskRelationship(models.Model):
         blank=True,
     )
 
+    objects = models.Manager()
+    dynamic_current_cost_annotated = CTRCurrentCostManager(dynamic=True)
+    static_current_cost_annotated = CTRCurrentCostManager(dynamic=False)
+
     class Meta:
         ordering = (
             '-ordering_number',
@@ -38,6 +44,8 @@ class ContestTaskRelationship(models.Model):
             'task',
         )
 
+        default_manager_name = 'objects'
+
 
 class ContestParticipantRelationship(models.Model):
     contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='contest_participant_relationship')
@@ -47,8 +55,31 @@ class ContestParticipantRelationship(models.Model):
     delta = models.IntegerField(null=True, blank=True)
     has_opened_contest = models.BooleanField(default=False)
 
+    registered_users = models.ManyToManyField(
+        'User',
+        related_name='contest_participant_relationship',
+        blank=True,
+    )
+
     class Meta:
         unique_together = (
             'contest',
             'participant',
+        )
+
+
+class CPRHelper(models.Model):
+    contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='cpr_helpers')
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='cpr_helpers')
+    cpr = models.ForeignKey(
+        'ContestParticipantRelationship',
+        on_delete=models.CASCADE,
+        related_name='cpr_helpers',
+        null=True,
+    )
+
+    class Meta:
+        unique_together = (
+            'contest',
+            'user',
         )
