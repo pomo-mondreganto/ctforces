@@ -1,5 +1,6 @@
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
+from rest_framework.exceptions import ValidationError
 
 from api import fields as api_fields
 from api import mixins as api_mixins
@@ -67,6 +68,11 @@ class TaskFileMainSerializer(rest_serializers.ModelSerializer):
 
     def validate_file_field(self, data):
         self.filename = data.name
+        return data
+
+    def validate_owner(self, data):
+        if self.instance and data != self.instance.owner:
+            raise ValidationError({'owner': 'This field is immutable once set'})
         return data
 
     def validate(self, attrs):
@@ -195,6 +201,11 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
             raise rest_serializers.ValidationError('You are allowed to include 5 files or less.')
         return data
 
+    def validate_owner(self, data):
+        if self.instance and data != self.instance.owner:
+            raise ValidationError({'owner': 'This field is immutable once set'})
+        return data
+
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user
         instance = super(TaskFullSerializer, self).create(validated_data)
@@ -257,6 +268,11 @@ class TaskHintSerializer(rest_serializers.ModelSerializer):
                 'write_only': True,
             }
         }
+
+    def validate_author(self, data):
+        if self.instance and data != self.instance.author:
+            raise ValidationError({'author': 'This field is immutable once set'})
+        return data
 
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user

@@ -3,12 +3,12 @@ from django.db.models import Value as V, Count
 from django.db.models.functions import Coalesce
 from guardian.admin import GuardedModelAdmin
 
-from api import models as api_models
+import api.models
 
 
 class ContestTaskInlineAdmin(admin.TabularInline):
     classes = ('collapse',)
-    model = api_models.ContestTaskRelationship
+    model = api.models.ContestTaskRelationship
     fieldsets = (
         (
             'Main info',
@@ -64,7 +64,7 @@ class ContestTaskInlineAdmin(admin.TabularInline):
 
 
 class ContestParticipantInlineAdmin(admin.TabularInline):
-    model = api_models.ContestParticipantRelationship
+    model = api.models.ContestParticipantRelationship
     classes = ('collapse',)
     fieldsets = (
         (

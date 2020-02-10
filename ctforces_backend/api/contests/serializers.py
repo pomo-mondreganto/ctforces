@@ -5,23 +5,23 @@ from rest_framework import serializers as rest_serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 
-from api import fields as api_fields
-from api import mixins as api_mixins
-from api import models as api_models
-from api.tasks import serializers as api_tasks_serializers
-from api.teams import serializers as api_teams_serializers
-from api.users import serializers as api_users_serializers
+import api.fields
+import api.models
+from api.mixins import ReadOnlySerializerMixin
+from api.tasks.serializers import TaskTagSerializer, TaskFileViewSerializer
+from api.teams.serializers import TeamMinimalSerializer
+from api.users.serializers import UserMinimalSerializer
 
 
 class CPRSerializer(rest_serializers.ModelSerializer):
-    participant = api_fields.CurrentUserPermissionsFilteredPKRF(
+    participant = api.fields.CurrentUserPermissionsFilteredPKRF(
         read_only=False,
         write_only=False,
-        queryset=api_models.Team.objects.all(),
+        queryset=api.models.Team.objects.all(),
         perms='register_team',
     )
 
-    registered_users_details = api_users_serializers.UserMinimalSerializer(
+    registered_users_details = UserMinimalSerializer(
         many=True,
         read_only=True,
         source='registered_users',
@@ -29,13 +29,13 @@ class CPRSerializer(rest_serializers.ModelSerializer):
 
     rating = rest_serializers.IntegerField(read_only=True)
 
-    participant_details = api_teams_serializers.TeamMinimalSerializer(
+    participant_details = TeamMinimalSerializer(
         read_only=True,
         source='participant',
     )
 
     class Meta:
-        model = api_models.ContestParticipantRelationship
+        model = api.models.ContestParticipantRelationship
         fields = (
             'id',
             'contest',
@@ -52,7 +52,7 @@ class CPRSerializer(rest_serializers.ModelSerializer):
         }
         validators = [
             UniqueTogetherValidator(
-                queryset=api_models.ContestParticipantRelationship.objects.all(),
+                queryset=api.models.ContestParticipantRelationship.objects.all(),
                 fields=['contest', 'participant'],
                 message='Team is already registered',
             ),
@@ -81,14 +81,14 @@ class CPRSerializer(rest_serializers.ModelSerializer):
         to_delete = current_registrations.difference(new_registrations)
         to_create = new_registrations.difference(current_registrations)
         to_create_helpers = list(
-            api_models.CPRHelper(contest=instance.contest, user_id=user_id, cpr=instance)
+            api.models.CPRHelper(contest=instance.contest, user_id=user_id, cpr=instance)
             for user_id in to_create
         )
 
         try:
             with transaction.atomic():
-                api_models.CPRHelper.objects.bulk_create(to_create_helpers)
-                api_models.CPRHelper.objects.filter(contest=instance.contest, user__id__in=to_delete).delete()
+                api.models.CPRHelper.objects.bulk_create(to_create_helpers)
+                api.models.CPRHelper.objects.filter(contest=instance.contest, user__id__in=to_delete).delete()
                 new_instance = super(CPRSerializer, self).update(instance, validated_data)
         except IntegrityError:
             raise ValidationError({'detail': "User is already registered in another team"})
@@ -102,14 +102,14 @@ class CPRSerializer(rest_serializers.ModelSerializer):
             with transaction.atomic():
                 instance = super(CPRSerializer, self).create(validated_data)
                 to_create_helpers = list(
-                    api_models.CPRHelper(
+                    api.models.CPRHelper(
                         contest=validated_data['contest'],
                         user_id=user_id,
                         cpr=instance,
                     )
                     for user_id in new_registrations
                 )
-                api_models.CPRHelper.objects.bulk_create(to_create_helpers)
+                api.models.CPRHelper.objects.bulk_create(to_create_helpers)
         except IntegrityError:
             raise ValidationError({'detail': "User is already registered in another team"})
 
@@ -121,27 +121,27 @@ class CTRMainSerializer(rest_serializers.ModelSerializer):
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     task_name = rest_serializers.SlugRelatedField(read_only=True, slug_field='name', source='task')
 
-    main_tag_details = api_tasks_serializers.TaskTagSerializer(
+    main_tag_details = TaskTagSerializer(
         read_only=True,
         source='main_tag',
     )
 
-    contest = api_fields.CurrentUserPermissionsFilteredPKRF(
+    contest = api.fields.CurrentUserPermissionsFilteredPKRF(
         read_only=False,
         write_only=True,
-        queryset=api_models.Contest.objects.all(),
+        queryset=api.models.Contest.objects.all(),
         perms='change_contest',
     )
 
-    task = api_fields.CurrentUserPermissionsFilteredPKRF(
+    task = api.fields.CurrentUserPermissionsFilteredPKRF(
         read_only=False,
-        queryset=api_models.Task.objects.all(),
+        queryset=api.models.Task.objects.all(),
         perms='change_task',
-        additional_queryset=api_models.Task.objects.filter(is_published=True),
+        additional_queryset=api.models.Task.objects.filter(is_published=True),
     )
 
     class Meta:
-        model = api_models.ContestTaskRelationship
+        model = api.models.ContestTaskRelationship
         fields = (
             'contest',
             'cost',
@@ -167,7 +167,7 @@ class CTRMainSerializer(rest_serializers.ModelSerializer):
 
 class CTRUpdateSerializer(rest_serializers.ModelSerializer):
     class Meta:
-        model = api_models.ContestTaskRelationship
+        model = api.models.ContestTaskRelationship
         fields = (
             'cost',
             'id',
@@ -179,16 +179,16 @@ class CTRUpdateSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
-    tags_details = api_tasks_serializers.TaskTagSerializer(many=True, read_only=True, source='tags')
+    tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     contest_cost = rest_serializers.IntegerField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     ordering_number = rest_serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = api_models.Task
+        model = api.models.Task
         fields = (
             'author_username',
             'contest_cost',
@@ -200,10 +200,10 @@ class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.
         )
 
 
-class ContestTaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class ContestTaskViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
-    tags_details = api_tasks_serializers.TaskTagSerializer(many=True, read_only=True, source='tags')
-    files_details = api_tasks_serializers.TaskFileViewSerializer(many=True, read_only=True, source='files')
+    tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
+    files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
     can_edit_task = rest_serializers.BooleanField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
@@ -212,7 +212,7 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.Rea
     ordering_number = rest_serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = api_models.Task
+        model = api.models.Task
         fields = (
             'id',
             'author_username',
@@ -230,7 +230,7 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.Rea
 
     @staticmethod
     def get_hints_method(obj):
-        return api_models.TaskHint.objects.filter(is_published=True, task=obj).values_list('id', flat=True)
+        return api.models.TaskHint.objects.filter(is_published=True, task=obj).values_list('id', flat=True)
 
 
 class ContestFullSerializer(rest_serializers.ModelSerializer):
@@ -243,7 +243,7 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
     )
 
     class Meta:
-        model = api_models.Contest
+        model = api.models.Contest
         fields = (
             'author',
             'author_username',
@@ -271,6 +271,11 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
             },
         }
 
+    def validate_author(self, data):
+        if self.instance and data != self.instance.author:
+            raise ValidationError({'author': 'This field is immutable once set'})
+        return data
+
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user
         instance = super(ContestFullSerializer, self).create(validated_data)
@@ -280,13 +285,13 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
         return instance
 
 
-class ContestPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class ContestPreviewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMixin):
     registered_count = rest_serializers.IntegerField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     is_registered = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
-        model = api_models.Contest
+        model = api.models.Contest
         fields = (
             'author_username',
             'dynamic_scoring',
@@ -304,7 +309,7 @@ class ContestPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.Read
         )
 
 
-class ContestViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class ContestViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMixin):
     can_edit_contest = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     contest_task_relationship_details = CTRMainSerializer(
@@ -314,7 +319,7 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
     )
 
     class Meta:
-        model = api_models.Contest
+        model = api.models.Contest
         fields = (
             'author',
             'author_username',
@@ -341,17 +346,17 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
         }
 
 
-class ContestScoreboardParticipantSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class ContestScoreboardParticipantSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMixin):
     cost_sum = rest_serializers.IntegerField()
     last_contest_solve = rest_serializers.DateTimeField()
-    registered_users = api_users_serializers.UserMinimalSerializer(
+    registered_users = UserMinimalSerializer(
         many=True,
         read_only=True,
     )
     rating = rest_serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = api_models.Team
+        model = api.models.Team
         fields = (
             'cost_sum',
             'id',
@@ -363,9 +368,9 @@ class ContestScoreboardParticipantSerializer(rest_serializers.ModelSerializer, a
 
 
 class ContestScoreboardParticipantMinimalSerializer(rest_serializers.ModelSerializer,
-                                                    api_mixins.ReadOnlySerializerMixin):
+                                                    ReadOnlySerializerMixin):
     class Meta:
-        model = api_models.Team
+        model = api.models.Team
         fields = (
             'id',
             'name',
