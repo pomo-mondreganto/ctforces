@@ -1,24 +1,25 @@
 from django.db.models import Avg
+from guardian.shortcuts import assign_perm
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from api import mixins as api_mixins
-from api import models as api_models
+import api.models
 from api import pagination as api_pagination
+from api.mixins import CustomPermissionsViewSetMixin
 from api.teams import permissions as api_teams_permissions
 from api.teams import serializers as api_teams_serializers
 
 
-class TeamViewSet(api_mixins.CustomPermissionsQuerysetViewSetMixin,
-                  api_mixins.CustomPermissionsViewSetMixin,
+class TeamViewSet(CustomPermissionsViewSetMixin,
                   rest_viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = api_pagination.TeamDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api_models.Team.objects.all()
+    queryset = api.models.Team.objects.all()
 
     action_permission_classes = {
         'update': (api_teams_permissions.HasEditTeamPermission,),
@@ -27,13 +28,7 @@ class TeamViewSet(api_mixins.CustomPermissionsQuerysetViewSetMixin,
         'get_full': (api_teams_permissions.HasEditTeamPermission,),
     }
 
-    klass = api_models.Team
-
-    action_permissions_querysets = {
-        'update': 'change_team',
-        'partial_update': 'change_team',
-        'destroy': 'delete_team',
-    }
+    klass = api.models.Team
 
     def get_queryset(self):
         qs = super(TeamViewSet, self).get_queryset()
@@ -77,8 +72,54 @@ class TeamViewSet(api_mixins.CustomPermissionsQuerysetViewSetMixin,
     )
     def get_contests_history(self, request, *args, **kwargs):
         instance = self.get_object()
-        queryset = api_models.ContestParticipantRelationship.objects.filter(
+        queryset = api.models.ContestParticipantRelationship.objects.filter(
             participant=instance,
+        ).select_related(
+            'contest',
+        ).prefetch_related(
+            'registered_users',
         )
-        serializer = api_teams_serializers.TeamContestsHistorySerializer(queryset)
+
+        serializer = api_teams_serializers.TeamContestsHistorySerializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(
+        detail=True,
+        url_path='kick',
+        url_name='kick',
+        methods=['post'],
+    )
+    def kick_member(self, _request, *_args, **_kwargs):
+        team = self.get_object()
+        participant_id = self.request.data.get('participant_id')
+        try:
+            team_member = team.participants.get(id=participant_id)
+        except (api.models.User.DoesNotExist, ValueError, TypeError):
+            raise NotFound("No such team member")
+
+        if team_member == team.captain:
+            raise ValidationError({'participant_id': 'You cannot kick the captain'})
+
+        team.participants.remove(team_member)
+        team.join_token = team.gen_join_token(team.name)
+        team.save()
+
+        return Response('ok')
+
+    @action(
+        detail=True,
+        url_path='join',
+        url_name='join',
+        methods=['post'],
+    )
+    def join_team(self, _request, *_args, **_kwargs):
+        team = self.get_object()
+        token = self.request.data.get('join_token')
+
+        if token != team.join_token:
+            raise ValidationError({'join_token': 'Invalid token'})
+
+        team.participants.add(self.request.user)
+        assign_perm('register_team', self.request.user, team)
+
+        return Response('ok')

@@ -1,3 +1,5 @@
+import secrets
+
 from celery import current_app
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -79,7 +81,7 @@ class User(AbstractUser):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=255, null=False, blank=False)
+    name = models.CharField(max_length=50, null=False, blank=False)
     join_token = models.CharField(max_length=255, null=False, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -95,6 +97,10 @@ class Team(models.Model):
         related_name='teams',
         blank=True,
     )
+
+    @staticmethod
+    def gen_join_token(name):
+        return f'{name}:{secrets.token_hex(16)}'
 
     class Meta:
         ordering = ('id',)
