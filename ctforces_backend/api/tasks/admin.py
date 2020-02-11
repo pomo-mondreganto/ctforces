@@ -193,3 +193,31 @@ class TaskFileFullAdmin(GuardedModelAdmin):
 
     readonly_fields = ('upload_time',)
     raw_id_fields = ('owner',)
+
+
+class TaskTagAdmin(GuardedModelAdmin):
+    model = api_models.TaskTag
+
+    list_display = (
+        'id',
+        'name',
+    )
+
+    list_display_links = (
+        'id',
+        'name',
+    )
+
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'name',
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = ('id',)

@@ -136,7 +136,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         if self.request.user.has_perm('api.change_task', instance):
             raise rest_serializers.ValidationError(
                 {
-                    'flag': 'You cannot submit that task',
+                    'flag': 'You cannot submit this task',
                 },
             )
 

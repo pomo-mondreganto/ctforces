@@ -494,7 +494,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         task = self.get_object()
 
         if self.request.user.has_perm('api.change_task', task):
-            raise ValidationError({'flag': 'You cannot submit that task'})
+            raise ValidationError({'flag': 'You cannot submit this task'})
 
         contest = self.get_contest()
         team = self.get_participating_team(contest)

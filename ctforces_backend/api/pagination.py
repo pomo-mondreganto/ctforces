@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 
 class PageNumberWithPageSizePagination(PageNumberPagination):
-    page_query_param = 'page_size'
+    page_size_query_param = 'page_size'
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
