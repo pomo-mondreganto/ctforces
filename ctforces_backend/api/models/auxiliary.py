@@ -1,15 +1,90 @@
 import os
+import re
 import uuid
 from io import BytesIO
 
 from PIL import Image
 from django.conf import settings
+from django.contrib.auth.models import UserManager
+from django.core import validators
 from django.core.exceptions import ValidationError
-from django.db.models import FileField
+from django.db import models
+from django.db.models import Sum, Q, Value as V, FileField, F, Count
+from django.db.models.functions import Coalesce, Greatest, Ceil
 from django.utils.deconstruct import deconstructible
 from rest_framework import exceptions
 
 from api.celery_tasks import process_stdimage
+
+
+@deconstructible
+class CustomASCIIUsernameValidator(validators.RegexValidator):
+    regex = r'^[\w_-]{5,25}$'
+    message = (
+        'Username needs to contain from 5 to 25 English letters, '
+        'numbers, and -/_ characters'
+    )
+    flags = re.ASCII
+
+
+@deconstructible
+class TagNameValidator(validators.RegexValidator):
+    regex = '^[a-z0-9]+(-[a-z0-9]+)*[a-z0-9]+$'
+    message = 'Name must consist of words (lowercase letters and digits), divided my single dash'
+
+
+class UserUpsolvingAnnotatedManager(UserManager):
+    def get_queryset(self):
+        return super(UserUpsolvingAnnotatedManager, self).get_queryset().annotate(
+            cost_sum=Coalesce(
+                Sum(
+                    'solved_tasks__cost',
+                    filter=Q(solved_tasks__show_on_main_page=True),
+                ),
+                V(0),
+            )
+        )
+
+
+class CTRCurrentCostManager(models.Manager):
+    def __init__(self, dynamic):
+        super(CTRCurrentCostManager, self).__init__()
+        self.dynamic = dynamic
+
+    def get_queryset(self):
+        qs = super(CTRCurrentCostManager, self).get_queryset()
+        if self.dynamic:
+            qs = qs.annotate(
+                solved_count=Coalesce(
+                    Count(
+                        'solved_by',
+                        distinct=True,
+                    ),
+                    V(0),
+                ),
+                current_cost=Greatest(
+                    Ceil(
+                        (F('min_cost') - F('max_cost')) /
+                        (F('decay_value') * F('decay_value')) *
+                        (F('solved_count') * F('solved_count')) +
+                        F('max_cost')
+                    ),
+                    F('min_cost'),
+                ),
+            )
+        else:
+            qs = qs.annotate(
+                solved_count=Coalesce(
+                    Count(
+                        'solved_by',
+                        distinct=True,
+                    ),
+                    V(0),
+                ),
+                current_cost=F('cost'),
+            )
+
+        return qs
 
 
 @deconstructible

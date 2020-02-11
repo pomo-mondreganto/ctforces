@@ -1,5 +1,6 @@
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
+from rest_framework.exceptions import ValidationError
 
 from api import models as api_models
 
@@ -35,6 +36,11 @@ class PostMainSerializer(rest_serializers.ModelSerializer):
                 'write_only': True,
             },
         }
+
+    def validate_author(self, data):
+        if self.instance and data != self.instance.author:
+            raise ValidationError({'author': 'This field is immutable once set'})
+        return data
 
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user

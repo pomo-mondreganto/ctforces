@@ -48,7 +48,7 @@ class TaskFileInlineAdmin(admin.TabularInline):
     raw_id_fields = ('owner',)
 
 
-class CustomTaskAdmin(GuardedModelAdmin):
+class TaskAdmin(GuardedModelAdmin):
     inlines = (TaskHintInlineAdmin, TaskFileInlineAdmin)
     list_display = (
         'id',
@@ -127,7 +127,7 @@ class CustomTaskAdmin(GuardedModelAdmin):
         return obj.solved_count
 
     def get_queryset(self, request):
-        return super(CustomTaskAdmin, self).get_queryset(request).annotate(
+        return super(TaskAdmin, self).get_queryset(request).annotate(
             solved_count=Count('solved_by')
         ).select_related('author')
 

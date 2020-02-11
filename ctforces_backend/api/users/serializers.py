@@ -132,6 +132,19 @@ class UserBasicSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlyS
             self.fields.pop('personal_info')
 
 
+class UserMinimalSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+    cost_sum = rest_serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = api_models.User
+        fields = (
+            'cost_sum',
+            'id',
+            'rating',
+            'username',
+        )
+
+
 class UserMainSerializer(rest_serializers.ModelSerializer):
     cost_sum = rest_serializers.IntegerField(read_only=True)
     avatar_main = rest_serializers.URLField(source='avatar.main.url', read_only=True)

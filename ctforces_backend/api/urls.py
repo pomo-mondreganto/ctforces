@@ -5,16 +5,19 @@ from rest_framework_nested.routers import NestedSimpleRouter
 from api.contests import views as api_contests_views
 from api.posts import views as api_posts_views
 from api.tasks import views as api_tasks_views
+from api.teams import views as api_teams_views
 from api.users import views as api_users_views
 
 router = SimpleRouter()
 router.register('users', api_users_views.UserViewSet)
+router.register('teams', api_teams_views.TeamViewSet)
 router.register('tasks', api_tasks_views.TaskViewSet)
 router.register('task_tags', api_tasks_views.TaskTagViewSet)
 router.register('task_files', api_tasks_views.TaskFileViewSet, basename='task_files')
 router.register('task_hints', api_tasks_views.TaskHintViewSet)
 router.register('posts', api_posts_views.PostViewSet)
 router.register('contests', api_contests_views.ContestViewSet)
+router.register('contest_participant_relationship', api_contests_views.ContestParticipantRelationshipViewSet)
 router.register('contest_task_relationship', api_contests_views.ContestTaskRelationshipViewSet)
 
 contests_router = NestedSimpleRouter(router, 'contests', lookup='contest')

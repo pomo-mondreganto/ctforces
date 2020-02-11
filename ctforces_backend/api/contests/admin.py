@@ -3,12 +3,12 @@ from django.db.models import Value as V, Count
 from django.db.models.functions import Coalesce
 from guardian.admin import GuardedModelAdmin
 
-from api import models as api_models
+import api.models
 
 
 class ContestTaskInlineAdmin(admin.TabularInline):
     classes = ('collapse',)
-    model = api_models.ContestTaskRelationship
+    model = api.models.ContestTaskRelationship
     fieldsets = (
         (
             'Main info',
@@ -64,7 +64,7 @@ class ContestTaskInlineAdmin(admin.TabularInline):
 
 
 class ContestParticipantInlineAdmin(admin.TabularInline):
-    model = api_models.ContestParticipantRelationship
+    model = api.models.ContestParticipantRelationship
     classes = ('collapse',)
     fieldsets = (
         (
@@ -74,6 +74,7 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
                     'id',
                     'participant',
                     'last_solve',
+                    'registered_users',
                 ),
             },
         ),
@@ -85,10 +86,11 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
 
     raw_id_fields = (
         'participant',
+        'registered_users',
     )
 
 
-class CustomContestAdmin(GuardedModelAdmin):
+class ContestAdmin(GuardedModelAdmin):
     inlines = (
         ContestTaskInlineAdmin,
         ContestParticipantInlineAdmin,
@@ -181,7 +183,7 @@ class CustomContestAdmin(GuardedModelAdmin):
         return obj.registered_count
 
     def get_queryset(self, request):
-        return super(CustomContestAdmin, self).get_queryset(request).annotate(
+        return super(ContestAdmin, self).get_queryset(request).annotate(
             registered_count=Count('participants', distinct=True),
         ).prefetch_related('tasks', 'participants')
 
