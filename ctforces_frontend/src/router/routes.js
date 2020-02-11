@@ -11,6 +11,10 @@ import Upsolving from '@/views/Users/Upsolving/Index';
 
 import Profile from '@/views/Users/Profile/Index';
 import ProfileMain from '@/views/Users/Profile/Index/Index';
+import ProfileSettings from '@/views/Users/Profile/Settings/Index';
+
+import UserBlog from '@/views/Users/Blog/Index';
+import PostIndex from '@/views/Posts/Index/Index';
 
 const routes = [
     {
@@ -69,9 +73,19 @@ const routes = [
             {
                 name: 'settings',
                 path: 'settings',
-                component: ProfileMain,
+                component: ProfileSettings,
+            },
+            {
+                name: 'blog',
+                path: 'blog',
+                component: UserBlog,
             },
         ],
+    },
+    {
+        path: '/posts/:id',
+        name: 'post_index',
+        component: PostIndex,
     },
 ];
 
