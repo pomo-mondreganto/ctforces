@@ -1,8 +1,6 @@
 <template>
-    <div>
-        <div class="inside">
-            <slot />
-        </div>
+    <div class="inside">
+        <slot />
     </div>
 </template>
 

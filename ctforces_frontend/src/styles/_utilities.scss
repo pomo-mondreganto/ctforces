@@ -151,3 +151,12 @@
 .mt-5 {
     margin-top: 5em;
 }
+
+.link {
+    color: blue;
+    cursor: pointer;
+}
+
+.link:hover {
+    text-decoration: underline;
+}

@@ -48,8 +48,6 @@ import FInput from '@/components/Form/Input';
 import FHeader from '@/components/Form/Header';
 import FDetail from '@/components/Form/Detail';
 
-import parse from '@/utils/errorParser';
-
 export default {
     components: {
         FInput,
@@ -75,7 +73,7 @@ export default {
                 });
                 this.$router.push({ name: 'login' });
             } catch (error) {
-                this.errors = parse(error.response.data);
+                this.errors = this.$parse(error.response.data);
             }
         },
     },

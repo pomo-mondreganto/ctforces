@@ -1,7 +1,7 @@
 <template>
     <card>
-        <f-header text="Tasks" v-if="!isNull(tasks)" />
-        <div class="mt-1" v-if="!isNull(tasks)">
+        <f-header text="Tasks" v-if="!$types.isNull(tasks)" />
+        <div class="mt-1" v-if="!$types.isNull(tasks)">
             <f-table
                 :fields="[
                     { name: '#', pos: 'c' },
@@ -36,11 +36,9 @@ import Card from '@/components/Card/Index';
 import FHeader from '@/components/Form/Header';
 import FTable from '@/components/Table/Index';
 import FDetail from '@/components/Form/Detail';
-import { isNull } from '@/utils/types';
 import Tags from './TaskTags';
 import TaskLink from './TaskLink';
 import TaskSolvedLink from './TaskSolvedLink';
-import parse from '@/utils/errorParser';
 
 export default {
     components: {
@@ -48,10 +46,6 @@ export default {
         FHeader,
         FTable,
         FDetail,
-    },
-    methods: {
-        isNull,
-        parse,
     },
     data: function() {
         return {
@@ -70,7 +64,7 @@ export default {
                 return { '#': index, ...row };
             });
         } catch (error) {
-            this.errors = parse(error.response.data);
+            this.errors = this.$parse(error.response.data);
         }
     },
 };

@@ -1,6 +1,6 @@
 <template>
     <button
-        v-if="isNull(user)"
+        v-if="$types.isNull(user)"
         @click="registerRedirect"
         class="btn register-button"
     >
@@ -13,7 +13,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { isNull } from '@/utils/types';
 
 export default {
     computed: mapState(['user']),
@@ -32,7 +31,6 @@ export default {
                 });
             }
         },
-        isNull,
     },
 };
 </script>

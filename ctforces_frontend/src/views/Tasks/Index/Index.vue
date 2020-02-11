@@ -1,6 +1,6 @@
 <template>
     <card>
-        <div v-if="!isNull(task)">
+        <div v-if="!$types.isNull(task)">
             <h1 class="header">
                 {{ task.name }}
             </h1>
@@ -58,14 +58,12 @@
 
 <script>
 import Card from '@/components/Card/Index';
-import { isNull, isUndefined } from '@/utils/types';
 import User from '@/components/User/Index';
 import Tag from '@/components/Tag/Index';
 import { mediaUrl } from '@/config';
 import Markdown from '@/components/Markdown/Index';
 import FInput from '@/components/Form/Input';
 import FDetail from '@/components/Form/Detail';
-import parse from '@/utils/errorParser';
 
 export default {
     components: {
@@ -82,7 +80,7 @@ export default {
             const r = await this.$http.get(`/tasks/${id}`);
             this.task = r.data;
         } catch (error) {
-            this.errors = parse(error.response.data);
+            this.errors = this.$parse(error.response.data);
         }
     },
     data: function() {
@@ -94,7 +92,6 @@ export default {
         };
     },
     methods: {
-        isNull,
         submit: async function() {
             const { id } = this.$route.params;
             try {
@@ -103,9 +100,9 @@ export default {
                 });
                 this.$toasted.success('Valid flag!');
             } catch (error) {
-                this.errors = parse(error.response.data);
+                this.errors = this.$parse(error.response.data);
                 if (
-                    !isUndefined(this.errors['flag']) &&
+                    !this.$types.isUndefined(this.errors['flag']) &&
                     this.errors['flag'].length > 0 &&
                     this.errors['flag'][0] === 'Invalid flag.'
                 ) {

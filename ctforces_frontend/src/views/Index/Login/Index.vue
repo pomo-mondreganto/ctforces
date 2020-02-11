@@ -36,9 +36,6 @@ import FInput from '@/components/Form/Input';
 import FHeader from '@/components/Form/Header';
 import FDetail from '@/components/Form/Detail';
 
-import parse from '@/utils/errorParser';
-import { isUndefined } from '@/utils/types';
-
 export default {
     components: {
         FInput,
@@ -62,13 +59,13 @@ export default {
                 });
                 await this.$store.dispatch('UPDATE_USER');
 
-                if (!isUndefined(this.$route.query.redirect)) {
+                if (!this.$types.isUndefined(this.$route.query.redirect)) {
                     this.$router.push({ name: this.$route.query.redirect });
                 } else {
                     this.$router.push({ name: 'index' });
                 }
             } catch (error) {
-                this.errors = parse(error.response.data);
+                this.errors = this.$parse(error.response.data);
             }
         },
     },

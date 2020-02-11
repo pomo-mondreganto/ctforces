@@ -1,5 +1,9 @@
 <template>
-    <button v-if="isNull(user)" @click="loginRedirect" class="btn login-button">
+    <button
+        v-if="$types.isNull(user)"
+        @click="loginRedirect"
+        class="btn login-button"
+    >
         Login
     </button>
     <button v-else class="btn profile-button" @click="go(user.username)">
@@ -9,7 +13,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { isNull } from '@/utils/types';
 
 export default {
     computed: mapState(['user']),
@@ -20,7 +23,6 @@ export default {
         go: function(username) {
             this.$router.push({ name: 'profile', params: { username } });
         },
-        isNull,
     },
 };
 </script>

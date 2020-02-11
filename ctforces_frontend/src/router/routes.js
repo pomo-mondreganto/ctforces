@@ -9,7 +9,8 @@ import TaskCreate from '@/views/Tasks/Create/Index';
 import Rating from '@/views/Users/Rating/Index';
 import Upsolving from '@/views/Users/Upsolving/Index';
 
-import Profile from '@/views/Users/Profile/Index/Index';
+import Profile from '@/views/Users/Profile/Index';
+import ProfileMain from '@/views/Users/Profile/Index/Index';
 
 const routes = [
     {
@@ -57,8 +58,20 @@ const routes = [
     },
     {
         path: '/users/:username',
-        name: 'profile',
         component: Profile,
+
+        children: [
+            {
+                name: 'profile',
+                path: '',
+                component: ProfileMain,
+            },
+            {
+                name: 'settings',
+                path: 'settings',
+                component: ProfileMain,
+            },
+        ],
     },
 ];
 

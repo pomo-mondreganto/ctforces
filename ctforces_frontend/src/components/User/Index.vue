@@ -1,17 +1,19 @@
 <template>
-    <span :class="getClass(rating)" @click="go(username)">{{ username }}</span>
+    <span :class="getInfo(rating).class" class="user" @click="go(username)">{{
+        username
+    }}</span>
 </template>
 
 <script>
+import getInfo from '@/utils/rating';
+
 export default {
     props: {
         username: String,
         rating: Number,
     },
     methods: {
-        getClass: function() {
-            return ['red', 'user'];
-        },
+        getInfo,
         go: function() {
             this.$router
                 .push({
@@ -27,9 +29,5 @@ export default {
 <style lang="scss" scoped>
 .user {
     cursor: pointer;
-}
-
-.red {
-    color: $red;
 }
 </style>

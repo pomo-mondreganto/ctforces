@@ -7,18 +7,13 @@
 </template>
 
 <script>
-import { isArray } from '@/utils/types';
-
 export default {
     props: {
         errors: Array,
     },
-    methods: {
-        isArray,
-    },
     computed: {
         invalid: function() {
-            return isArray(this.errors) && this.errors.length > 0;
+            return this.$types.isArray(this.errors) && this.errors.length > 0;
         },
     },
 };

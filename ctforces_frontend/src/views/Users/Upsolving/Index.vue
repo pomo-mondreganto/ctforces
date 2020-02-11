@@ -1,7 +1,7 @@
 <template>
     <card>
-        <f-header text="Upsolving" v-if="!isNull(users)" />
-        <div class="mt-1" v-if="!isNull(users)">
+        <f-header text="Upsolving" v-if="!$types.isNull(users)" />
+        <div class="mt-1" v-if="!$types.isNull(users)">
             <f-table
                 :fields="[
                     {
@@ -16,9 +16,9 @@
                         comp: UserComp,
                     },
                     {
-                        name: 'Rating',
+                        name: 'Upsolving',
                         pos: 'c',
-                        key: 'rating',
+                        key: 'cost_sum',
                         grow: 3,
                     },
                 ]"
@@ -36,18 +36,12 @@ import FTable from '@/components/Table/Index';
 import FDetail from '@/components/Form/Detail';
 import User from '@/components/Table/User';
 
-import { isNull } from '@/utils/types';
-import parse from '@/utils/errorParser';
-
 export default {
     components: {
         Card,
         FHeader,
         FTable,
         FDetail,
-    },
-    methods: {
-        isNull,
     },
     data: function() {
         return {
@@ -69,7 +63,7 @@ export default {
                 };
             });
         } catch (error) {
-            this.errors = parse(error.response.data);
+            this.errors = this.$parse(error.response.data);
         }
     },
 };

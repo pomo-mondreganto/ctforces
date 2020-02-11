@@ -1,5 +1,5 @@
 <template>
-    <router-link :to="url">{{ row[fieldName] }}</router-link>
+    <div class="link" @click="go()">{{ row[fieldName] }}</div>
 </template>
 
 <script>
@@ -8,9 +8,9 @@ export default {
         fieldName: String,
         row: Object,
     },
-    computed: {
-        url: function() {
-            return `/tasks/${this.row.id}/solved`;
+    methods: {
+        go: function() {
+            this.$router.push({ name: 'index' }).catch(() => {});
         },
     },
 };
