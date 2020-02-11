@@ -5,6 +5,7 @@ import Register from '@/views/Index/Register/Index';
 import TaskList from '@/views/Tasks/List/Index';
 import TaskIndex from '@/views/Tasks/Index/Index';
 import TaskCreate from '@/views/Tasks/Create/Index';
+import TaskEdit from '@/views/Tasks/Edit/Index';
 
 import Rating from '@/views/Users/Rating/Index';
 import Upsolving from '@/views/Users/Upsolving/Index';
@@ -41,6 +42,14 @@ const routes = [
         path: '/tasks/create/',
         name: 'task_create',
         component: TaskCreate,
+        meta: {
+            auth: true,
+        },
+    },
+    {
+        path: '/tasks/:id/edit/',
+        name: 'task_edit',
+        component: TaskEdit,
         meta: {
             auth: true,
         },
