@@ -69,7 +69,7 @@ class User(AbstractUser):
 
     @cached_property
     def is_admin(self):
-        return self.groups.filter(name=settings.ADMIN_GROUP_NAME).exists()
+        return self.is_superuser or self.groups.filter(name=settings.ADMIN_GROUP_NAME).exists()
 
     class Meta:
         ordering = ('id',)
