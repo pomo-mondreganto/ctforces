@@ -59,7 +59,7 @@ class User(AbstractUser):
 
     upsolving_annotated = UserUpsolvingAnnotatedManager()
 
-    telegram = models.CharField(max_length=255, blank=True)
+    telegram = models.CharField(max_length=255, blank=False, null=False, default="")
     hide_personal_info = models.BooleanField(default=False)
     personal_info = NestedProxyField(
         'first_name',
@@ -69,7 +69,7 @@ class User(AbstractUser):
 
     @cached_property
     def is_admin(self):
-        return self.groups.filter(name=settings.ADMIN_GROUP_NAME).exists()
+        return self.is_superuser or self.groups.filter(name=settings.ADMIN_GROUP_NAME).exists()
 
     class Meta:
         ordering = ('id',)

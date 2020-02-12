@@ -1,4 +1,4 @@
-from django.db.models import Count, Exists, OuterRef
+from django.db.models import Count, Exists, OuterRef, Q
 from django.utils import timezone
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import mixins as rest_mixins
@@ -45,8 +45,9 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
     def get_queryset(self):
         queryset = super(TaskViewSet, self).get_queryset()
+        queryset = queryset.prefetch_related('tags').select_related('author')
 
-        if self.action == 'list' or self.action == 'search_by_tag':
+        if self.action == 'list' or self.action == 'search_task':
             queryset = queryset.filter(show_on_main_page=True)
 
         if self.action == 'retrieve' or self.action == 'get_full_task':
@@ -63,7 +64,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
                     solved_by__id=self.request.user.id or -1,
                 )
             ),
-        ).prefetch_related('tags')
+        )
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -80,13 +81,17 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
     @action(
         detail=False,
-        url_path='search_tag',
-        url_name='search_tag',
+        url_path='search',
+        url_name='search',
         methods=['get']
     )
-    def search_by_tag(self, request, *_args, **_kwargs):
-        tag_name = request.query_params.get('name', '')
-        tasks = self.get_queryset().filter(tags__name=tag_name)
+    def search_task(self, request, *_args, **_kwargs):
+        search_q = request.query_params.get('q', '')
+        tasks = self.get_queryset().filter(
+            Q(tags__name__icontains=search_q) |
+            Q(name__icontains=search_q) |
+            Q(author__name__icontains=search_q)
+        )
 
         return api_pagination.get_paginated_response(
             paginator=api_pagination.TaskDefaultPagination(),
