@@ -43,6 +43,8 @@ export default {
         display: flex;
         flex-flow: row nowrap;
 
+        align-items: flex-start;
+
         & > :nth-child(1) {
             flex: 2.2 1 0;
             margin-right: 3em;

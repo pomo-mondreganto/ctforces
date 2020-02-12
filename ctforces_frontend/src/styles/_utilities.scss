@@ -3,6 +3,10 @@
     margin-top: 0.5em;
 }
 
+.sidebar-header {
+    font-size: 1.2em;
+}
+
 .hr {
     border-bottom: 1px solid $gray;
 }
@@ -168,4 +172,8 @@
 
 .link:hover {
     text-decoration: underline;
+}
+
+.mb-2 {
+    margin-bottom: 2em;
 }
