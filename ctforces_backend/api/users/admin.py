@@ -52,6 +52,8 @@ class CustomUserAdmin(UserAdmin):
                 'fields': (
                     'first_name',
                     'last_name',
+                    'telegram',
+                    'hide_personal_info',
                 ),
             }
         ),

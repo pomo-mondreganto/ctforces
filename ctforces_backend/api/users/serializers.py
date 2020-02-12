@@ -99,6 +99,7 @@ class UserPersonalInfoSerializer(rest_serializers.ModelSerializer):
         fields = (
             'first_name',
             'last_name',
+            'telegram',
         )
         nested_proxy_field = True
 
