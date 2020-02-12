@@ -2,12 +2,13 @@
     <div class="group">
         <input
             v-bind="$attrs"
-            :value="value"
-            @input="$emit('input', $event.target.value)"
-            :class="['input', !value ? '' : 'non-empty']"
+            @input="$emit('input', $event.target.checked)"
+            class="input"
+            type="checkbox"
+            :checked="value"
             :invalid="invalid"
         />
-        <label class="label">{{ placeholder }}</label>
+        <label class="label">{{ label }}</label>
         <div v-if="invalid">
             <div v-for="error of errors" :key="error" class="error">
                 {{ error }}
@@ -19,8 +20,8 @@
 <script>
 export default {
     props: {
-        placeholder: String,
-        value: String,
+        label: String,
+        value: Boolean,
         errors: Array,
     },
     computed: {
@@ -32,12 +33,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$height-input: 2.6em;
-$height-label: 1em;
+$height-input: 1.5em;
+$height-label: 0.9em;
 $border: 0.05em;
 
 .group {
-    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 0.2em;
 }
 
 .input {
@@ -46,38 +50,21 @@ $border: 0.05em;
     font-family: inherit;
     font-size: $height-label;
     height: $height-input * (1em / $height-label);
-    padding-left: 0.4em;
     border: $border * (1em / $height-label) solid $darklight;
     border-radius: (1em / $height-label) * 0.3em;
-
-    &:focus {
-        border-color: $bluelight;
-    }
 
     &[invalid] {
         border-color: $reddanger;
     }
+}
 
-    &:focus + .label,
-    &.non-empty + .label {
-        font-size: 85%;
-        top: -1em;
-        left: 0;
-        color: rgba($black, 1);
-    }
-
-    width: calc(100% - 0.4em - #{$border * (1em / $height-label)});
+.input[type='checkbox'] {
+    display: flex;
 }
 
 .label {
-    position: absolute;
-    font-size: $height-label;
-    padding-left: 0.3em;
-    top: (1em / $height-label) * ($height-input + 2 * $border) / 2 - 0.5em;
-    left: 0.4em;
-    transition: all 200ms;
-    color: rgba($black, 0.5);
-    pointer-events: none;
+    display: flex;
+    padding-left: 0.5em;
 }
 
 .error {

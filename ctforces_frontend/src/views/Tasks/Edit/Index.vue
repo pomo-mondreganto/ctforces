@@ -1,7 +1,7 @@
 <template>
     <card>
-        <f-header header text="Create task"></f-header>
-        <form class="def-form mt-2" @submit.prevent="createTask">
+        <f-header header text="Update task"></f-header>
+        <form class="def-form mt-2" @submit.prevent="updateTask">
             <div class="ff">
                 <f-input
                     class="mt-1-5"
@@ -86,7 +86,7 @@
                 </div>
             </div>
             <div class="ff">
-                <input type="submit" value="Create" class="btn" />
+                <input type="submit" value="Update" class="btn" />
             </div>
         </form>
     </card>
@@ -154,6 +154,24 @@ export default {
             autocompleteTags: [],
         };
     },
+    created: async function() {
+        try {
+            const resp = await this.$http.get(
+                `/tasks/${this.$route.params.id}/full/`
+            );
+            this.name = resp.data.name;
+            this.description = resp.data.description;
+            this.cost = String(resp.data.cost);
+            this.flag = resp.data.flag;
+            this.is_published = resp.data.is_published;
+            this.attachedFiles = resp.data.files_details;
+            this.tags = resp.data.task_tags_details.map(tag => {
+                return { text: tag.name };
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    },
     methods: {
         tagsChanged(newTags) {
             this.tags = newTags;
@@ -161,6 +179,10 @@ export default {
         createFiles: async function() {
             let fileIds = [];
             for await (const file of this.attachedFiles) {
+                if (file.id !== undefined) {
+                    fileIds.push(file.id);
+                    continue;
+                }
                 let form = new FormData();
                 form.set('name', file.name);
                 form.append('file_field', file);
@@ -178,9 +200,10 @@ export default {
                         'files',
                         error.response.data['file_field']
                     );
+                    return { ok: false };
                 }
             }
-            return fileIds;
+            return { ok: true, ids: fileIds };
         },
         createTags: async function() {
             let tagIds = [];
@@ -203,28 +226,38 @@ export default {
                 resp.data.forEach(tag => tagIds.push(tag.id));
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
+                return { ok: false };
             }
 
-            return tagIds;
+            return { ok: true, ids: tagIds };
         },
-        createTask: async function() {
+        updateTask: async function() {
             if (this.attachedFiles.length > 5) {
                 this.errors['files'] = '5 files at most';
                 return;
             }
-            const fileIds = await this.createFiles();
-            const tagIds = await this.createTags();
+            const { ok: ok1, ids: fileIds } = await this.createFiles();
+            if (!ok1) {
+                return;
+            }
+            const { ok: ok2, ids: tagIds } = await this.createTags();
+            if (!ok2) {
+                return;
+            }
             try {
-                const resp = await this.$http.post('/tasks/', {
-                    name: this.name,
-                    cost: this.cost,
-                    flag: this.flag,
-                    description: this.description,
-                    is_published: this.is_published,
-                    files: fileIds,
-                    tags: tagIds,
-                    hints: [],
-                });
+                const resp = await this.$http.put(
+                    `/tasks/${this.$route.params.id}/`,
+                    {
+                        name: this.name,
+                        cost: this.cost,
+                        flag: this.flag,
+                        description: this.description,
+                        is_published: this.is_published,
+                        files: fileIds,
+                        tags: tagIds,
+                        hints: [],
+                    }
+                );
                 this.$router
                     .push({
                         name: 'task_index',
