@@ -10,7 +10,7 @@
                 :rating="task.author_rating"
             />
         </div>
-        <div class="tags mt-1">
+        <div class="tags mt-1 mb-1">
             <span class="tags-h">Tags:</span>
             <tag v-for="tag in task.tags_details" :key="tag.id">{{
                 tag.name
@@ -87,7 +87,6 @@ export default {
 
 <style lang="scss" scoped>
 .tags {
-    margin-bottom: 1em;
     display: flex;
     flex-flow: row wrap;
     align-items: center;

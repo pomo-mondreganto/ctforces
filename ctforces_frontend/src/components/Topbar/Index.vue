@@ -1,6 +1,6 @@
 <template>
     <div class="menu">
-        <div class="logo vc" @click="indexRedirect">CTForces</div>
+        <div class="logo vc ml-0-5" @click="indexRedirect">CTForces</div>
         <div class="navigation vc">
             <nav-button to="index" text="Home" />
             <nav-button to="contest_list" text="Contests" />
@@ -8,7 +8,7 @@
             <nav-button to="upsolving" text="Upsolving" />
             <nav-button to="rating" text="Rating" />
         </div>
-        <div class="logreg vc">
+        <div class="logreg vc mr-0-5">
             <login-button />
             <register-button />
         </div>
@@ -46,7 +46,6 @@ export default {
 .logo {
     color: $black;
     font-size: 1.5em;
-    margin-left: 0.5em;
     flex-grow: 2;
     flex-basis: 0;
     padding: 0.3em;
@@ -62,7 +61,5 @@ export default {
     display: flex;
     flex-grow: 3;
     flex-basis: 0;
-
-    margin-right: 0.5em;
 }
 </style>

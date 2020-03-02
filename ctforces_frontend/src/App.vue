@@ -20,4 +20,5 @@ export default {
 <style lang="scss">
 @import './styles/main.scss';
 @import '~simplemde/dist/simplemde.min.css';
+@import '~vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
 </style>

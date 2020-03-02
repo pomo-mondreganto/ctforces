@@ -20,6 +20,7 @@
                     },
                     {
                         name: 'Solved',
+                        grow: 2,
                         key: 'solved_count',
                         comp: TaskSolvedLinkComp,
                     },

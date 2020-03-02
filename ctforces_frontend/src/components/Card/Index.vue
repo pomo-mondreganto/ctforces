@@ -1,5 +1,5 @@
 <template>
-    <div class="inside">
+    <div class="inside p-1">
         <slot />
     </div>
 </template>
@@ -8,6 +8,5 @@
 .inside {
     border: 0.05em solid rgba($darklight, 0.5);
     border-radius: 0.4em;
-    padding: 1em;
 }
 </style>

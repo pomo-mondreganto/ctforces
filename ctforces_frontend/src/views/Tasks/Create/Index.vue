@@ -81,7 +81,7 @@
                 >
                     Remove
                 </div>
-                <div class="file-list-name">
+                <div class="file-list-name pl-0-5">
                     {{ file.name }}
                 </div>
             </div>
@@ -109,7 +109,6 @@
 }
 
 .file-list-name {
-    padding-left: 0.5em;
     display: flex;
     flex: 0 0 100em;
 }

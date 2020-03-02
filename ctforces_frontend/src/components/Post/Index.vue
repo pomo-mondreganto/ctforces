@@ -12,7 +12,7 @@
         </div>
         <div class="hr mt-1" />
         <div class="content mt-1">
-            <div class="markdown">
+            <div class="markdown ml-1 p-1">
                 <markdown :content="post.body" />
             </div>
         </div>
@@ -44,11 +44,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.markdown {
-    margin-left: 1em;
-    padding: 1em;
-}
-
 .content {
     border-left: 0.3em solid $gray;
 }

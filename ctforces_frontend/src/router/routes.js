@@ -7,6 +7,8 @@ import TaskIndex from '@/views/Tasks/Index/Index';
 import TaskCreate from '@/views/Tasks/Create/Index';
 import TaskEdit from '@/views/Tasks/Edit/Index';
 
+import ContestCreate from '@/views/Contests/Create/Index';
+
 import Rating from '@/views/Users/Rating/Index';
 import Upsolving from '@/views/Users/Upsolving/Index';
 
@@ -60,6 +62,14 @@ const routes = [
         component: TaskIndex,
     },
     {
+        path: '/contests/create/',
+        name: 'contest_create',
+        component: ContestCreate,
+        meta: {
+            auth: true,
+        },
+    },
+    {
         path: '/rating/',
         name: 'rating',
         component: Rating,
@@ -83,6 +93,9 @@ const routes = [
                 name: 'settings',
                 path: 'settings',
                 component: ProfileSettings,
+                meta: {
+                    auth: true,
+                },
             },
             {
                 name: 'blog',

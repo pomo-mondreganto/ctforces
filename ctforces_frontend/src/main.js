@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Fragment from 'vue-fragment';
 import Toasted from 'vue-toasted';
 import VueSimplemde from 'vue-simplemde';
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -64,6 +65,7 @@ Vue.use(Toasted, {
 });
 
 Vue.component('vue-simplemde', VueSimplemde);
+Vue.component('datetime', VueCtkDateTimePicker);
 
 new Vue({
     router,

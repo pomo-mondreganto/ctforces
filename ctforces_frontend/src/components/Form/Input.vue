@@ -40,6 +40,10 @@ $border: 0.05em;
     position: relative;
 }
 
+.input:disabled {
+    background-color: $gray;
+}
+
 .input {
     padding: 0;
     outline: none;
