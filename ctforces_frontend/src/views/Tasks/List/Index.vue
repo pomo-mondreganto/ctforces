@@ -29,6 +29,7 @@
             />
         </div>
         <f-detail :errors="errors['detail']" />
+        <pagination :count="count" :pagesize="pagesize" />
     </card>
 </template>
 
@@ -40,6 +41,7 @@ import FDetail from '@/components/Form/Detail';
 import Tags from './TaskTags';
 import TaskLink from './TaskLink';
 import TaskSolvedLink from './TaskSolvedLink';
+import Pagination from '@/components/Pagination/Index';
 
 export default {
     components: {
@@ -47,7 +49,9 @@ export default {
         FHeader,
         FTable,
         FDetail,
+        Pagination,
     },
+
     data: function() {
         return {
             tasks: null,
@@ -55,18 +59,36 @@ export default {
             TaskLinkComp: TaskLink,
             TaskSolvedLinkComp: TaskSolvedLink,
             errors: {},
+            count: null,
+            pagesize: 30,
         };
     },
+
     created: async function() {
-        const { page = 1 } = this.$route;
-        try {
-            const r = await this.$http.get(`/tasks/?page=${page}`);
-            this.tasks = r.data.results.map((row, index) => {
-                return { '#': index, ...row };
-            });
-        } catch (error) {
-            this.errors = this.$parse(error.response.data);
-        }
+        await this.fetchTasks();
+    },
+
+    watch: {
+        async $route() {
+            await this.fetchTasks();
+        },
+    },
+
+    methods: {
+        fetchTasks: async function() {
+            const { page = 1 } = this.$route.query;
+            try {
+                const r = await this.$http.get(
+                    `/tasks/?page=${page}&page_size=${this.pagesize}`
+                );
+                this.tasks = r.data.results.map((row, index) => {
+                    return { '#': index, ...row };
+                });
+                this.count = r.data.count;
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
     },
 };
 </script>

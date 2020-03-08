@@ -60,9 +60,11 @@ export default {
                 await this.$store.dispatch('UPDATE_USER');
 
                 if (!this.$types.isUndefined(this.$route.query.redirect)) {
-                    this.$router.push({ name: this.$route.query.redirect });
+                    this.$router
+                        .push({ name: this.$route.query.redirect })
+                        .catch(() => {});
                 } else {
-                    this.$router.push({ name: 'index' });
+                    this.$router.push({ name: 'index' }).catch(() => {});
                 }
             } catch (error) {
                 this.errors = this.$parse(error.response.data);

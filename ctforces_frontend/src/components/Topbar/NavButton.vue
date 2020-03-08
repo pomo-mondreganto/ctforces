@@ -10,11 +10,13 @@ export default {
         to: String,
         text: String,
     },
+
     methods: {
         go: function() {
             this.$router.push({ name: this.to }).catch(() => {});
         },
     },
+
     computed: {
         active: function() {
             return this.$route.name == this.to;

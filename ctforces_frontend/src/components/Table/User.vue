@@ -10,6 +10,7 @@ export default {
         fieldName: String,
         row: Object,
     },
+
     components: {
         User,
     },

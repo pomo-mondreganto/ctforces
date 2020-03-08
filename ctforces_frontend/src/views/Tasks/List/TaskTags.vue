@@ -14,6 +14,7 @@ export default {
         fieldName: String,
         row: Object,
     },
+
     components: {
         Tag,
     },

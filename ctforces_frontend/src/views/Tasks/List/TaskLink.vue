@@ -8,6 +8,7 @@ export default {
         fieldName: String,
         row: Object,
     },
+
     methods: {
         go: function() {
             this.$router

@@ -12,8 +12,10 @@ export default {
         username: String,
         rating: Number,
     },
+
     methods: {
         getInfo,
+
         go: function() {
             this.$router
                 .push({

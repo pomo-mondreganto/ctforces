@@ -24,7 +24,7 @@ export default {
     },
     methods: {
         go: function(to) {
-            this.$router.push(to);
+            this.$router.push(to).catch(() => {});
         },
     },
 };

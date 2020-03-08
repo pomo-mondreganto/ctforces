@@ -11,6 +11,7 @@ export default {
     created: async function() {
         await this.$store.dispatch('UPDATE_USER');
     },
+
     components: {
         Master,
     },

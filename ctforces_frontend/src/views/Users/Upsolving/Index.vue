@@ -43,6 +43,7 @@ export default {
         FTable,
         FDetail,
     },
+
     data: function() {
         return {
             users: null,
@@ -50,21 +51,34 @@ export default {
             errors: {},
         };
     },
+
+    methods: {
+        fetchUpsolving: async function() {
+            const { page = 1 } = this.$route.query;
+            try {
+                const r = await this.$http.get(
+                    `/users/upsolving_top/?page=${page}`
+                );
+                this.users = r.data.results.map((user, index) => {
+                    return {
+                        '#': index,
+                        ...user,
+                    };
+                });
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
+    },
+
     created: async function() {
-        const { page = 1 } = this.$route;
-        try {
-            const r = await this.$http.get(
-                `/users/upsolving_top/?page=${page}`
-            );
-            this.users = r.data.results.map((user, index) => {
-                return {
-                    '#': index,
-                    ...user,
-                };
-            });
-        } catch (error) {
-            this.errors = this.$parse(error.response.data);
-        }
+        await this.fetchUpsolving();
+    },
+
+    watch: {
+        async $route() {
+            await this.fetchUpsolving();
+        },
     },
 };
 </script>

@@ -51,6 +51,7 @@ export default {
         FDetail,
         User,
     },
+
     data: function() {
         return {
             errors: {},
@@ -58,8 +59,10 @@ export default {
             serverUrl,
         };
     },
+
     methods: {
         getInfo,
+
         fetchUser: async function() {
             try {
                 const r = await this.$http.get(
@@ -71,9 +74,11 @@ export default {
             }
         },
     },
+
     created: async function() {
         await this.fetchUser();
     },
+
     watch: {
         async $route() {
             await this.fetchUser();

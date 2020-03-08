@@ -16,12 +16,16 @@ import { mapState } from 'vuex';
 
 export default {
     computed: mapState(['user']),
+
     methods: {
         loginRedirect: function() {
             this.$router.push({ name: 'login' }).catch(() => {});
         },
+
         go: function(username) {
-            this.$router.push({ name: 'profile', params: { username } });
+            this.$router
+                .push({ name: 'profile', params: { username } })
+                .catch(() => {});
         },
     },
 };

@@ -16,15 +16,11 @@ export default {
         Task,
         FDetail,
     },
+
     created: async function() {
-        const { id } = this.$route.params;
-        try {
-            const r = await this.$http.get(`/tasks/${id}`);
-            this.task = r.data;
-        } catch (error) {
-            this.errors = this.$parse(error.response.data);
-        }
+        await this.fetchTask();
     },
+
     data: function() {
         return {
             task: null,
@@ -32,7 +28,24 @@ export default {
             errors: {},
         };
     },
+
+    watch: {
+        async $route() {
+            await this.fetchTask();
+        },
+    },
+
     methods: {
+        fetchTask: async function() {
+            const { id } = this.$route.params;
+            try {
+                const r = await this.$http.get(`/tasks/${id}`);
+                this.task = r.data;
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
+
         submit: async function() {
             const { id } = this.$route.params;
             try {

@@ -71,7 +71,7 @@ export default {
                     email: this.email,
                     password: this.password,
                 });
-                this.$router.push({ name: 'login' });
+                this.$router.push({ name: 'login' }).catch(() => {});
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }

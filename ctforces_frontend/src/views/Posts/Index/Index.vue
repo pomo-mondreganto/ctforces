@@ -24,13 +24,27 @@ export default {
         Post,
     },
 
+    methods: {
+        fetchPost: async function() {
+            try {
+                const r = await this.$http.get(
+                    `/posts/${this.$route.params.id}/`
+                );
+                this.post = r.data;
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
+    },
+
     created: async function() {
-        try {
-            const r = await this.$http.get(`/posts/${this.$route.params.id}/`);
-            this.post = r.data;
-        } catch (error) {
-            this.errors = this.$parse(error.response.data);
-        }
+        await this.fetchPost();
+    },
+
+    watch: {
+        async $route() {
+            await this.fetchPost();
+        },
     },
 };
 </script>

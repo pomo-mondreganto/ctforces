@@ -16,19 +16,23 @@ import { mapState } from 'vuex';
 
 export default {
     computed: mapState(['user']),
+
     methods: {
         registerRedirect: function() {
             this.$router.push({ name: 'register' }).catch(() => {});
         },
+
         logout: async function() {
             await this.$http.post('/logout/');
             await this.$store.dispatch('UPDATE_USER');
 
             if (this.$route.meta.auth) {
-                this.$router.push({
-                    name: 'login',
-                    query: { redirect: this.$route.name },
-                });
+                this.$router
+                    .push({
+                        name: 'login',
+                        query: { redirect: this.$route.name },
+                    })
+                    .catch(() => {});
             }
         },
     },

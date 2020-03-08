@@ -26,6 +26,7 @@ export default {
         RegisterButton,
         NavButton,
     },
+
     methods: {
         indexRedirect: function() {
             this.$router.push({ name: 'index' }).catch(() => {});
