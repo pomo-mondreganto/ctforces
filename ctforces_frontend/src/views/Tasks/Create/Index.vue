@@ -1,7 +1,7 @@
 <template>
     <card>
         <f-header header text="Create task"></f-header>
-        <form class="def-form mt-2" @submit.prevent="createTask">
+        <form class="mt-2" @submit.prevent="createTask">
             <div class="ff">
                 <f-input
                     class="mt-1-5"

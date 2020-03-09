@@ -1,9 +1,10 @@
 import Vue from 'vue';
-import Fragment from 'vue-fragment';
 import Toasted from 'vue-toasted';
 import VueSimplemde from 'vue-simplemde';
 import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import Paginate from 'vuejs-paginate';
+import lodash from 'lodash';
+
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -43,6 +44,7 @@ axios.interceptors.response.use(
     }
 );
 
+Vue.prototype._ = lodash;
 Vue.prototype.$http = axios;
 Vue.prototype.$parse = parse;
 Vue.prototype.$types = {
@@ -58,7 +60,6 @@ Vue.prototype.$types = {
 };
 store.$http = axios;
 
-Vue.use(Fragment.Plugin);
 Vue.use(Toasted, {
     position: 'bottom-right',
     duration: 2000,

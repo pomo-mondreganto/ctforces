@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="table-body">
-            <div class="table-row" v-for="(row, index) of data" :key="index">
+            <div class="table-row" v-for="row of data">
                 <div
                     v-for="field of fields"
                     :key="field.name"

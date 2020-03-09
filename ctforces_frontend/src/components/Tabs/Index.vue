@@ -1,15 +1,15 @@
 <template>
     <div class="tabs">
         <div class="tabs-tabs">
-            <div
-                v-for="tab in tabs"
+            <a
+                v-for="tab of tabs"
                 :key="tab.name"
                 class="tab"
                 @click="go(tab.to)"
                 :class="$route.name === tab.to.name ? 'active' : ''"
             >
                 {{ tab.name }}
-            </div>
+            </a>
         </div>
         <div class="tabs-content">
             <slot />

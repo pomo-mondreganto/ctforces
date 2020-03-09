@@ -66,6 +66,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.error {
+    color: $red;
+    margin-top: 0.3em;
+    font-size: 0.8em;
+}
+
 .vue-tags-input {
     max-width: 100%;
 }

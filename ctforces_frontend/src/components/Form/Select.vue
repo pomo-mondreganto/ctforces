@@ -1,7 +1,11 @@
 <template>
     <div class="group">
-        <div class="mb-0-5">{{ label }}</div>
-        <datetime :value="value" @input="val => $emit('input', val)" />
+        <select :value="value" @input="val => $emit('input', val)">
+            <option disabled value="">Select main tag</option>
+            <option v-for="option of options" :key="option">
+                {{ option }}
+            </option>
+        </select>
         <div v-if="invalid">
             <div v-for="error of errors" :key="error" class="error">
                 {{ error }}
@@ -14,7 +18,7 @@
 export default {
     props: {
         value: String,
-        label: String,
+        options: Array,
         errors: Array,
     },
 

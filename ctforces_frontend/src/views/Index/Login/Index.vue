@@ -1,7 +1,7 @@
 <template>
     <card>
         <f-header text="Login" />
-        <form class="def-form mt-3" @submit.prevent="login">
+        <form class="mt-3" @submit.prevent="login">
             <div class="ff">
                 <f-input
                     type="text"

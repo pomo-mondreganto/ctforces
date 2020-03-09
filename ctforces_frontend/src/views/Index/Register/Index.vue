@@ -1,7 +1,7 @@
 <template>
     <card>
         <f-header text="Register" />
-        <form class="def-form mt-3" @submit.prevent="register">
+        <form class="mt-3" @submit.prevent="register">
             <div class="ff">
                 <f-input
                     type="text"

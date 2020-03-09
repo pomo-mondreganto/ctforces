@@ -1,7 +1,7 @@
 <template>
     <card>
         <f-header header text="Update task"></f-header>
-        <form class="def-form mt-2" @submit.prevent="updateTask">
+        <form class="mt-2" @submit.prevent="updateTask">
             <div class="ff">
                 <f-input
                     class="mt-1-5"
@@ -10,7 +10,7 @@
                     v-model="name"
                     :errors="errors['name']"
                     placeholder="Name"
-                ></f-input>
+                />
             </div>
             <div class="ff">
                 <f-tags
@@ -28,7 +28,7 @@
                     v-model="cost"
                     :errors="errors['cost']"
                     placeholder="Cost"
-                ></f-input>
+                />
             </div>
             <div class="ff">
                 <f-input
@@ -38,7 +38,7 @@
                     v-model="flag"
                     :errors="errors['flag']"
                     placeholder="Flag"
-                ></f-input>
+                />
             </div>
             <div class="ff">
                 <editor v-model="description" :errors="errors['description']" />

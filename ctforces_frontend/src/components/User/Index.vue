@@ -1,7 +1,7 @@
 <template>
-    <span :class="getInfo(rating).class" class="user" @click="go(username)">{{
+    <a :class="getInfo(rating).class" class="user" @click="go(username)">{{
         username
-    }}</span>
+    }}</a>
 </template>
 
 <script>

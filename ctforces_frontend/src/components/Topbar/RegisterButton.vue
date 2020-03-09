@@ -1,12 +1,18 @@
 <template>
     <button
+        type="button"
         v-if="$types.isNull(user)"
         @click="registerRedirect"
         class="btn register-button ml-0-5"
     >
         Register
     </button>
-    <button v-else class="btn logout-button out ml-0-5" @click="logout">
+    <button
+        type="button"
+        v-else
+        class="btn logout-button out ml-0-5"
+        @click="logout"
+    >
         Logout
     </button>
 </template>

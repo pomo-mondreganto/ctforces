@@ -1,6 +1,6 @@
 <template>
     <div class="menu">
-        <div class="logo vc ml-0-5" @click="indexRedirect">CTForces</div>
+        <a class="logo vc ml-0-5" @click="indexRedirect">CTForces</a>
         <div class="navigation vc">
             <nav-button to="index" text="Home" />
             <nav-button to="contest_list" text="Contests" />

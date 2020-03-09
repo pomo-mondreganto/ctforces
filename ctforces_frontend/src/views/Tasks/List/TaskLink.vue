@@ -1,5 +1,5 @@
 <template>
-    <div @click="go" class="link">{{ row[fieldName] }}</div>
+    <a @click="go" class="link">{{ row[fieldName] }}</a>
 </template>
 
 <script>

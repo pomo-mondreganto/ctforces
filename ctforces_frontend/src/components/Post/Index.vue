@@ -1,8 +1,8 @@
 <template>
     <div v-if="!$types.isNull(post)">
-        <h1 class="header link" @click="go">
+        <a class="header link" @click="go">
             {{ post.title }}
-        </h1>
+        </a>
         <div class="mt-1">
             By
             <user

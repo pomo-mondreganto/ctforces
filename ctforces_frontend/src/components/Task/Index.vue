@@ -12,7 +12,7 @@
         </div>
         <div class="tags mt-1 mb-1">
             <span class="tags-h">Tags:</span>
-            <tag v-for="tag in task.tags_details" :key="tag.id">{{
+            <tag v-for="tag of task.tags_details" :key="tag.id">{{
                 tag.name
             }}</tag>
         </div>
@@ -28,14 +28,14 @@
             <a
                 :href="mediaUrl + file.file_field"
                 target="_blank"
-                v-for="file in task.files_details"
+                v-for="file of task.files_details"
                 :key="file.id"
             >
                 {{ file.name }}
             </a>
         </div>
         <div class="hr mt-1" v-if="task.files_details.length > 0"></div>
-        <form class="def-form mt-2" @submit.prevent="submitFlag">
+        <form class="mt-2" @submit.prevent="submitFlag">
             <f-input
                 type="text"
                 name="flag"

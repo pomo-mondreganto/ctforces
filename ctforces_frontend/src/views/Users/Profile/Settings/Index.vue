@@ -2,7 +2,7 @@
     <card>
         <f-header text="Settings" />
         <form
-            class="def-form mt-3"
+            class="mt-3"
             @submit.prevent="updateSettings"
             v-if="!$types.isNull(user)"
         >
@@ -26,7 +26,7 @@
                 <f-input
                     type="text"
                     name="first_name"
-                    :value="personal_info.first_name"
+                    v-model="personal_info.first_name"
                 />
             </div>
             <div class="ff">
@@ -92,9 +92,9 @@ export default {
             oldPassword: '',
             password: '',
             personal_info: {
-                first_name: '',
-                last_name: '',
-                telegram: '',
+                first_name: null,
+                last_name: null,
+                telegram: null,
             },
             errors: {},
         };

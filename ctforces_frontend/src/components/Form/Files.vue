@@ -10,7 +10,11 @@
             multiple
         />
         <label class="label">{{ label }}</label>
-        <div class="file-list mt-1" v-for="(file, index) of value" :key="index">
+        <div
+            class="file-list mt-1"
+            v-for="(file, index) of value"
+            :key="file.id"
+        >
             <div class="btn file-list-remove-btn" @click="removeFile(index)">
                 Remove
             </div>
@@ -44,6 +48,7 @@ export default {
         changeFiles: function(files) {
             let filesArr = this.value;
             for (let file of files) {
+                file.id = this._.uniqueId('file');
                 filesArr.push(file);
             }
             this.$emit('input', filesArr);

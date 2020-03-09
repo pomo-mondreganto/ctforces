@@ -1,12 +1,18 @@
 <template>
     <button
+        type="button"
         v-if="$types.isNull(user)"
         @click="loginRedirect"
         class="btn login-button"
     >
         Login
     </button>
-    <button v-else class="btn profile-button" @click="go(user.username)">
+    <button
+        type="button"
+        v-else
+        class="btn profile-button"
+        @click="go(user.username)"
+    >
         {{ user.username }}
     </button>
 </template>
