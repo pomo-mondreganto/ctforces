@@ -1,6 +1,10 @@
 <template>
     <div>
-        <contest :contest="contest" :errors="errors" />
+        <contest
+            :contest="contest"
+            :contest_tasks="contest_tasks"
+            :errors="errors"
+        />
         <f-detail :errors="errors['detail']" />
     </div>
 </template>
@@ -12,6 +16,7 @@ export default {
     data: function() {
         return {
             contest: null,
+            contest_tasks: null,
             errors: {},
         };
     },
@@ -34,8 +39,10 @@ export default {
         fetchContest: async function() {
             const { id } = this.$route.params;
             try {
-                const r = await this.$http.get(`/contests/${id}/`);
-                this.contest = r.data;
+                const rc = await this.$http.get(`/contests/${id}/`);
+                this.contest = rc.data;
+                const rt = await this.$http.get(`/contests/${id}/tasks/`);
+                this.contest_tasks = rt.data;
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }

@@ -17,6 +17,9 @@
                             user.cost_sum
                         }}</span>
                     </div>
+                    <div class="mt-">
+                        <router-link :to="{ name: '' }"></router-link>
+                    </div>
                 </div>
                 <div class="sidebar-profile-right">
                     <img :src="`${serverUrl}${user.avatar_small}`" />
@@ -99,5 +102,9 @@ export default {
 
     flex-flow: row nowrap;
     justify-content: space-between;
+}
+
+.sidebar-header {
+    font-size: 1.2em;
 }
 </style>

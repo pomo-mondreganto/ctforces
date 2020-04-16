@@ -33,16 +33,17 @@
 export default {
     props: {
         contest: Object,
+        contest_tasks: Array,
         errors: Object,
     },
 
     computed: {
         tasks: function() {
-            if (this.$types.isNull(this.contest)) {
+            if (this.$types.isNull(this.contest_tasks)) {
                 return null;
             }
             return this._.groupBy(
-                this.contest.contest_task_relationship_details,
+                this.contest_tasks,
                 ({ main_tag_details: { name } }) => name
             );
         },

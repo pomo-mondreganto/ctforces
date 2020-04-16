@@ -35,12 +35,20 @@
                     />
                 </div>
                 <div>
-                    <countdown :time="2 * 24 * 60 * 60 * 1000">
+                    <countdown :time="new Date(contest.end_time) - new Date()">
                         <template v-slot="props"
                             >Time Remaining：{{ time(props) }}</template
                         >
                     </countdown>
                 </div>
+                <button
+                    v-if="contest.is_registration_open"
+                    type="button"
+                    class="btn mt-1"
+                    @click="register"
+                >
+                    Register
+                </button>
             </card>
         </template>
     </master-layout>
@@ -80,6 +88,11 @@ export default {
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }
+        },
+
+        register: async function() {
+            const { id } = this.$route.params;
+            await this.$http.get(`/contests/${id}/register/`);
         },
 
         time: function(props) {

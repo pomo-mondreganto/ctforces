@@ -1,9 +1,14 @@
 <template>
-    <div>
+    <div class="p-r">
+        <div class="a-tr">
+            <button type="button" @click="createPost()" class="btn">
+                Create post
+            </button>
+        </div>
         <div
             v-for="(post, index) of posts"
             :key="post.id"
-            :class="index > 0 ? 'mt-3' : ''"
+            :class="index > 0 ? 'mt-3' : 'pt-1'"
         >
             <post :post="post" />
         </div>
@@ -15,6 +20,7 @@
 <script>
 import Post from '@/components/Post/Index';
 import Pagination from '@/components/Pagination/Index';
+import { mapState } from 'vuex';
 
 export default {
     data: function() {
@@ -43,6 +49,10 @@ export default {
                 this.errors = this.$parse(error.response.data);
             }
         },
+
+        createPost: function() {
+            this.$router.push({ name: 'post_create' }).catch(() => {});
+        },
     },
 
     created: async function() {
@@ -56,5 +66,7 @@ export default {
             await this.fetchPosts(page);
         },
     },
+
+    computed: mapState(['user']),
 };
 </script>

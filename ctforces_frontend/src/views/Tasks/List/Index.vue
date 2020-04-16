@@ -1,6 +1,16 @@
 <template>
     <master-layout>
         <card>
+            <div
+                class="p-r"
+                v-if="!$types.isNull(user) && user.can_create_tasks"
+            >
+                <div class="a-tr">
+                    <button type="button" @click="createTask()" class="btn">
+                        Create task
+                    </button>
+                </div>
+            </div>
             <f-header text="Tasks" v-if="!$types.isNull(tasks)" />
             <div class="mt-1" v-if="!$types.isNull(tasks)">
                 <f-table
@@ -45,6 +55,7 @@ import Tags from './TaskTags';
 import TaskLink from './TaskLink';
 import TaskSolvedLink from './TaskSolvedLink';
 import Pagination from '@/components/Pagination/Index';
+import { mapState } from 'vuex';
 
 export default {
     components: {
@@ -90,6 +101,12 @@ export default {
                 this.errors = this.$parse(error.response.data);
             }
         },
+
+        createTask: function() {
+            this.$router.push({ name: 'task_create' }).catch(() => {});
+        },
     },
+
+    computed: mapState(['user']),
 };
 </script>

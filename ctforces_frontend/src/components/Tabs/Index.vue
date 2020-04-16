@@ -70,5 +70,6 @@ export default {
     padding: 1em;
     border-bottom-left-radius: 0.4em;
     border-bottom-right-radius: 0.4em;
+    min-height: 5em;
 }
 </style>

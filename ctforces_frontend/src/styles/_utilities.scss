@@ -3,8 +3,12 @@
     margin-top: 0.5em;
 }
 
-.sidebar-header {
-    font-size: 1.2em;
+.a-tr {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20%;
+    min-width: min-content;
 }
 
 .hr {
@@ -21,6 +25,10 @@
 .ff {
     margin-top: 1em;
     width: 100%;
+}
+
+.p-r {
+    position: relative;
 }
 
 

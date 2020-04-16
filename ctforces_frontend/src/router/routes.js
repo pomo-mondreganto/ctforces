@@ -19,9 +19,13 @@ import Upsolving from '@/views/Users/Upsolving/Index';
 import Profile from '@/views/Users/Profile/Index';
 import ProfileMain from '@/views/Users/Profile/Index/Index';
 import ProfileSettings from '@/views/Users/Profile/Settings/Index';
+import ProfileBlog from '@/views/Users/Profile/Blog/Index';
+import ProfileTeams from '@/views/Users/Profile/Teams/Index';
 
-import UserBlog from '@/views/Users/Blog/Index';
 import PostIndex from '@/views/Posts/Index/Index';
+
+import TeamCreate from '@/views/Teams/Create/Index';
+import TeamIndex from '@/views/Teams/Index/Index';
 
 const routes = [
     {
@@ -38,6 +42,16 @@ const routes = [
         path: '/register',
         name: 'register',
         component: Register,
+    },
+    {
+        path: '/teams/create',
+        name: 'team_create',
+        component: TeamCreate,
+    },
+    {
+        path: '/teams/:id',
+        name: 'team_index',
+        component: TeamIndex,
     },
     {
         path: '/tasks',
@@ -126,7 +140,12 @@ const routes = [
             {
                 name: 'blog',
                 path: 'blog',
-                component: UserBlog,
+                component: ProfileBlog,
+            },
+            {
+                name: 'teams',
+                path: 'teams',
+                component: ProfileTeams,
             },
         ],
     },

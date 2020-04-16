@@ -17,6 +17,13 @@
                             params: { username: $route.params.username },
                         },
                     },
+                    {
+                        name: 'Teams',
+                        to: {
+                            name: 'teams',
+                            params: { username: $route.params.username },
+                        },
+                    },
                 ].concat(
                     $types.isNull(user) ||
                         user.username !== $route.params.username
