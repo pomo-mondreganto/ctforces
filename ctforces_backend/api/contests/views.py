@@ -409,7 +409,9 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             task = relation.task
 
             if task.id in all_solved:
-                task.is_solved = True
+                task.is_solved_by_user = True
+            else:
+                task.is_solved_by_user = False
 
             task.contest_cost = relation.current_cost
             task.ordering_number = relation.ordering_number
