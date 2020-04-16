@@ -1,10 +1,8 @@
 <template>
-    <master-layout>
-        <card>
-            <task :task="task" :errors="errors" :submitFlag="submit" />
-            <f-detail :errors="errors['detail']" />
-        </card>
-    </master-layout>
+    <div>
+        <task :task="task" :errors="errors" :submitFlag="submit" />
+        <f-detail :errors="errors['detail']" />
+    </div>
 </template>
 
 <script>
@@ -35,9 +33,11 @@ export default {
 
     methods: {
         fetchTask: async function() {
-            const { id } = this.$route.params;
+            const { id, task_id } = this.$route.params;
             try {
-                const r = await this.$http.get(`/tasks/${id}/`);
+                const r = await this.$http.get(
+                    `/contests/${id}/tasks/${task_id}/`
+                );
                 this.task = r.data;
             } catch (error) {
                 this.errors = this.$parse(error.response.data);

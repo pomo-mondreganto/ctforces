@@ -1,19 +1,11 @@
 <template>
-    <master>
-        <router-view />
-    </master>
+    <router-view />
 </template>
 
 <script>
-import Master from '@/layouts/Master';
-
 export default {
     created: async function() {
         await this.$store.dispatch('UPDATE_USER');
-    },
-
-    components: {
-        Master,
     },
 };
 </script>

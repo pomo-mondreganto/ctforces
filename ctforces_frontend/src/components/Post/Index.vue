@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import User from '@/components/User/Index';
 import Markdown from '@/components/Markdown/Index';
 
 export default {
@@ -29,7 +28,6 @@ export default {
     },
 
     components: {
-        User,
         Markdown,
     },
 

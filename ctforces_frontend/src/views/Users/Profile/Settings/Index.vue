@@ -26,21 +26,21 @@
                 <f-input
                     type="text"
                     name="first_name"
-                    v-model="personal_info.first_name"
+                    v-model="personalInfo.firstName"
                 />
             </div>
             <div class="ff">
                 <f-input
                     type="text"
                     name="last_name"
-                    v-model="personal_info.last_name"
+                    v-model="personalInfo.lastName"
                 />
             </div>
             <div class="ff">
                 <f-input
                     type="text"
                     name="telegram"
-                    v-model="personal_info.telegram"
+                    v-model="personalInfo.telegram"
                 />
             </div>
             <div class="ff">
@@ -72,28 +72,24 @@
 </template>
 
 <script>
-import Card from '@/components/Card/Index';
 import FInput from '@/components/Form/Input';
 import FHeader from '@/components/Form/Header';
-import FDetail from '@/components/Form/Detail';
 
 import { mapState } from 'vuex';
 
 export default {
     components: {
         FInput,
-        Card,
         FHeader,
-        FDetail,
     },
 
     data: function() {
         return {
             oldPassword: '',
             password: '',
-            personal_info: {
-                first_name: null,
-                last_name: null,
+            personalInfo: {
+                firstName: null,
+                lastName: null,
                 telegram: null,
             },
             errors: {},
@@ -103,7 +99,7 @@ export default {
     created: async function() {
         await this.$store.dispatch('GET_USER');
 
-        this.personal_info = this.user.personal_info;
+        this.personalInfo = this.user.personal_info;
     },
 
     methods: {
@@ -112,7 +108,11 @@ export default {
                 await this.$http.put('/me/', {
                     password: this.password,
                     old_password: this.oldPassword,
-                    personal_info: this.personal_info,
+                    personal_info: {
+                        first_name: this.personalInfo.firstName,
+                        last_name: this.personalInfo.lastName,
+                        telegram: this.personalInfo.telegram,
+                    },
                 });
 
                 await this.$store.dispatch('UPDATE_USER');

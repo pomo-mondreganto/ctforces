@@ -1,43 +1,46 @@
 <template>
-    <card>
-        <f-header text="Tasks" v-if="!$types.isNull(tasks)" />
-        <div class="mt-1" v-if="!$types.isNull(tasks)">
-            <f-table
-                :fields="[
-                    { name: '#', pos: 'c' },
-                    {
-                        name: 'Name',
-                        pos: 'l',
-                        grow: 7,
-                        comp: TaskLinkComp,
-                    },
-                    { name: 'Cost' },
-                    {
-                        name: 'Tags',
-                        grow: 5,
-                        key: 'task_tags_details',
-                        comp: TagsComp,
-                    },
-                    {
-                        name: 'Solved',
-                        grow: 2,
-                        key: 'solved_count',
-                        comp: TaskSolvedLinkComp,
-                    },
-                ]"
-                :data="tasks"
-            />
-        </div>
-        <f-detail :errors="errors['detail']" />
-        <pagination :count="count" :pagesize="pagesize" />
-    </card>
+    <master-layout>
+        <card>
+            <f-header text="Tasks" v-if="!$types.isNull(tasks)" />
+            <div class="mt-1" v-if="!$types.isNull(tasks)">
+                <f-table
+                    :fields="[
+                        { name: '#', pos: 'c' },
+                        {
+                            name: 'Name',
+                            pos: 'l',
+                            grow: 7,
+                            comp: TaskLinkComp,
+                        },
+                        { name: 'Cost' },
+                        {
+                            name: 'Tags',
+                            grow: 5,
+                            key: 'task_tags_details',
+                            comp: TagsComp,
+                        },
+                        {
+                            name: 'Solved',
+                            grow: 2,
+                            key: 'solved_count',
+                            comp: TaskSolvedLinkComp,
+                        },
+                    ]"
+                    :data="tasks"
+                />
+            </div>
+            <f-detail :errors="errors['detail']" />
+            <pagination :count="count" :pagesize="pagesize" />
+        </card>
+        <template v-slot:sidebar>
+            <div>123</div>
+        </template>
+    </master-layout>
 </template>
 
 <script>
-import Card from '@/components/Card/Index';
 import FHeader from '@/components/Form/Header';
 import FTable from '@/components/Table/Index';
-import FDetail from '@/components/Form/Detail';
 import Tags from './TaskTags';
 import TaskLink from './TaskLink';
 import TaskSolvedLink from './TaskSolvedLink';
@@ -45,10 +48,8 @@ import Pagination from '@/components/Pagination/Index';
 
 export default {
     components: {
-        Card,
         FHeader,
         FTable,
-        FDetail,
         Pagination,
     },
 

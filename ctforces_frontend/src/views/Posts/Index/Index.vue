@@ -1,13 +1,13 @@
 <template>
-    <card>
-        <post :post="post" />
-        <f-detail :errors="errors['detail']" />
-    </card>
+    <master-layout>
+        <card>
+            <post :post="post" />
+            <f-detail :errors="errors['detail']" />
+        </card>
+    </master-layout>
 </template>
 
 <script>
-import Card from '@/components/Card/Index';
-import FDetail from '@/components/Form/Detail';
 import Post from '@/components/Post/Index';
 
 export default {
@@ -19,8 +19,6 @@ export default {
     },
 
     components: {
-        Card,
-        FDetail,
         Post,
     },
 

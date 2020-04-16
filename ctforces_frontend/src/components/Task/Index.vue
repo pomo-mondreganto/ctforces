@@ -26,7 +26,7 @@
         <div class="files mt-1" v-if="task.files_details.length > 0">
             <div>Files:</div>
             <a
-                :href="mediaUrl + file.file_field"
+                :href="`${mediaUrl}/${file.file_field}`"
                 target="_blank"
                 v-for="file of task.files_details"
                 :key="file.id"
@@ -54,12 +54,10 @@
 </template>
 
 <script>
-import User from '@/components/User/Index';
 import Tag from '@/components/Tag/Index';
 import { mediaUrl } from '@/config';
 import Markdown from '@/components/Markdown/Index';
 import FInput from '@/components/Form/Input';
-import FDetail from '@/components/Form/Detail';
 
 export default {
     props: {
@@ -69,11 +67,9 @@ export default {
     },
 
     components: {
-        User,
         Tag,
         Markdown,
         FInput,
-        FDetail,
     },
 
     data: function() {

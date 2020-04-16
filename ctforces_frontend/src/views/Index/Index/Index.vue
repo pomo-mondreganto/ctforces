@@ -1,3 +1,7 @@
 <template>
-    <div>123</div>
+    <master-layout>
+        <card>
+            <div>123</div>
+        </card>
+    </master-layout>
 </template>

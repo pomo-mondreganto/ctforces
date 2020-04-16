@@ -55,8 +55,6 @@
 
 <script>
 import { serverUrl } from '@/config';
-import Card from '@/components/Card/Index';
-import FDetail from '@/components/Form/Detail';
 import User from '@/components/Table/User';
 import FTable from '@/components/Table/Index';
 import { mapState } from 'vuex';
@@ -64,8 +62,6 @@ import getInfo from '@/utils/rating';
 
 export default {
     components: {
-        Card,
-        FDetail,
         FTable,
     },
 
@@ -98,10 +94,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.sidebar {
-    flex: 1 1 0;
-}
-
 .sidebar-profile {
     display: flex;
 

@@ -42,16 +42,9 @@
 
 <script>
 import { serverUrl } from '@/config';
-import FDetail from '@/components/Form/Detail';
 import getInfo from '@/utils/rating';
-import User from '@/components/User/Index';
 
 export default {
-    components: {
-        FDetail,
-        User,
-    },
-
     data: function() {
         return {
             errors: {},

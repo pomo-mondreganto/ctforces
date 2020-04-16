@@ -1,74 +1,78 @@
 <template>
-    <card>
-        <f-header header text="Create task"></f-header>
-        <form class="mt-2" @submit.prevent="createTask">
-            <div class="ff">
-                <f-input
-                    class="mt-1-5"
-                    type="text"
-                    name="name"
-                    v-model="name"
-                    :errors="errors['name']"
-                    placeholder="Name"
-                />
-            </div>
-            <div class="ff">
-                <f-tags
-                    class="mt-1-5"
-                    v-model="tags"
-                    :errors="errors['tags']"
-                    name="tags"
-                />
-            </div>
-            <div class="ff">
-                <f-input
-                    class="mt-1-5"
-                    type="text"
-                    name="cost"
-                    v-model="cost"
-                    :errors="errors['cost']"
-                    placeholder="Cost"
-                />
-            </div>
-            <div class="ff">
-                <f-input
-                    class="mt-1-5"
-                    type="text"
-                    name="flag"
-                    v-model="flag"
-                    :errors="errors['flag']"
-                    placeholder="Flag"
-                />
-            </div>
-            <div class="ff">
-                <editor v-model="description" :errors="errors['description']" />
-            </div>
-            <div class="ff mt-0">
-                <f-checkbox
-                    name="is_published"
-                    v-model="is_published"
-                    label="Published"
-                    :errors="errors['is_published']"
-                />
-            </div>
-            <div class="ff mt-1">
-                <f-files
-                    name="file"
-                    label="Upload files"
-                    v-model="attachedFiles"
-                    :errors="errors['files']"
-                />
-            </div>
-            <div class="ff">
-                <input type="submit" value="Create" class="btn" />
-            </div>
-        </form>
-    </card>
+    <master-layout>
+        <card>
+            <f-header header text="Create task"></f-header>
+            <form class="mt-2" @submit.prevent="createTask">
+                <div class="ff">
+                    <f-input
+                        class="mt-1-5"
+                        type="text"
+                        name="name"
+                        v-model="name"
+                        :errors="errors['name']"
+                        placeholder="Name"
+                    />
+                </div>
+                <div class="ff">
+                    <f-tags
+                        class="mt-1-5"
+                        v-model="tags"
+                        :errors="errors['tags']"
+                        name="tags"
+                    />
+                </div>
+                <div class="ff">
+                    <f-input
+                        class="mt-1-5"
+                        type="text"
+                        name="cost"
+                        v-model="cost"
+                        :errors="errors['cost']"
+                        placeholder="Cost"
+                    />
+                </div>
+                <div class="ff">
+                    <f-input
+                        class="mt-1-5"
+                        type="text"
+                        name="flag"
+                        v-model="flag"
+                        :errors="errors['flag']"
+                        placeholder="Flag"
+                    />
+                </div>
+                <div class="ff">
+                    <editor
+                        v-model="description"
+                        :errors="errors['description']"
+                    />
+                </div>
+                <div class="ff mt-0">
+                    <f-checkbox
+                        name="is_published"
+                        v-model="is_published"
+                        label="Published"
+                        :errors="errors['is_published']"
+                    />
+                </div>
+                <div class="ff mt-1">
+                    <f-files
+                        name="file"
+                        label="Upload files"
+                        v-model="attachedFiles"
+                        :errors="errors['files']"
+                    />
+                </div>
+                <div class="ff">
+                    <input type="submit" value="Create" class="btn" />
+                </div>
+            </form>
+        </card>
+    </master-layout>
 </template>
 
 <script>
 import Editor from '@/components/Editor/Index';
-import Card from '@/components/Card/Index';
 import FHeader from '@/components/Form/Header';
 import FInput from '@/components/Form/Input';
 import FCheckbox from '@/components/Form/Checkbox';
@@ -77,7 +81,6 @@ import FTags from '@/components/Form/Tags';
 
 export default {
     components: {
-        Card,
         FHeader,
         FInput,
         Editor,

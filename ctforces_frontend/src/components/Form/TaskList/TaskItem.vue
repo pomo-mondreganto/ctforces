@@ -50,7 +50,6 @@
 
 <script>
 import FInput from '@/components/Form/Input';
-import FDetail from '@/components/Form/Detail';
 import FSelect from '@/components/Form/Select';
 
 export default {
@@ -109,7 +108,6 @@ export default {
 
     components: {
         FInput,
-        FDetail,
         FSelect,
     },
 };

@@ -6,9 +6,6 @@
         <container>
             <div class="layout">
                 <slot />
-                <slot name="sidebar">
-                    <sidebar />
-                </slot>
             </div>
         </container>
         <footer class="ta-c mt-2">
@@ -20,13 +17,11 @@
 <script>
 import Topbar from '@/components/Topbar/Index';
 import Container from '@/components/Container/Index';
-import Sidebar from '@/components/Sidebar/Index';
 
 export default {
     components: {
         Topbar,
         Container,
-        Sidebar,
     },
 };
 </script>
@@ -39,22 +34,6 @@ export default {
 
     & > :nth-child(2) {
         flex-grow: 1;
-    }
-
-    .layout {
-        display: flex;
-        flex-flow: row nowrap;
-
-        align-items: flex-start;
-
-        & > :nth-child(1) {
-            flex: 2.2 1 0;
-            margin-right: 3em;
-        }
-
-        & > :nth-child(2) {
-            flex: 1 1 0;
-        }
     }
 }
 

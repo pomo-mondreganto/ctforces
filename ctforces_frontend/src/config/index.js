@@ -9,6 +9,6 @@ if (process.env.NODE_ENV === 'development') {
 const serverUrl = url;
 
 const apiUrl = `${serverUrl}/api`;
-const mediaUrl = `${serverUrl}/media/`;
+const mediaUrl = `${serverUrl}/media`;
 
 export { serverUrl, apiUrl, mediaUrl };

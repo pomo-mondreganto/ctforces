@@ -1,74 +1,78 @@
 <template>
-    <card>
-        <f-header header text="Update task"></f-header>
-        <form class="mt-2" @submit.prevent="updateTask">
-            <div class="ff">
-                <f-input
-                    class="mt-1-5"
-                    type="text"
-                    name="name"
-                    v-model="name"
-                    :errors="errors['name']"
-                    placeholder="Name"
-                />
-            </div>
-            <div class="ff">
-                <f-tags
-                    class="mt-1-5"
-                    v-model="tags"
-                    :errors="errors['tags']"
-                    name="tags"
-                />
-            </div>
-            <div class="ff">
-                <f-input
-                    class="mt-1-5"
-                    type="text"
-                    name="cost"
-                    v-model="cost"
-                    :errors="errors['cost']"
-                    placeholder="Cost"
-                />
-            </div>
-            <div class="ff">
-                <f-input
-                    class="mt-1-5"
-                    type="text"
-                    name="flag"
-                    v-model="flag"
-                    :errors="errors['flag']"
-                    placeholder="Flag"
-                />
-            </div>
-            <div class="ff">
-                <editor v-model="description" :errors="errors['description']" />
-            </div>
-            <div class="ff mt-0">
-                <f-checkbox
-                    name="is_published"
-                    v-model="is_published"
-                    label="Published"
-                    :errors="errors['is_published']"
-                />
-            </div>
-            <div class="ff mt-1">
-                <f-files
-                    name="file"
-                    label="Upload files"
-                    v-model="attachedFiles"
-                    :errors="errors['files']"
-                />
-            </div>
-            <div class="ff">
-                <input type="submit" value="Update" class="btn" />
-            </div>
-        </form>
-    </card>
+    <master-layout>
+        <card>
+            <f-header header text="Update task"></f-header>
+            <form class="mt-2" @submit.prevent="updateTask">
+                <div class="ff">
+                    <f-input
+                        class="mt-1-5"
+                        type="text"
+                        name="name"
+                        v-model="name"
+                        :errors="errors['name']"
+                        placeholder="Name"
+                    />
+                </div>
+                <div class="ff">
+                    <f-tags
+                        class="mt-1-5"
+                        v-model="tags"
+                        :errors="errors['tags']"
+                        name="tags"
+                    />
+                </div>
+                <div class="ff">
+                    <f-input
+                        class="mt-1-5"
+                        type="text"
+                        name="cost"
+                        v-model="cost"
+                        :errors="errors['cost']"
+                        placeholder="Cost"
+                    />
+                </div>
+                <div class="ff">
+                    <f-input
+                        class="mt-1-5"
+                        type="text"
+                        name="flag"
+                        v-model="flag"
+                        :errors="errors['flag']"
+                        placeholder="Flag"
+                    />
+                </div>
+                <div class="ff">
+                    <editor
+                        v-model="description"
+                        :errors="errors['description']"
+                    />
+                </div>
+                <div class="ff mt-0">
+                    <f-checkbox
+                        name="is_published"
+                        v-model="is_published"
+                        label="Published"
+                        :errors="errors['is_published']"
+                    />
+                </div>
+                <div class="ff mt-1">
+                    <f-files
+                        name="file"
+                        label="Upload files"
+                        v-model="attachedFiles"
+                        :errors="errors['files']"
+                    />
+                </div>
+                <div class="ff">
+                    <input type="submit" value="Update" class="btn" />
+                </div>
+            </form>
+        </card>
+    </master-layout>
 </template>
 
 <script>
 import Editor from '@/components/Editor/Index';
-import Card from '@/components/Card/Index';
 import FHeader from '@/components/Form/Header';
 import FInput from '@/components/Form/Input';
 import FCheckbox from '@/components/Form/Checkbox';
@@ -77,7 +81,6 @@ import FTags from '@/components/Form/Tags';
 
 export default {
     components: {
-        Card,
         FHeader,
         FInput,
         Editor,
@@ -109,7 +112,7 @@ export default {
             this.description = resp.data.description;
             this.cost = String(resp.data.cost);
             this.flag = resp.data.flag;
-            this.is_published = resp.data.is_published;
+            this.isPublished = resp.data.is_published;
             this.attachedFiles = resp.data.files_details;
             this.tags = resp.data.task_tags_details.map(tag => {
                 return { text: tag.name };
@@ -156,7 +159,7 @@ export default {
             for await (const tag of this.tags) {
                 const tagName = tag.text;
                 const resp = await this.$http.get(
-                    `/task_tags/search/?name=${tagName}`
+                    `/task_tags/search?name=${tagName}/`
                 );
 
                 if (resp.data.length > 0 && resp.data[0].name == tagName) {
@@ -198,7 +201,7 @@ export default {
                         cost: this.cost,
                         flag: this.flag,
                         description: this.description,
-                        is_published: this.is_published,
+                        is_published: this.isPublished,
                         files: fileIds,
                         tags: tagIds,
                         hints: [],

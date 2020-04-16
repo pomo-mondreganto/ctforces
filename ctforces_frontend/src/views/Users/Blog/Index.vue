@@ -1,7 +1,7 @@
 <template>
     <div>
         <div
-            v-for="(post, index) in posts"
+            v-for="(post, index) of posts"
             :key="post.id"
             :class="index > 0 ? 'mt-3' : ''"
         >
@@ -14,7 +14,6 @@
 
 <script>
 import Post from '@/components/Post/Index';
-import FDetail from '@/components/Form/Detail';
 import Pagination from '@/components/Pagination/Index';
 
 export default {
@@ -29,7 +28,6 @@ export default {
 
     components: {
         Post,
-        FDetail,
         Pagination,
     },
 
