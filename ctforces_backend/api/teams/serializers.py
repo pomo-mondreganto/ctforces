@@ -35,6 +35,7 @@ class TeamViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMix
     class Meta:
         model = api_models.Team
         fields = (
+            'id',
             'name',
             'created_at',
             'captain_details',
@@ -61,6 +62,7 @@ class TeamFullSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.Team
         fields = (
+            'id',
             'name',
             'join_token',
             'created_at',
