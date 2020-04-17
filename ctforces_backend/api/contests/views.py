@@ -18,7 +18,7 @@ import api.models
 import api.pagination
 import api.tasks.serializers
 import api.teams.serializers
-from api.contests.caching import CTFTimeScoreboardKeyConstructor
+from api.contests.caching import ScoreboardKeyConstructor, ContestTaskListKeyConstructor
 from api.database_functions import SubquerySum
 from api.mixins import (
     CustomPermissionsQuerysetViewSetMixin,
@@ -245,6 +245,10 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         serializer = api.contests.serializers.CPRSerializer(page, many=True)
         return Response(serializer.data)
 
+    @cache_response(
+        timeout=5,
+        key_func=ScoreboardKeyConstructor(),
+    )
     @action(
         detail=True,
         url_path='scoreboard',
@@ -257,7 +261,7 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
 
     @cache_response(
         timeout=60,
-        key_func=CTFTimeScoreboardKeyConstructor(),
+        key_func=ScoreboardKeyConstructor(),
     )
     @action(
         detail=True,
@@ -469,6 +473,10 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return api.contests.serializers.ContestTaskViewSerializer
         return super(ContestTaskViewSet, self).get_serializer_class()
+
+    @cache_response(timeout=5, key_func=ContestTaskListKeyConstructor())
+    def list(self, request, *args, **kwargs):
+        return super(ContestTaskViewSet, self).list(request, *args, **kwargs)
 
     @action(detail=True,
             url_name='solved',
