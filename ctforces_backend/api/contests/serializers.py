@@ -312,11 +312,6 @@ class ContestPreviewSerializer(rest_serializers.ModelSerializer, ReadOnlySeriali
 class ContestViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMixin):
     can_edit_contest = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
-    contest_task_relationship_details = CTRMainSerializer(
-        many=True,
-        read_only=True,
-        source='contest_task_relationship',
-    )
 
     class Meta:
         model = api.models.Contest
@@ -324,7 +319,6 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializer
             'author',
             'author_username',
             'can_edit_contest',
-            'contest_task_relationship_details',
             'created_at',
             'dynamic_scoring',
             'end_time',
