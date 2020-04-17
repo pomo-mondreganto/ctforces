@@ -24,6 +24,7 @@ export default {
         value: Boolean,
         errors: Array,
     },
+
     computed: {
         invalid: function() {
             return this.$types.isArray(this.errors) && this.errors.length > 0;

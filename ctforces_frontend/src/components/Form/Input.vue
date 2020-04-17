@@ -23,6 +23,7 @@ export default {
         value: String,
         errors: Array,
     },
+
     computed: {
         invalid: function() {
             return this.$types.isArray(this.errors) && this.errors.length > 0;
@@ -38,6 +39,10 @@ $border: 0.05em;
 
 .group {
     position: relative;
+}
+
+.input:disabled {
+    background-color: $gray;
 }
 
 .input {

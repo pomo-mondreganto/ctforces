@@ -7,15 +7,25 @@ import TaskIndex from '@/views/Tasks/Index/Index';
 import TaskCreate from '@/views/Tasks/Create/Index';
 import TaskEdit from '@/views/Tasks/Edit/Index';
 
+import ContestCreate from '@/views/Contests/Create/Index';
+import ContestIndex from '@/views/Contests/Index/Index';
+import ContestTasks from '@/views/Contests/Index/Index/Index';
+import ContestScoreboard from '@/views/Contests/Index/Scoreboard/Index';
+import ContestTask from '@/views/Contests/Index/Task/Index';
+
 import Rating from '@/views/Users/Rating/Index';
 import Upsolving from '@/views/Users/Upsolving/Index';
 
 import Profile from '@/views/Users/Profile/Index';
 import ProfileMain from '@/views/Users/Profile/Index/Index';
 import ProfileSettings from '@/views/Users/Profile/Settings/Index';
+import ProfileBlog from '@/views/Users/Profile/Blog/Index';
+import ProfileTeams from '@/views/Users/Profile/Teams/Index';
 
-import UserBlog from '@/views/Users/Blog/Index';
 import PostIndex from '@/views/Posts/Index/Index';
+
+import TeamCreate from '@/views/Teams/Create/Index';
+import TeamIndex from '@/views/Teams/Index/Index';
 
 const routes = [
     {
@@ -24,22 +34,32 @@ const routes = [
         component: Index,
     },
     {
-        path: '/login/',
+        path: '/login',
         name: 'login',
         component: Login,
     },
     {
-        path: '/register/',
+        path: '/register',
         name: 'register',
         component: Register,
     },
     {
-        path: '/tasks/',
+        path: '/teams/create',
+        name: 'team_create',
+        component: TeamCreate,
+    },
+    {
+        path: '/teams/:id',
+        name: 'team_index',
+        component: TeamIndex,
+    },
+    {
+        path: '/tasks',
         name: 'task_list',
         component: TaskList,
     },
     {
-        path: '/tasks/create/',
+        path: '/tasks/create',
         name: 'task_create',
         component: TaskCreate,
         meta: {
@@ -47,7 +67,7 @@ const routes = [
         },
     },
     {
-        path: '/tasks/:id/edit/',
+        path: '/tasks/:id/edit',
         name: 'task_edit',
         component: TaskEdit,
         meta: {
@@ -60,12 +80,42 @@ const routes = [
         component: TaskIndex,
     },
     {
-        path: '/rating/',
+        path: '/contests/create',
+        name: 'contest_create',
+        component: ContestCreate,
+        meta: {
+            auth: true,
+        },
+    },
+    {
+        path: '/contests/:id',
+        component: ContestIndex,
+
+        children: [
+            {
+                name: 'contest_scoreboard',
+                path: 'scoreboard',
+                component: ContestScoreboard,
+            },
+            {
+                name: 'contest_task',
+                path: 'task/:task_id',
+                component: ContestTask,
+            },
+            {
+                name: 'contest_tasks',
+                path: '',
+                component: ContestTasks,
+            },
+        ],
+    },
+    {
+        path: '/rating',
         name: 'rating',
         component: Rating,
     },
     {
-        path: '/upsolving/',
+        path: '/upsolving',
         name: 'upsolving',
         component: Upsolving,
     },
@@ -83,11 +133,19 @@ const routes = [
                 name: 'settings',
                 path: 'settings',
                 component: ProfileSettings,
+                meta: {
+                    auth: true,
+                },
             },
             {
                 name: 'blog',
                 path: 'blog',
-                component: UserBlog,
+                component: ProfileBlog,
+            },
+            {
+                name: 'teams',
+                path: 'teams',
+                component: ProfileTeams,
             },
         ],
     },

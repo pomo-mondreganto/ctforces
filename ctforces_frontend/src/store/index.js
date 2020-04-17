@@ -18,8 +18,8 @@ export default new Vuex.Store({
         UPDATE_USER: async function(context) {
             try {
                 const r = await this.$http.get('/me/');
-                const { username } = r.data;
-                context.commit('SET_USER', { username });
+                const user = r.data;
+                context.commit('SET_USER', user);
             } catch {
                 context.commit('SET_USER', null);
             }

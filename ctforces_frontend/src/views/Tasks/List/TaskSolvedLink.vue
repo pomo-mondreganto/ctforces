@@ -1,5 +1,5 @@
 <template>
-    <div class="link" @click="go">{{ row[fieldName] }}</div>
+    <a class="link" @click="go">{{ row[fieldName] }}</a>
 </template>
 
 <script>
@@ -8,6 +8,7 @@ export default {
         fieldName: String,
         row: Object,
     },
+
     methods: {
         go: function() {
             this.$router.push({ name: 'index' }).catch(() => {});

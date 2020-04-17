@@ -15,6 +15,7 @@ export default {
     props: {
         value: String,
     },
+
     data: function() {
         return {
             configs: {

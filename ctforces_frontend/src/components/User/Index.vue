@@ -1,7 +1,7 @@
 <template>
-    <span :class="getInfo(rating).class" class="user" @click="go(username)">{{
+    <a :class="getInfo(rating).class" class="user" @click="go(username)">{{
         username
-    }}</span>
+    }}</a>
 </template>
 
 <script>
@@ -12,8 +12,10 @@ export default {
         username: String,
         rating: Number,
     },
+
     methods: {
         getInfo,
+
         go: function() {
             this.$router
                 .push({

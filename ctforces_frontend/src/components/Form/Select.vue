@@ -1,14 +1,11 @@
 <template>
     <div class="group">
-        <input
-            v-bind="$attrs"
-            :value="value"
-            @change="$emit('fileChanged', $event.target.files)"
-            class="input file"
-            type="file"
-            :invalid="invalid"
-        />
-        <label class="label">{{ label }}</label>
+        <select :value="value" @input="val => $emit('input', val)">
+            <option disabled value="">Select main tag</option>
+            <option v-for="option of options" :key="option">
+                {{ option }}
+            </option>
+        </select>
         <div v-if="invalid">
             <div v-for="error of errors" :key="error" class="error">
                 {{ error }}
@@ -20,10 +17,11 @@
 <script>
 export default {
     props: {
-        label: String,
         value: String,
+        options: Array,
         errors: Array,
     },
+
     computed: {
         invalid: function() {
             return this.$types.isArray(this.errors) && this.errors.length > 0;
@@ -33,10 +31,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$height-input: 2.6em;
-$height-label: 1em;
-$border: 0.05em;
-
 .error {
     color: $red;
     margin-top: 0.3em;

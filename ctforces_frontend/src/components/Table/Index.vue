@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="table-body">
-            <div class="table-row" v-for="(row, index) of data" :key="index">
+            <div class="table-row" v-for="row of data">
                 <div
                     v-for="field of fields"
                     :key="field.name"
@@ -37,6 +37,7 @@ export default {
         fields: Array,
         data: Array,
     },
+
     methods: {
         getComponent: function(field) {
             if (!this.$types.isUndefined(field.comp)) {
@@ -45,6 +46,7 @@ export default {
                 return Text;
             }
         },
+
         getFieldName: function(field) {
             if (!this.$types.isUndefined(field.key)) {
                 return field.key;
@@ -52,11 +54,13 @@ export default {
                 return field.name.toLowerCase();
             }
         },
+
         getPos: function(pos) {
             if (!this.$types.isUndefined(pos)) {
                 return `jc-${pos}`;
             }
         },
+
         header: function({ grow = 1, pos = 'c' }) {
             return ['ai-c', 'fb-0', `fg-${grow}`, this.getPos(pos)];
         },

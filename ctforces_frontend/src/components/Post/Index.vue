@@ -1,8 +1,8 @@
 <template>
     <div v-if="!$types.isNull(post)">
-        <h1 class="header link" @click="go">
+        <a class="header link" @click="go">
             {{ post.title }}
-        </h1>
+        </a>
         <div class="mt-1">
             By
             <user
@@ -12,7 +12,7 @@
         </div>
         <div class="hr mt-1" />
         <div class="content mt-1">
-            <div class="markdown">
+            <div class="markdown ml-1 p-1">
                 <markdown :content="post.body" />
             </div>
         </div>
@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import User from '@/components/User/Index';
 import Markdown from '@/components/Markdown/Index';
 
 export default {
@@ -29,7 +28,6 @@ export default {
     },
 
     components: {
-        User,
         Markdown,
     },
 
@@ -44,11 +42,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.markdown {
-    margin-left: 1em;
-    padding: 1em;
-}
-
 .content {
     border-left: 0.3em solid $gray;
 }

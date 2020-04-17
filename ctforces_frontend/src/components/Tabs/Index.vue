@@ -1,15 +1,15 @@
 <template>
     <div class="tabs">
         <div class="tabs-tabs">
-            <div
-                v-for="tab in tabs"
+            <a
+                v-for="tab of tabs"
                 :key="tab.name"
                 class="tab"
                 @click="go(tab.to)"
                 :class="$route.name === tab.to.name ? 'active' : ''"
             >
                 {{ tab.name }}
-            </div>
+            </a>
         </div>
         <div class="tabs-content">
             <slot />
@@ -24,7 +24,7 @@ export default {
     },
     methods: {
         go: function(to) {
-            this.$router.push(to);
+            this.$router.push(to).catch(() => {});
         },
     },
 };
@@ -70,5 +70,6 @@ export default {
     padding: 1em;
     border-bottom-left-radius: 0.4em;
     border-bottom-right-radius: 0.4em;
+    min-height: 5em;
 }
 </style>

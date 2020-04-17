@@ -10,9 +10,9 @@
                 :rating="task.author_rating"
             />
         </div>
-        <div class="tags mt-1">
+        <div class="tags mt-1 mb-1">
             <span class="tags-h">Tags:</span>
-            <tag v-for="tag in task.tags_details" :key="tag.id">{{
+            <tag v-for="tag of task.tags_details" :key="tag.id">{{
                 tag.name
             }}</tag>
         </div>
@@ -26,16 +26,16 @@
         <div class="files mt-1" v-if="task.files_details.length > 0">
             <div>Files:</div>
             <a
-                :href="mediaUrl + file.file_field"
+                :href="`${mediaUrl}/${file.file_field}`"
                 target="_blank"
-                v-for="file in task.files_details"
+                v-for="file of task.files_details"
                 :key="file.id"
             >
                 {{ file.name }}
             </a>
         </div>
         <div class="hr mt-1" v-if="task.files_details.length > 0"></div>
-        <form class="def-form mt-2" @submit.prevent="submitFlag">
+        <form class="mt-2" @submit.prevent="submitFlag">
             <f-input
                 type="text"
                 name="flag"
@@ -54,12 +54,10 @@
 </template>
 
 <script>
-import User from '@/components/User/Index';
 import Tag from '@/components/Tag/Index';
 import { mediaUrl } from '@/config';
 import Markdown from '@/components/Markdown/Index';
 import FInput from '@/components/Form/Input';
-import FDetail from '@/components/Form/Detail';
 
 export default {
     props: {
@@ -69,11 +67,9 @@ export default {
     },
 
     components: {
-        User,
         Tag,
         Markdown,
         FInput,
-        FDetail,
     },
 
     data: function() {
@@ -87,7 +83,6 @@ export default {
 
 <style lang="scss" scoped>
 .tags {
-    margin-bottom: 1em;
     display: flex;
     flex-flow: row wrap;
     align-items: center;

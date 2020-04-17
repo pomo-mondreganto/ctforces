@@ -11,7 +11,23 @@
     border-width: 0.05em;
 
     width: 100%;
+
+    &.red {
+        background-color: $red;
+        border-color: $red;
+    }
+
+    &.green {
+        background-color: $green;
+        border-color: $green;
+    }
+
+    &.disabled {
+        background-color: $gray;
+        border-color: $gray;
+    }
 }
+
 .btn:hover {
     border-radius: 3em;
     transition: all 0.3s ease 0s;
