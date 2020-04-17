@@ -20,6 +20,7 @@ from api import models as api_models
 from api import pagination as api_pagination
 from api.posts import serializers as api_posts_serializers
 from api.tasks import serializers as api_tasks_serializers
+from api.teams import serializers as api_teams_serializers
 from api.token_operations import serialize, deserialize
 from api.users import caching as api_users_caching
 from api.users import serializers as api_users_serializers
@@ -400,5 +401,18 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             paginator=api_pagination.PostDefaultPagination(),
             queryset=queryset,
             serializer_class=api_posts_serializers.PostMainSerializer,
+            request=request,
+        )
+
+    @action(detail=True, url_name='teams', url_path='teams', methods=['get'])
+    def get_users_teams(self, request, **_kwargs):
+        user = self.get_object()
+        queryset = user.teams.all()
+        queryset = queryset.order_by('-id')
+
+        return api_pagination.get_paginated_response(
+            paginator=api_pagination.TeamDefaultPagination(),
+            queryset=queryset,
+            serializer_class=api_teams_serializers.TeamMinimalSerializer,
             request=request,
         )
