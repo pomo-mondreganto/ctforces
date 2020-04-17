@@ -390,6 +390,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             'task__tags',
         ).select_related(
             'task__author',
+            'main_tag',
         ).order_by(
             'ordering_number',
             'cost',
@@ -415,6 +416,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             else:
                 task.is_solved_by_user = False
 
+            task.main_tag = relation.main_tag
             task.contest_cost = relation.current_cost
             task.ordering_number = relation.ordering_number
 
@@ -451,7 +453,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             raise ValidationError(detail='Invalid task_id.')
 
         try:
-            task = self.get_queryset().get(id=task_id).task
+            task = self.get_queryset().get(task_id=task_id).task
         except api.models.ContestTaskRelationship.DoesNotExist:
             raise NotFound('No such task.')
 

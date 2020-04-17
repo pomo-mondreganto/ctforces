@@ -186,10 +186,12 @@ class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, ReadOnlySer
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     ordering_number = rest_serializers.IntegerField(read_only=True)
+    main_tag_details = TaskTagSerializer(read_only=True, source='main_tag')
 
     class Meta:
         model = api.models.Task
         fields = (
+            'id',
             'author_username',
             'contest_cost',
             'is_solved_by_user',
@@ -197,6 +199,7 @@ class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, ReadOnlySer
             'ordering_number',
             'solved_count',
             'tags_details',
+            'main_tag_details',
         )
 
 
