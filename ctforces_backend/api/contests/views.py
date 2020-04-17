@@ -386,7 +386,9 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         else:
             manager = api.models.ContestTaskRelationship.static_current_cost_annotated
 
-        contest_task_relationship_query = manager.prefetch_related(
+        contest_task_relationship_query = manager.filter(
+            contest=contest,
+        ).prefetch_related(
             'task__tags',
         ).select_related(
             'task__author',
