@@ -403,7 +403,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         all_solved = set(
             api.models.ContestTaskRelationship.objects.filter(
                 contest=contest,
-                solved_by__exact=self.get_participating_team(contest),
+                solved_by=self.get_participating_team(contest),
             ).values_list('task_id', flat=True)
         )
 
