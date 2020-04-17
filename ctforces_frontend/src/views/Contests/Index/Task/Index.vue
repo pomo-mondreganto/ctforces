@@ -45,11 +45,14 @@ export default {
         },
 
         submit: async function() {
-            const { id } = this.$route.params;
+            const { id, task_id } = this.$route.params;
             try {
-                await this.$http.post(`/tasks/${id}/submit/`, {
-                    flag: this.flag,
-                });
+                await this.$http.post(
+                    `/contests/${id}/tasks/${task_id}/submit/`,
+                    {
+                        flag: this.flag,
+                    }
+                );
                 this.$toasted.success('Valid flag!');
             } catch (error) {
                 this.errors = this.$parse(error.response.data);

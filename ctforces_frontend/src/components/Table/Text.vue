@@ -1,11 +1,11 @@
 <template>
-    <span>{{ row[fieldName] }}</span>
+    <span>{{ row[fieldData] }}</span>
 </template>
 
 <script>
 export default {
     props: {
-        fieldName: [String, Number],
+        fieldData: [String, Number],
         row: Object,
     },
 };

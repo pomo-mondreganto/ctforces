@@ -1,20 +1,18 @@
 <template>
-    <button
-        type="button"
+    <router-link
+        :to="{ name: 'login' }"
         v-if="$types.isNull(user)"
-        @click="loginRedirect"
-        class="btn login-button"
+        class="btn login-button nlnk"
     >
         Login
-    </button>
-    <button
-        type="button"
+    </router-link>
+    <router-link
+        :to="{ name: 'profile', params: { username: user.username } }"
         v-else
-        class="btn profile-button"
-        @click="go(user.username)"
+        class="btn profile-button nlnk"
     >
         {{ user.username }}
-    </button>
+    </router-link>
 </template>
 
 <script>
@@ -22,18 +20,6 @@ import { mapState } from 'vuex';
 
 export default {
     computed: mapState(['user']),
-
-    methods: {
-        loginRedirect: function() {
-            this.$router.push({ name: 'login' }).catch(() => {});
-        },
-
-        go: function(username) {
-            this.$router
-                .push({ name: 'profile', params: { username } })
-                .catch(() => {});
-        },
-    },
 };
 </script>
 

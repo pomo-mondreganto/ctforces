@@ -6,12 +6,12 @@
                 v-if="!$types.isNull(user) && user.can_create_tasks"
             >
                 <div class="a-tr">
-                    <button type="button" @click="createTask()" class="btn">
+                    <router-link :to="{ name: 'task_create' }" class="btn nlnk">
                         Create task
-                    </button>
+                    </router-link>
                 </div>
             </div>
-            <f-header text="Tasks" v-if="!$types.isNull(tasks)" />
+            <f-header text="Tasks" />
             <div class="mt-1" v-if="!$types.isNull(tasks)">
                 <f-table
                     :fields="[
@@ -100,10 +100,6 @@ export default {
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }
-        },
-
-        createTask: function() {
-            this.$router.push({ name: 'task_create' }).catch(() => {});
         },
     },
 

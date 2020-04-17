@@ -12,6 +12,8 @@ import ContestIndex from '@/views/Contests/Index/Index';
 import ContestTasks from '@/views/Contests/Index/Index/Index';
 import ContestScoreboard from '@/views/Contests/Index/Scoreboard/Index';
 import ContestTask from '@/views/Contests/Index/Task/Index';
+import ContestList from '@/views/Contests/List/Index';
+import ContestRegister from '@/views/Contests/Register/Index';
 
 import Rating from '@/views/Users/Rating/Index';
 import Upsolving from '@/views/Users/Upsolving/Index';
@@ -25,6 +27,7 @@ import ProfileTeams from '@/views/Users/Profile/Teams/Index';
 import PostIndex from '@/views/Posts/Index/Index';
 
 import TeamCreate from '@/views/Teams/Create/Index';
+import TeamJoin from '@/views/Teams/Join/Index';
 import TeamIndex from '@/views/Teams/Index/Index';
 
 const routes = [
@@ -47,6 +50,11 @@ const routes = [
         path: '/teams/create',
         name: 'team_create',
         component: TeamCreate,
+    },
+    {
+        path: '/teams/:id/join',
+        name: 'team_join',
+        component: TeamJoin,
     },
     {
         path: '/teams/:id',
@@ -88,6 +96,11 @@ const routes = [
         },
     },
     {
+        name: 'contest_register',
+        path: '/contests/:id/register',
+        component: ContestRegister,
+    },
+    {
         path: '/contests/:id',
         component: ContestIndex,
 
@@ -108,6 +121,11 @@ const routes = [
                 component: ContestTasks,
             },
         ],
+    },
+    {
+        path: '/contests',
+        name: 'contest_list',
+        component: ContestList,
     },
     {
         path: '/rating',

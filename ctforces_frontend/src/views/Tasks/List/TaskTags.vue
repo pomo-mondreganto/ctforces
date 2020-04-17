@@ -1,6 +1,6 @@
 <template>
     <div class="tags jc-c">
-        <tag v-for="tag of row[fieldName]" :key="tag.id">
+        <tag v-for="tag of row[fieldData]" :key="tag.id">
             {{ tag.name }}
         </tag>
     </div>
@@ -11,7 +11,7 @@ import Tag from '@/components/Tag/Index';
 
 export default {
     props: {
-        fieldName: String,
+        fieldData: String,
         row: Object,
     },
 

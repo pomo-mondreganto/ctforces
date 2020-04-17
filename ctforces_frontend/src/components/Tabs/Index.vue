@@ -1,15 +1,15 @@
 <template>
-    <div class="tabs">
+    <div class="tabs pr-1 pl-1">
         <div class="tabs-tabs">
-            <a
+            <router-link
+                :to="tab.to"
+                class="tab nlnk"
                 v-for="tab of tabs"
                 :key="tab.name"
-                class="tab"
-                @click="go(tab.to)"
                 :class="$route.name === tab.to.name ? 'active' : ''"
             >
                 {{ tab.name }}
-            </a>
+            </router-link>
         </div>
         <div class="tabs-content">
             <slot />
@@ -21,11 +21,6 @@
 export default {
     props: {
         tabs: Array,
-    },
-    methods: {
-        go: function(to) {
-            this.$router.push(to).catch(() => {});
-        },
     },
 };
 </script>
@@ -70,6 +65,11 @@ export default {
     padding: 1em;
     border-bottom-left-radius: 0.4em;
     border-bottom-right-radius: 0.4em;
-    min-height: 5em;
+}
+</style>
+
+<style lang="scss">
+.tabs-content .p-r .a-tr {
+    padding-right: 1em;
 }
 </style>

@@ -1,20 +1,20 @@
 <template>
     <div class="p-r">
         <div class="a-tr">
-            <button type="button" @click="createTeam()" class="btn">
+            <router-link :to="{ name: 'team_create' }" class="btn nlnk">
                 Create team
-            </button>
+            </router-link>
         </div>
-        <div>Team list</div>
+        <f-header :text="`${$route.params.username} teams`" />
     </div>
 </template>
 
 <script>
+import FHeader from '@/components/Form/Header';
+
 export default {
-    methods: {
-        createTeam: function() {
-            this.$router.push({ name: 'team_create' }).catch(() => {});
-        },
+    components: {
+        FHeader,
     },
 };
 </script>

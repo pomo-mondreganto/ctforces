@@ -1,7 +1,10 @@
 <template>
-    <a @click="go" :class="['menu-nav', 'ta-c', active ? 'active' : '']">{{
-        text
-    }}</a>
+    <router-link
+        :to="{ name: to }"
+        :class="['menu-nav', 'ta-c', 'nlnk', active ? 'active' : '']"
+    >
+        {{ text }}
+    </router-link>
 </template>
 
 <script>
@@ -9,12 +12,6 @@ export default {
     props: {
         to: String,
         text: String,
-    },
-
-    methods: {
-        go: function() {
-            this.$router.push({ name: this.to }).catch(() => {});
-        },
     },
 
     computed: {

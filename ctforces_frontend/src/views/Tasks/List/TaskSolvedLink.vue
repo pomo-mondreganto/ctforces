@@ -1,18 +1,14 @@
 <template>
-    <a class="link" @click="go">{{ row[fieldName] }}</a>
+    <router-link class="link" :to="{ name: 'index' }">{{
+        row[fieldData]
+    }}</router-link>
 </template>
 
 <script>
 export default {
     props: {
-        fieldName: String,
+        fieldData: String,
         row: Object,
-    },
-
-    methods: {
-        go: function() {
-            this.$router.push({ name: 'index' }).catch(() => {});
-        },
     },
 };
 </script>

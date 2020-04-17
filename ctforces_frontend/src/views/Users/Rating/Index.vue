@@ -1,7 +1,7 @@
 <template>
     <master-layout>
         <card>
-            <f-header text="Rating" v-if="!$types.isNull(users)" />
+            <f-header text="Rating" />
             <div class="mt-1" v-if="!$types.isNull(users)">
                 <f-table
                     :fields="[

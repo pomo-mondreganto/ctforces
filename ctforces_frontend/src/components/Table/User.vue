@@ -5,7 +5,7 @@
 <script>
 export default {
     props: {
-        fieldName: String,
+        fieldData: String,
         row: Object,
     },
 };

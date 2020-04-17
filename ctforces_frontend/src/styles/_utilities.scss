@@ -1,13 +1,13 @@
-.header {
-    font-size: 2em;
-    margin-top: 0.5em;
+.nlnk {
+    text-decoration: none;
+    outline: none;
+    outline-width: 0;
 }
 
 .a-tr {
     position: absolute;
     right: 0;
     top: 0;
-    width: 20%;
     min-width: min-content;
 }
 
@@ -18,12 +18,13 @@
 
 .vc {
     display: flex;
+    flex-flow: row nowrap;
     align-items: center;
 }
 
 
 .ff {
-    margin-top: 1em;
+    margin-top: 1.5em;
     width: 100%;
 }
 
@@ -63,6 +64,8 @@
 
 
 .link {
+    text-decoration: none;
+    outline: none;
     color: blue;
     cursor: pointer;
 }
@@ -70,6 +73,7 @@
 
 .link:hover {
     text-decoration: underline;
+    outline: none
 }
 
 

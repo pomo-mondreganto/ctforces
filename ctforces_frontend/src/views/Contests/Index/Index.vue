@@ -1,32 +1,30 @@
 <template>
     <master-layout>
-        <card>
-            <tabs
-                :tabs="[
-                    {
-                        name: 'Tasks',
-                        to: {
-                            name: 'contest_tasks',
-                            params: { id: $route.params.id },
-                        },
+        <tabs
+            :tabs="[
+                {
+                    name: 'Tasks',
+                    to: {
+                        name: 'contest_tasks',
+                        params: { id: $route.params.id },
                     },
-                    {
-                        name: 'Scoreboard',
-                        to: {
-                            name: 'contest_scoreboard',
-                            params: { id: $route.params.id },
-                        },
+                },
+                {
+                    name: 'Scoreboard',
+                    to: {
+                        name: 'contest_scoreboard',
+                        params: { id: $route.params.id },
                     },
-                ]"
-            >
-                <router-view />
-            </tabs>
-        </card>
+                },
+            ]"
+        >
+            <router-view />
+        </tabs>
         <template v-slot:sidebar v-if="!$types.isNull(contest)">
             <card>
-                <h1 class="header">
+                <div class="header">
                     {{ contest.name }}
-                </h1>
+                </div>
                 <div class="author mt-1 mb-2">
                     By
                     <user
@@ -34,21 +32,33 @@
                         :rating="contest.author_rating"
                     />
                 </div>
-                <div>
-                    <countdown :time="new Date(contest.end_time) - new Date()">
-                        <template v-slot="props"
-                            >Time Remaining：{{ time(props) }}</template
+                <div v-if="contest.is_running">
+                    Contest is <span class="running">running</span>
+                    <div class="mt-1">
+                        <countdown
+                            :time="new Date(contest.end_time) - new Date()"
                         >
-                    </countdown>
+                            <template v-slot="props"
+                                >Time Remaining：{{ $time(props) }}</template
+                            >
+                        </countdown>
+                    </div>
                 </div>
-                <button
-                    v-if="contest.is_registration_open"
-                    type="button"
-                    class="btn mt-1"
-                    @click="register"
-                >
-                    Register
-                </button>
+                <div v-else-if="contest.is_finished">
+                    Contest is <span class="finished">finished</span>
+                </div>
+                <div v-else>
+                    Contest is <span class="upcoming">upcoming</span>
+                    <div class="mt-1">
+                        <countdown
+                            :time="new Date(contest.start_time) - new Date()"
+                        >
+                            <template v-slot="props"
+                                >Starts in {{ $time(props) }}</template
+                            >
+                        </countdown>
+                    </div>
+                </div>
             </card>
         </template>
     </master-layout>
@@ -89,24 +99,20 @@ export default {
                 this.errors = this.$parse(error.response.data);
             }
         },
-
-        register: async function() {
-            const { id } = this.$route.params;
-            await this.$http.get(`/contests/${id}/register/`);
-        },
-
-        time: function(props) {
-            let ret = '';
-            if (props.days > 1) {
-                ret += `${props.days} days `;
-            } else if (props.days === 1) {
-                ret += `${props.days} day `;
-            }
-            ret += `${props.hours.toString().padStart(2, '0')}:`;
-            ret += `${props.minutes.toString().padStart(2, '0')}:`;
-            ret += `${props.seconds.toString().padStart(2, '0')}`;
-            return ret;
-        },
     },
 };
 </script>
+
+<style lang="scss" scoped>
+.upcoming {
+    color: $reddanger;
+}
+
+.running {
+    color: $greenlight;
+}
+
+.header {
+    font-size: 2em;
+}
+</style>

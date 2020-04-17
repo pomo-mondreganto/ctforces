@@ -66,7 +66,7 @@ $border: 0.05em;
     &:focus + .label,
     &.non-empty + .label {
         font-size: 85%;
-        top: -1em;
+        top: -1.2em;
         left: 0;
         color: rgba($black, 1);
     }

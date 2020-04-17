@@ -1,46 +1,54 @@
 <template>
     <div>
         <div class="task">
-            <f-input
-                type="text"
-                name="id"
-                :value="value.id"
-                @input="onChange"
-                placeholder="Id"
-                class="mr-1"
-            />
-            <f-input
-                type="text"
-                name="name"
-                :value="value.name"
-                placeholder="Name"
-                disabled
-                class="mr-1"
-            />
-            <f-input
-                type="text"
-                name="cost"
-                :value="value.cost"
-                @input="changeCost"
-                placeholder="Cost"
-                class="mr-1"
-                v-if="!$types.isNull(value.cost)"
-            />
-            <f-input
-                type="text"
-                name="cost"
-                :value="value.cost"
-                @input="changeCost"
-                placeholder="Cost"
-                class="mr-1"
-                disabled
-                v-else
-            />
-            <f-select
-                :value="mainTag.name"
-                @input="changeMainTag"
-                :options="value.tags.map(({ name }) => name)"
-            />
+            <div class="field">
+                <f-input
+                    type="text"
+                    name="id"
+                    :value="value.id"
+                    @input="onChange"
+                    placeholder="Id"
+                    class="mr-1"
+                />
+            </div>
+            <div class="field">
+                <f-input
+                    type="text"
+                    name="name"
+                    :value="value.name"
+                    placeholder="Name"
+                    disabled
+                    class="mr-1"
+                />
+            </div>
+            <div class="field">
+                <f-input
+                    type="text"
+                    name="cost"
+                    :value="value.cost"
+                    @input="changeCost"
+                    placeholder="Cost"
+                    class="mr-1"
+                    v-if="!$types.isNull(value.cost)"
+                />
+                <f-input
+                    type="text"
+                    name="cost"
+                    :value="value.cost"
+                    @input="changeCost"
+                    placeholder="Cost"
+                    class="mr-1"
+                    disabled
+                    v-else
+                />
+            </div>
+            <div class="field vc">
+                <f-select
+                    :value="mainTag.name"
+                    @input="changeMainTag"
+                    :options="value.tags.map(({ name }) => name)"
+                />
+            </div>
         </div>
         <div class="ff mb-1">
             <f-detail :errors="errors['detail']" />
@@ -123,5 +131,13 @@ export default {
 .task {
     display: flex;
     flex-flow: row nowrap;
+}
+
+.field {
+    flex: 1 1 0;
+
+    &.vc .group {
+        flex: 1 1 0;
+    }
 }
 </style>
