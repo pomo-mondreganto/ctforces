@@ -1,20 +1,16 @@
 <template>
-    <a @click="go" class="link">{{ row[fieldName] }}</a>
+    <router-link
+        :to="{ name: 'task_index', params: { id: row.id } }"
+        class="link"
+        >{{ row[fieldData] }}</router-link
+    >
 </template>
 
 <script>
 export default {
     props: {
-        fieldName: String,
+        fieldData: String,
         row: Object,
-    },
-
-    methods: {
-        go: function() {
-            this.$router
-                .push({ name: 'task_index', params: { id: this.row.id } })
-                .catch(() => {});
-        },
     },
 };
 </script>

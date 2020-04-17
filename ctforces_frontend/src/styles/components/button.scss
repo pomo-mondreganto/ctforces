@@ -1,6 +1,7 @@
 @import '@/styles/global/_variables.scss';
 
 .btn {
+    display: block;
     background-color: $bluebtn;
     border-color: $bluebtn;
     color: $white;
@@ -10,6 +11,7 @@
     border-style: solid;
     border-width: 0.05em;
 
+    text-align: center;
     width: 100%;
 
     &.red {

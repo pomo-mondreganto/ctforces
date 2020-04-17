@@ -100,4 +100,8 @@ export default {
     margin-left: 1em;
     padding: 1em;
 }
+
+.header {
+    font-size: 2em;
+}
 </style>

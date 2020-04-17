@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="table-body">
-            <div class="table-row" v-for="row of data">
+            <div class="table-row" v-for="(row, index) of data" :key="index">
                 <div
                     v-for="field of fields"
                     :key="field.name"
@@ -21,7 +21,7 @@
                     <component
                         :is="getComponent(field)"
                         :row="row"
-                        :fieldName="getFieldName(field)"
+                        :fieldData="getFieldData(field)"
                     />
                 </div>
             </div>
@@ -47,7 +47,7 @@ export default {
             }
         },
 
-        getFieldName: function(field) {
+        getFieldData: function(field) {
             if (!this.$types.isUndefined(field.key)) {
                 return field.key;
             } else {

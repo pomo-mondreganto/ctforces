@@ -9,21 +9,24 @@
                 {{ taskRow[0].main_tag_details.name }}
             </div>
             <div class="tasks">
-                <div
+                <router-link
+                    :to="{
+                        name: 'contest_task',
+                        params: { id: $route.params.id, task_id: task.id },
+                    }"
                     class="task-wrap"
                     v-for="(task, index) of taskRow"
                     :key="index"
-                    @click="openTask(task.task)"
                 >
                     <div class="task">
                         <div class="name">
-                            {{ task.task_name }}
+                            {{ task.name }}
                         </div>
                         <div class="cost">
-                            {{ task.cost }}
+                            {{ task.contest_cost }}
                         </div>
                     </div>
-                </div>
+                </router-link>
             </div>
         </div>
     </div>
@@ -42,21 +45,11 @@ export default {
             if (this.$types.isNull(this.contest_tasks)) {
                 return null;
             }
+
             return this._.groupBy(
                 this.contest_tasks,
                 ({ main_tag_details: { name } }) => name
             );
-        },
-    },
-
-    methods: {
-        openTask: function(task) {
-            this.$router
-                .push({
-                    name: 'contest_task',
-                    params: { task_id: task },
-                })
-                .catch(() => {});
         },
     },
 };

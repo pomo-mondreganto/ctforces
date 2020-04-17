@@ -64,6 +64,9 @@
                     />
                 </div>
                 <div class="ff">
+                    <f-detail :errors="errors['detail']" />
+                </div>
+                <div class="ff">
                     <input type="submit" value="Update" class="btn" />
                 </div>
             </form>
@@ -126,7 +129,7 @@ export default {
         createFiles: async function() {
             let fileIds = [];
             for await (const file of this.attachedFiles) {
-                if (file.id !== undefined) {
+                if (!this.$types.isUndefined(file.id)) {
                     fileIds.push(file.id);
                     continue;
                 }

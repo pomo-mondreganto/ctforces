@@ -1,7 +1,13 @@
 <template>
-    <a :class="getInfo(rating).class" class="user" @click="go(username)">{{
-        username
-    }}</a>
+    <router-link
+        :to="{
+            name: 'profile',
+            params: { username: this.username },
+        }"
+        :class="getInfo(rating).class"
+        class="user nlnk"
+        >{{ username }}</router-link
+    >
 </template>
 
 <script>
@@ -15,15 +21,6 @@ export default {
 
     methods: {
         getInfo,
-
-        go: function() {
-            this.$router
-                .push({
-                    name: 'profile',
-                    params: { username: this.username },
-                })
-                .catch(() => {});
-        },
     },
 };
 </script>

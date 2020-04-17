@@ -1,6 +1,8 @@
 <template>
     <div class="menu">
-        <a class="logo vc ml-0-5" @click="indexRedirect">CTForces</a>
+        <router-link :to="{ name: 'index' }" class="logo vc ml-0-5"
+            >CTForces</router-link
+        >
         <div class="navigation vc">
             <nav-button to="index" text="Home" />
             <nav-button to="contest_list" text="Contests" />
@@ -26,12 +28,6 @@ export default {
         RegisterButton,
         NavButton,
     },
-
-    methods: {
-        indexRedirect: function() {
-            this.$router.push({ name: 'index' }).catch(() => {});
-        },
-    },
 };
 </script>
 
@@ -45,6 +41,8 @@ export default {
 }
 
 .logo {
+    text-decoration: none;
+    outline: none;
     color: $black;
     font-size: 1.5em;
     flex-grow: 2;

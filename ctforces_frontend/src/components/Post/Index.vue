@@ -1,8 +1,11 @@
 <template>
     <div v-if="!$types.isNull(post)">
-        <a class="header link" @click="go">
+        <router-link
+            :to="{ name: 'post_index', params: { id: post.id } }"
+            class="header link"
+        >
             {{ post.title }}
-        </a>
+        </router-link>
         <div class="mt-1">
             By
             <user
@@ -30,19 +33,15 @@ export default {
     components: {
         Markdown,
     },
-
-    methods: {
-        go: function() {
-            this.$router
-                .push({ name: 'post_index', params: { id: this.post.id } })
-                .catch(() => {});
-        },
-    },
 };
 </script>
 
 <style lang="scss" scoped>
 .content {
     border-left: 0.3em solid $gray;
+}
+
+.header {
+    font-size: 2em;
 }
 </style>

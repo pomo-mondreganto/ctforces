@@ -1,11 +1,7 @@
 <template>
     <card>
         <f-header text="Settings" />
-        <form
-            class="mt-3"
-            @submit.prevent="updateSettings"
-            v-if="!$types.isNull(user)"
-        >
+        <form @submit.prevent="updateSettings" v-if="!$types.isNull(user)">
             <div class="ff">
                 <f-input
                     type="text"
@@ -62,10 +58,10 @@
                 />
             </div>
             <div class="ff">
-                <input type="submit" value="Update" class="btn" />
+                <f-detail :errors="errors['detail']" />
             </div>
             <div class="ff">
-                <f-detail :errors="errors['detail']" />
+                <input type="submit" value="Update" class="btn" />
             </div>
         </form>
     </card>

@@ -1,18 +1,12 @@
 <template>
-    <button
-        type="button"
+    <router-link
+        :to="{ name: 'register' }"
         v-if="$types.isNull(user)"
-        @click="registerRedirect"
-        class="btn register-button ml-0-5"
+        class="btn register-button ml-0-5 nlnk"
     >
         Register
-    </button>
-    <button
-        type="button"
-        v-else
-        class="btn logout-button out ml-0-5"
-        @click="logout"
-    >
+    </router-link>
+    <button v-else class="btn logout-button out ml-0-5" @click="logout">
         Logout
     </button>
 </template>
@@ -24,10 +18,6 @@ export default {
     computed: mapState(['user']),
 
     methods: {
-        registerRedirect: function() {
-            this.$router.push({ name: 'register' }).catch(() => {});
-        },
-
         logout: async function() {
             await this.$http.post('/logout/');
             await this.$store.dispatch('UPDATE_USER');

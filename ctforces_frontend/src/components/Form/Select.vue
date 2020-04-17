@@ -1,11 +1,11 @@
 <template>
     <div class="group">
-        <select :value="value" @input="val => $emit('input', val)">
-            <option disabled value="">Select main tag</option>
-            <option v-for="option of options" :key="option">
-                {{ option }}
-            </option>
-        </select>
+        <v-select
+            class="select"
+            :options="options"
+            :value="value"
+            @input="val => $emit('input', val)"
+        />
         <div v-if="invalid">
             <div v-for="error of errors" :key="error" class="error">
                 {{ error }}
@@ -35,5 +35,11 @@ export default {
     color: $red;
     margin-top: 0.3em;
     font-size: 0.8em;
+}
+</style>
+
+<style lang="scss">
+.select {
+    width: 100%;
 }
 </style>

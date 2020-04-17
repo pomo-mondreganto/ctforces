@@ -1,10 +1,11 @@
 <template>
     <div class="p-r">
         <div class="a-tr">
-            <button type="button" @click="createPost()" class="btn">
+            <router-link :to="{ name: 'post_create' }" class="btn nlnk">
                 Create post
-            </button>
+            </router-link>
         </div>
+        <f-header :text="`${$route.params.username} blog`" />
         <div
             v-for="(post, index) of posts"
             :key="post.id"
@@ -18,6 +19,7 @@
 </template>
 
 <script>
+import FHeader from '@/components/Form/Header';
 import Post from '@/components/Post/Index';
 import Pagination from '@/components/Pagination/Index';
 import { mapState } from 'vuex';
@@ -35,6 +37,7 @@ export default {
     components: {
         Post,
         Pagination,
+        FHeader,
     },
 
     methods: {
@@ -48,10 +51,6 @@ export default {
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }
-        },
-
-        createPost: function() {
-            this.$router.push({ name: 'post_create' }).catch(() => {});
         },
     },
 

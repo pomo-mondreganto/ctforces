@@ -64,6 +64,9 @@
                     />
                 </div>
                 <div class="ff">
+                    <f-detail :errors="errors['detail']" />
+                </div>
+                <div class="ff">
                     <input type="submit" value="Create" class="btn" />
                 </div>
             </form>
