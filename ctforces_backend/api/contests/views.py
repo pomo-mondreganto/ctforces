@@ -404,6 +404,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             api.models.ContestTaskRelationship.objects.filter(
                 contest=contest,
                 solved_by=self.get_participating_team(contest),
+                solved_by__isnull=False,
             ).values_list('task_id', flat=True)
         )
 
