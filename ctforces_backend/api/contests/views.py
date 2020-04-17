@@ -357,15 +357,17 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if not contest:
             raise NotFound(detail='Contest not found.')
 
-        if not contest.is_published and not self.request.user.has_perm('view_contest', contest):
-            raise NotFound(detail='Contest not found.')
+        can_view = self.request.user.has_perm('view_contest', contest)
 
-        if not contest.is_running and not contest.is_finished:
-            if not self.request.user.has_perm('view_contest', contest):
+        if not can_view:
+            if not contest.is_published:
+                raise NotFound(detail='Contest not found.')
+
+            if not contest.is_running and not contest.is_finished:
                 raise PermissionDenied(detail='Contest is not started yet')
 
         team = self.get_participating_team(contest)
-        if not contest.is_finished and team is None:
+        if not can_view and not contest.is_finished and team is None:
             raise PermissionDenied(detail='Register for a contest first')
 
         if self.action == 'retrieve':
