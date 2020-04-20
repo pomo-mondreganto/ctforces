@@ -3,6 +3,7 @@ from collections import defaultdict
 from django.db.models import Count, Value as V, OuterRef, Exists, F, Prefetch, IntegerField, Avg
 from django.db.models.functions import Coalesce
 from django.utils import timezone
+from django_filters import rest_framework as filters
 from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
 from rest_framework import viewsets as rest_viewsets
@@ -291,10 +292,12 @@ class ContestParticipantRelationshipViewSet(rest_viewsets.ModelViewSet):
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
     serializer_class = api.contests.serializers.CPRSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('contest_id',)
 
     def get_queryset(self):
         qs = super(ContestParticipantRelationshipViewSet, self).get_queryset()
-        return qs.filter(participant_id__in=self.request.user.teams.only('id'))
+        return qs.filter(participant_id=self.request.user.id)
 
 
 class ContestTaskRelationshipViewSet(CustomPermissionsViewSetMixin,
