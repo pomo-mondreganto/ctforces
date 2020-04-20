@@ -55,6 +55,7 @@ export default {
     components: {
         Tabs,
     },
+
     computed: mapState(['user']),
 };
 </script>

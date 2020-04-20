@@ -35,7 +35,7 @@
             </a>
         </div>
         <div class="hr mt-1" v-if="task.files_details.length > 0"></div>
-        <form class="mt-2" @submit.prevent="submitFlag">
+        <form class="mt-2" @submit.prevent="submitFlag(flag)">
             <f-input
                 type="text"
                 name="flag"

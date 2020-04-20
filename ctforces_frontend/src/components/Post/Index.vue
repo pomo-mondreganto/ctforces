@@ -7,7 +7,7 @@
             {{ post.title }}
         </router-link>
         <div class="mt-1">
-            By
+            <span>By </span>
             <user
                 :username="post.author_username"
                 :rating="post.author_rating"

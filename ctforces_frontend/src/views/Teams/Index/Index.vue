@@ -91,14 +91,14 @@ export default {
             try {
                 const r = await this.$http.get(`/teams/${id}/`);
                 this.team = r.data;
-                this.team.participants_details = this.team.participants_details
-                    .concat([this.team.captain_details])
-                    .map((member, index) => {
+                this.team.participants_details = this.team.participants_details.map(
+                    (member, index) => {
                         return {
                             '#': index,
                             ...member,
                         };
-                    });
+                    }
+                );
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }

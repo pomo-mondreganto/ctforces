@@ -50,11 +50,17 @@ const routes = [
         path: '/teams/create',
         name: 'team_create',
         component: TeamCreate,
+        meta: {
+            auth: true,
+        },
     },
     {
         path: '/teams/:id/join',
         name: 'team_join',
         component: TeamJoin,
+        meta: {
+            auth: true,
+        },
     },
     {
         path: '/teams/:id',
@@ -99,6 +105,9 @@ const routes = [
         name: 'contest_register',
         path: '/contests/:id/register',
         component: ContestRegister,
+        meta: {
+            auth: true,
+        },
     },
     {
         path: '/contests/:id',

@@ -23,6 +23,7 @@
                     type="text"
                     name="first_name"
                     v-model="personalInfo.firstName"
+                    :errors="errors['first_name']"
                 />
             </div>
             <div class="ff">
@@ -30,6 +31,7 @@
                     type="text"
                     name="last_name"
                     v-model="personalInfo.lastName"
+                    :errors="errors['last_name']"
                 />
             </div>
             <div class="ff">
@@ -37,6 +39,7 @@
                     type="text"
                     name="telegram"
                     v-model="personalInfo.telegram"
+                    :errors="errors['telegram']"
                 />
             </div>
             <div class="ff">

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <task :task="task" :errors="errors" :submitFlag="submit" />
+        <task :task="task" :errors="serrors" :submitFlag="submit" />
         <f-detail :errors="errors['detail']" />
     </div>
 </template>
@@ -20,8 +20,8 @@ export default {
     data: function() {
         return {
             task: null,
-            flag: null,
             errors: {},
+            serrors: {},
         };
     },
 
@@ -44,22 +44,22 @@ export default {
             }
         },
 
-        submit: async function() {
+        submit: async function(flag) {
             const { id, task_id } = this.$route.params;
             try {
                 await this.$http.post(
                     `/contests/${id}/tasks/${task_id}/submit/`,
                     {
-                        flag: this.flag,
+                        flag: flag,
                     }
                 );
                 this.$toasted.success('Valid flag!');
             } catch (error) {
-                this.errors = this.$parse(error.response.data);
+                this.serrors = this.$parse(error.response.data);
                 if (
-                    !this.$types.isUndefined(this.errors['flag']) &&
-                    this.errors['flag'].length > 0 &&
-                    this.errors['flag'][0] === 'Invalid flag.'
+                    !this.$types.isUndefined(this.serrors['flag']) &&
+                    this.serrors['flag'].length > 0 &&
+                    this.serrors['flag'][0] === 'Invalid flag.'
                 ) {
                     this.$toasted.error('Invalid flag!');
                 }
