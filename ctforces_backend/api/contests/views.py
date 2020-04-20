@@ -297,7 +297,7 @@ class ContestParticipantRelationshipViewSet(rest_viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super(ContestParticipantRelationshipViewSet, self).get_queryset()
-        return qs.filter(participant_id=self.request.user.id)
+        return qs.filter(participant__participants__id=self.request.user.id)
 
 
 class ContestTaskRelationshipViewSet(CustomPermissionsViewSetMixin,
