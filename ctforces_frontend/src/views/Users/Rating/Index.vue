@@ -64,7 +64,7 @@ export default {
                 );
                 this.users = r.data.results.map((user, index) => {
                     return {
-                        '#': index,
+                        '#': index + (page - 1) * this.pagesize,
                         ...user,
                     };
                 });

@@ -59,6 +59,7 @@
                         </countdown>
                     </div>
                 </div>
+                <f-detail :errors="errors['detail']" />
             </card>
         </template>
     </master-layout>

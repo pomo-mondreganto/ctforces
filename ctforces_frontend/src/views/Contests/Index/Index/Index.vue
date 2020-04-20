@@ -1,10 +1,6 @@
 <template>
     <div>
-        <contest
-            :contest="contest"
-            :contest_tasks="contest_tasks"
-            :errors="errors"
-        />
+        <contest :contest="contest" :contest_tasks="contest_tasks" />
         <f-detail :errors="errors['detail']" />
     </div>
 </template>

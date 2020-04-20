@@ -1,7 +1,7 @@
 <template>
     <master-layout>
         <card>
-            <task :task="task" :errors="errors" :submitFlag="submit" />
+            <task :task="task" :errors="serrors" :submitFlag="submit" />
             <f-detail :errors="errors['detail']" />
         </card>
     </master-layout>
@@ -22,8 +22,8 @@ export default {
     data: function() {
         return {
             task: null,
-            flag: null,
             errors: {},
+            serrors: {},
         };
     },
 
@@ -44,19 +44,19 @@ export default {
             }
         },
 
-        submit: async function() {
+        submit: async function(flag) {
             const { id } = this.$route.params;
             try {
                 await this.$http.post(`/tasks/${id}/submit/`, {
-                    flag: this.flag,
+                    flag: flag,
                 });
                 this.$toasted.success('Valid flag!');
             } catch (error) {
-                this.errors = this.$parse(error.response.data);
+                this.serrors = this.$parse(error.response.data);
                 if (
-                    !this.$types.isUndefined(this.errors['flag']) &&
-                    this.errors['flag'].length > 0 &&
-                    this.errors['flag'][0] === 'Invalid flag.'
+                    !this.$types.isUndefined(this.serrors['flag']) &&
+                    this.serrors['flag'].length > 0 &&
+                    this.serrors['flag'][0] === 'Invalid flag.'
                 ) {
                     this.$toasted.error('Invalid flag!');
                 }

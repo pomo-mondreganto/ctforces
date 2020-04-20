@@ -12,7 +12,7 @@ export default {
 
 <style lang="scss" scoped>
 .header {
-    font-size: 2em;
+    font-size: 1.6em;
     color: $black;
 }
 </style>

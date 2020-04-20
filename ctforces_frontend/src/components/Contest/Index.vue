@@ -37,7 +37,6 @@ export default {
     props: {
         contest: Object,
         contest_tasks: Array,
-        errors: Object,
     },
 
     computed: {
