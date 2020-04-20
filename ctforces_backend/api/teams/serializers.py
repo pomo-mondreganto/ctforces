@@ -73,6 +73,17 @@ class TeamFullSerializer(rest_serializers.ModelSerializer):
             'can_delete_team',
         )
 
+    def validate_captain(self, captain):
+        if self.instance and captain:
+            if isinstance(captain, int):
+                exists = self.instance.participants.filter(id=captain)
+            else:
+                exists = self.instance.participants.filter(id=captain.id)
+
+            if not exists:
+                raise rest_serializers.ValidationError('Only a team member can be made captain')
+        return captain
+
     def update(self, instance, validated_data):
         if 'join_token' in validated_data:
             name = validated_data.get('name', instance.name)
@@ -97,6 +108,7 @@ class TeamFullSerializer(rest_serializers.ModelSerializer):
         assign_perm('change_team', instance.captain, instance)
         assign_perm('delete_team', instance.captain, instance)
         assign_perm('register_team', instance.captain, instance)
+        instance.participants.add(instance.captain)
         return instance
 
 

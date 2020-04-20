@@ -26,6 +26,7 @@ class TeamViewSet(CustomPermissionsViewSetMixin,
         'partial_update': (api_teams_permissions.HasEditTeamPermission,),
         'destroy': (api_teams_permissions.HasDeleteTeamPermission,),
         'get_full': (api_teams_permissions.HasEditTeamPermission,),
+        'kick': (api_teams_permissions.HasEditTeamPermission,),
     }
 
     klass = api.models.Team
