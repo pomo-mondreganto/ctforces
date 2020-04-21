@@ -1,6 +1,6 @@
 <template>
     <countdown :time="new Date(row[fieldData]) - new Date()">
-        <template v-slot="props">{{ $time(props) }}</template>
+        <template v-slot="props">{{ $time(props.time) }}</template>
     </countdown>
 </template>
 

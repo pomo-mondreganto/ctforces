@@ -121,11 +121,8 @@ export default {
                     });
                     fileIds.push(resp.data.id);
                 } catch (error) {
-                    this.$set(
-                        this.errors,
-                        'files',
-                        error.response.data['file_field']
-                    );
+                    this.errors = this.$parse(error.response.data);
+                    return null;
                 }
             }
             return fileIds;
@@ -152,18 +149,21 @@ export default {
                 resp.data.forEach(tag => tagIds.push(tag.id));
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
+                return null;
             }
 
             return tagIds;
         },
 
         createTask: async function() {
-            if (this.attachedFiles.length > 5) {
-                this.$set(this.errors, 'files', '5 files at most');
+            const fileIds = await this.createFiles();
+            if (this.$types.isNull(fileIds)) {
                 return;
             }
-            const fileIds = await this.createFiles();
             const tagIds = await this.createTags();
+            if (this.$types.isNull(tagIds)) {
+                return;
+            }
             try {
                 const resp = await this.$http.post('/tasks/', {
                     name: this.name,

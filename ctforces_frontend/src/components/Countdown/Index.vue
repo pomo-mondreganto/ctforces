@@ -1,6 +1,6 @@
 <template>
     <vue-countdown :time="Math.max(0, time)" v-slot="props">
-        {{ $time(props) }}
+        <slot :time="props" />
     </vue-countdown>
 </template>
 

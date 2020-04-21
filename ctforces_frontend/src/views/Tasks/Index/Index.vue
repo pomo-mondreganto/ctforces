@@ -1,7 +1,12 @@
 <template>
     <master-layout>
         <card>
-            <task :task="task" :errors="serrors" :submitFlag="submit" />
+            <task
+                :task="task"
+                :errors="serrors"
+                :submitFlag="submit"
+                :solved="solved"
+            />
             <f-detail :errors="errors['detail']" />
         </card>
     </master-layout>
@@ -22,6 +27,7 @@ export default {
     data: function() {
         return {
             task: null,
+            solved: {},
             errors: {},
             serrors: {},
         };
@@ -39,6 +45,10 @@ export default {
             try {
                 const r = await this.$http.get(`/tasks/${id}/`);
                 this.task = r.data;
+                this.solved = {
+                    number: this.task.solved_count,
+                    link: { name: 'task_solved', params: { id } },
+                };
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }

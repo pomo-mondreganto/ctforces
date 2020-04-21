@@ -39,7 +39,9 @@
                             :time="new Date(contest.end_time) - new Date()"
                         >
                             <template v-slot="props"
-                                >Time Remaining：{{ $time(props) }}</template
+                                >Time Remaining：{{
+                                    $time(props.time)
+                                }}</template
                             >
                         </countdown>
                     </div>
@@ -52,10 +54,9 @@
                     <div class="mt-1">
                         <countdown
                             :time="new Date(contest.start_time) - new Date()"
+                            v-slot="props"
                         >
-                            <template v-slot="props"
-                                >Starts in {{ $time(props) }}</template
-                            >
+                            Starts in {{ $time(props.time) }}
                         </countdown>
                     </div>
                 </div>

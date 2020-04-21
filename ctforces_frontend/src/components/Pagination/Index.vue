@@ -6,7 +6,9 @@
         <paginate
             v-model="page"
             :clickHandler="changePage"
-            :page-count="Math.floor((count + pagesize - 1) / pagesize)"
+            :page-count="
+                Math.max(1, Math.floor((count + pagesize - 1) / pagesize))
+            "
             :page-range="5"
             container-class="pagination"
             page-class="page"

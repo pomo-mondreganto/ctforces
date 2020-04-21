@@ -5,9 +5,10 @@
                 v-for="field of fields"
                 :key="field.name"
                 :class="header({ grow: field.grow, pos: field.pos })"
-                class="table-head-col"
             >
-                {{ field.name }}
+                <div class="table-head-col">
+                    {{ field.name }}
+                </div>
             </div>
         </div>
         <div class="table-body">
@@ -16,13 +17,22 @@
                     v-for="field of fields"
                     :key="field.name"
                     :class="header({ grow: field.grow, pos: field.pos })"
-                    class="table-body-col"
                 >
-                    <component
-                        :is="getComponent(field)"
-                        :row="row"
-                        :fieldData="getFieldData(field)"
-                    />
+                    <div class="table-body-col">
+                        <component
+                            :is="getComponent(field)"
+                            :row="row"
+                            :fieldData="getFieldData(field)"
+                            v-if="$types.isUndefined(field.aux)"
+                        />
+                        <component
+                            :is="getComponent(field)"
+                            :row="row"
+                            :fieldData="getFieldData(field)"
+                            :aux="field.aux"
+                            v-else
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -62,7 +72,7 @@ export default {
         },
 
         header: function({ grow = 1, pos = 'c' }) {
-            return ['ai-c', 'fb-0', `fg-${grow}`, this.getPos(pos)];
+            return ['ai-c', 'fs-0', 'fb-0', `fg-${grow}`, this.getPos(pos)];
         },
     },
 };
@@ -97,13 +107,16 @@ export default {
     flex-flow: row nowrap;
     border-bottom: 0.05em solid $gray;
 
-    .table-body-col {
-        padding: 0.8em;
+    & > :first-child {
+        border-left: 0.05em solid $gray;
+    }
+
+    & > * {
         border-right: 0.05em solid $gray;
         display: flex;
 
-        &:nth-child(1) {
-            border-left: 0.05em solid $gray;
+        & > .table-body-col {
+            padding: 0.8em;
         }
     }
 }

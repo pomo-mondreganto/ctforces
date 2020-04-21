@@ -6,12 +6,14 @@ import TaskList from '@/views/Tasks/List/Index';
 import TaskIndex from '@/views/Tasks/Index/Index';
 import TaskCreate from '@/views/Tasks/Create/Index';
 import TaskEdit from '@/views/Tasks/Edit/Index';
+import TaskSolved from '@/views/Tasks/Solved/Index';
 
 import ContestCreate from '@/views/Contests/Create/Index';
 import ContestIndex from '@/views/Contests/Index/Index';
 import ContestTasks from '@/views/Contests/Index/Index/Index';
 import ContestScoreboard from '@/views/Contests/Index/Scoreboard/Index';
-import ContestTask from '@/views/Contests/Index/Task/Index';
+import ContestTask from '@/views/Contests/Index/Task/Index/Index';
+import ContestTaskSolved from '@/views/Contests/Index/Task/Solved/Index';
 import ContestList from '@/views/Contests/List/Index';
 import ContestRegister from '@/views/Contests/Register/Index';
 
@@ -89,6 +91,11 @@ const routes = [
         },
     },
     {
+        path: '/tasks/:id/solved',
+        name: 'task_solved',
+        component: TaskSolved,
+    },
+    {
         path: '/tasks/:id',
         name: 'task_index',
         component: TaskIndex,
@@ -118,6 +125,11 @@ const routes = [
                 name: 'contest_scoreboard',
                 path: 'scoreboard',
                 component: ContestScoreboard,
+            },
+            {
+                name: 'contest_task_solved',
+                path: 'task/:task_id/solved',
+                component: ContestTaskSolved,
             },
             {
                 name: 'contest_task',

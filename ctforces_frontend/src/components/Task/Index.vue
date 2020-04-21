@@ -1,5 +1,15 @@
 <template>
     <div v-if="!$types.isNull(task)">
+        <div class="p-r" v-if="!$types.isNull(task) && task.can_edit_task">
+            <div class="a-tr">
+                <router-link
+                    :to="{ name: 'task_edit', params: { id: task.id } }"
+                    class="btn nlnk"
+                >
+                    Edit task
+                </router-link>
+            </div>
+        </div>
         <h1 class="header">
             {{ task.name }}
         </h1>
@@ -8,7 +18,10 @@
             <user
                 :username="task.author_username"
                 :rating="task.author_rating"
-            />
+            />,
+            <router-link :to="solved.link"
+                >{{ solved.number }} solves</router-link
+            >
         </div>
         <div class="tags mt-1 mb-1">
             <span class="tags-h">Tags:</span>
@@ -64,6 +77,7 @@ export default {
         task: Object,
         errors: Object,
         submitFlag: Function,
+        solved: Object,
     },
 
     components: {

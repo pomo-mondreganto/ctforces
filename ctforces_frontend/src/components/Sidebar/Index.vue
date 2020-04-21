@@ -26,6 +26,7 @@
         <card>
             <h2 class="sidebar-header ta-c">Top users</h2>
             <f-table
+                v-if="!$types.isNull(users)"
                 class="mt-1"
                 :fields="[
                     {
@@ -68,7 +69,7 @@ export default {
     data: function() {
         return {
             errors: {},
-            users: [],
+            users: null,
             UserComp: User,
             serverUrl,
         };

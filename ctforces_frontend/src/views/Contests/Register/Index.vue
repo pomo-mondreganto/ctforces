@@ -18,22 +18,38 @@
                                     ]"
                                     v-for="teamV of teams"
                                     :key="teamV.id"
-                                    @click="changeTeam"
+                                    @click.native="changeTeam(teamV)"
                                 >
                                     {{ teamV.name }}
                                 </card>
                             </div>
-                            <card class="participant-list">
-                                123
-                            </card>
+                            <div class="participant-list">
+                                <div v-if="!$types.isNull(users)">
+                                    <card
+                                        :class="[
+                                            'participant',
+                                            participants[user.id]
+                                                ? 'chosen'
+                                                : '',
+                                        ]"
+                                        v-for="user of users"
+                                        :key="user.id"
+                                        @click.native="
+                                            changeParticipant(user.id)
+                                        "
+                                    >
+                                        {{ user.username }}
+                                    </card>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <f-detail :errors="rerrors['detail']" />
+                    <pagination :count="count" :pagesize="pagesize" />
                     <div class="ff">
                         <input type="submit" value="Register" class="btn" />
                     </div>
                 </form>
-                <f-detail :errors="rerrors['detail']" />
-                <pagination :count="count" :pagesize="pagesize" />
             </div>
             <f-detail :errors="cerrors['detail']" />
         </card>
@@ -58,6 +74,8 @@ export default {
             team: { id: null, name: null },
             cerrors: {},
             rerrors: {},
+            users: null,
+            participants: {},
             count: null,
             pagesize: 50,
         };
@@ -92,7 +110,7 @@ export default {
             if (!this.$types.isNull(username)) {
                 try {
                     const r = await this.$http.get(
-                        `/users/${username}/teams/?page=${page}`
+                        `/users/${username}/teams/?page=${page}&page_size=${this.pagesize}`
                     );
                     this.teams = r.data.results;
                     if (this.teams.length > 0) {
@@ -108,18 +126,51 @@ export default {
         },
 
         registerForContest: async function() {
+            let toRegister = [];
+            for (let user of this.users) {
+                if (this.participants[user.id]) {
+                    toRegister.push(user.id);
+                }
+            }
             try {
                 await this.$http.post(`/contest_participant_relationship/`, {
                     contest: this.contest.id,
-                    participant: this.user.id,
+                    participant: this.team.id,
+                    registered_users: toRegister,
                 });
+
+                if (this.contest.is_running) {
+                    this.$router
+                        .push({
+                            name: 'contest_tasks',
+                            params: { id: this.contest.id },
+                        })
+                        .catch(() => {});
+                } else {
+                    this.$router.push({ name: 'contest_list' }).catch(() => {});
+                }
             } catch (error) {
                 this.rerrors = this.$parse(error.response.data);
             }
         },
 
-        changeTeam: function(team) {
+        changeTeam: async function(team) {
             this.team = team;
+            this.participants = {};
+            try {
+                const r = await this.$http.get(`/teams/${team.id}/`);
+                this.users = r.data.participants_details;
+            } catch (error) {
+                this.rerrors = this.$parse(error.response.data);
+            }
+        },
+
+        changeParticipant: function(id) {
+            if (this.participants[id]) {
+                this.$set(this.participants, id, false);
+            } else {
+                this.$set(this.participants, id, true);
+            }
         },
     },
 
@@ -131,21 +182,42 @@ export default {
 .participants {
     display: flex;
     flex-flow: row nowrap;
+    align-items: flex-start;
 }
 
 .team-list {
     flex: 1 1 0;
     margin-right: 1em;
+}
+
+.team {
     cursor: pointer;
 
-    & > .team:hover,
-    & > .chosen {
+    &:hover,
+    &.chosen {
         background-color: $gray;
     }
+}
+
+.team:not(:last-child) {
+    margin-bottom: 1em;
 }
 
 .participant-list {
     flex: 1 1 0;
     text-align: center;
+}
+
+.participant:not(:last-child) {
+    margin-bottom: 1em;
+}
+
+.participant {
+    cursor: pointer;
+
+    &:hover,
+    &.chosen {
+        background-color: $gray;
+    }
 }
 </style>

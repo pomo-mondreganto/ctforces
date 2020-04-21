@@ -1,6 +1,11 @@
 <template>
     <div class="p-r">
-        <div class="a-tr">
+        <div
+            class="a-tr"
+            v-if="
+                !$types.isNull(user) && user.username === $route.params.username
+            "
+        >
             <router-link :to="{ name: 'post_create' }" class="btn nlnk">
                 Create post
             </router-link>

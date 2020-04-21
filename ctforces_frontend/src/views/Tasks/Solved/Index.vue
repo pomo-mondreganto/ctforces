@@ -1,7 +1,7 @@
 <template>
     <master-layout>
-        <card>
-            <f-header text="Rating" />
+        <card v-if="!$types.isNull(task)">
+            <f-header :text="`${task.name} solves`" />
             <div class="mt-1" v-if="!$types.isNull(users)">
                 <f-table
                     :fields="[
@@ -47,6 +47,7 @@ export default {
 
     data: function() {
         return {
+            task: null,
             users: null,
             UserComp: User,
             errors: {},
@@ -56,11 +57,12 @@ export default {
     },
 
     methods: {
-        fetchRating: async function() {
+        fetchSolved: async function() {
             const { page = 1 } = this.$route.query;
+            const { id } = this.$route.params;
             try {
                 const r = await this.$http.get(
-                    `/users/rating_top/?page=${page}&page_size=${this.pagesize}`
+                    `/tasks/${id}/solved/?page=${page}&page_size=${this.pagesize}`
                 );
                 this.users = r.data.results.map((user, index) => {
                     return {
@@ -73,15 +75,27 @@ export default {
                 this.errors = this.$parse(error.response.data);
             }
         },
+
+        fetchTask: async function() {
+            const { id } = this.$route.params;
+            try {
+                const r = await this.$http.get(`/tasks/${id}/`);
+                this.task = r.data;
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
     },
 
     created: async function() {
-        await this.fetchRating();
+        await this.fetchTask();
+        await this.fetchSolved();
     },
 
     watch: {
         async $route() {
-            await this.fetchRating();
+            await this.fetchTask();
+            await this.fetchSolved();
         },
     },
 };

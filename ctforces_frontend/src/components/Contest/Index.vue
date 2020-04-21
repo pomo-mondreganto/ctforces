@@ -14,7 +14,7 @@
                         name: 'contest_task',
                         params: { id: $route.params.id, task_id: task.id },
                     }"
-                    class="task-wrap"
+                    class="task-wrap nlnk"
                     v-for="(task, index) of taskRow"
                     :key="index"
                 >
@@ -84,10 +84,12 @@ export default {
 
 .name {
     margin-top: 0.5em;
+    color: $black;
 }
 
 .cost {
     margin-top: 1em;
     margin-bottom: 0.5em;
+    color: $black;
 }
 </style>

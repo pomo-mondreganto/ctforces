@@ -128,11 +128,7 @@ export default {
     methods: {
         createFiles: async function() {
             let fileIds = [];
-            for await (const file of this.attachedFiles) {
-                if (!this.$types.isUndefined(file.id)) {
-                    fileIds.push(file.id);
-                    continue;
-                }
+            for (const file of this.attachedFiles) {
                 let form = new FormData();
                 form.set('name', file.name);
                 form.append('file_field', file);
@@ -141,19 +137,14 @@ export default {
                         url: '/task_files/',
                         method: 'post',
                         data: form,
-                        headers: { 'Content-Type': 'multipart/form-data' },
                     });
                     fileIds.push(resp.data.id);
                 } catch (error) {
-                    this.$set(
-                        this.errors,
-                        'files',
-                        error.response.data['file_field']
-                    );
-                    return { ok: false };
+                    this.errors = this.$parse(error.response.data);
+                    return null;
                 }
             }
-            return { ok: true, ids: fileIds };
+            return fileIds;
         },
 
         createTags: async function() {
@@ -162,7 +153,7 @@ export default {
             for await (const tag of this.tags) {
                 const tagName = tag.text;
                 const resp = await this.$http.get(
-                    `/task_tags/search?name=${tagName}/`
+                    `/task_tags/search?name=${tagName}`
                 );
 
                 if (resp.data.length > 0 && resp.data[0].name == tagName) {
@@ -177,23 +168,19 @@ export default {
                 resp.data.forEach(tag => tagIds.push(tag.id));
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
-                return { ok: false };
+                return null;
             }
 
-            return { ok: true, ids: tagIds };
+            return tagIds;
         },
 
         updateTask: async function() {
-            if (this.attachedFiles.length > 5) {
-                this.errors['files'] = '5 files at most';
+            const fileIds = await this.createFiles();
+            if (this.$types.isNull(fileIds)) {
                 return;
             }
-            const { ok: ok1, ids: fileIds } = await this.createFiles();
-            if (!ok1) {
-                return;
-            }
-            const { ok: ok2, ids: tagIds } = await this.createTags();
-            if (!ok2) {
+            const tagIds = await this.createTags();
+            if (this.$types.isNull(tagIds)) {
                 return;
             }
             try {

@@ -1,6 +1,11 @@
 <template>
     <div>
-        <task :task="task" :errors="serrors" :submitFlag="submit" />
+        <task
+            :task="task"
+            :errors="serrors"
+            :submitFlag="submit"
+            :solved="solved"
+        />
         <f-detail :errors="errors['detail']" />
     </div>
 </template>
@@ -22,6 +27,7 @@ export default {
             task: null,
             errors: {},
             serrors: {},
+            solved: {},
         };
     },
 
@@ -39,6 +45,13 @@ export default {
                     `/contests/${id}/tasks/${task_id}/`
                 );
                 this.task = r.data;
+                this.solved = {
+                    number: this.task.solved_count,
+                    link: {
+                        name: 'contest_task_solved',
+                        params: { id, task_id },
+                    },
+                };
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }

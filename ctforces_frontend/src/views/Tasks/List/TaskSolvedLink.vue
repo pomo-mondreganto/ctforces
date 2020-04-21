@@ -1,7 +1,9 @@
 <template>
-    <router-link class="link" :to="{ name: 'index' }">{{
-        row[fieldData]
-    }}</router-link>
+    <router-link
+        class="link"
+        :to="{ name: 'task_solved', params: { id: row.id } }"
+        >{{ row[fieldData] }}</router-link
+    >
 </template>
 
 <script>

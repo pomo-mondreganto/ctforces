@@ -1,4 +1,4 @@
-import { isString } from '@/utils/types';
+import { isString, isUndefined } from '@/utils/types';
 
 function parse(errors) {
     let result = {};
@@ -8,6 +8,10 @@ function parse(errors) {
         } else {
             result[key] = errors[key];
         }
+    }
+    if (!isUndefined(result.non_field_errors)) {
+        result.detail = result.non_field_errors;
+        delete result.non_field_errors;
     }
     return result;
 }

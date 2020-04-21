@@ -1,17 +1,7 @@
 <template>
-    <div class="p-r">
-        <div
-            class="a-tr"
-            v-if="
-                !$types.isNull(user) && user.username === $route.params.username
-            "
-        >
-            <router-link :to="{ name: 'team_create' }" class="btn nlnk">
-                Create team
-            </router-link>
-        </div>
-        <f-header :text="`${$route.params.username} teams`" />
-        <div class="mt-1" v-if="!$types.isNull(teams)">
+    <div v-if="!$types.isNull(task)">
+        <f-header :text="`${task.name} solves`" />
+        <div class="mt-1" v-if="!$types.isNull(users)">
             <f-table
                 :fields="[
                     {
@@ -25,8 +15,14 @@
                         grow: 11,
                         comp: TeamComp,
                     },
+                    {
+                        name: 'Rating',
+                        pos: 'c',
+                        key: 'rating',
+                        grow: 3,
+                    },
                 ]"
-                :data="teams"
+                :data="users"
             />
         </div>
         <f-detail :errors="errors['detail']" />
@@ -36,21 +32,21 @@
 
 <script>
 import FHeader from '@/components/Form/Header';
-import Team from '@/components/Table/Team';
-import { mapState } from 'vuex';
-import Pagination from '@/components/Pagination/Index';
 import FTable from '@/components/Table/Index';
+import Team from '@/components/Table/Team';
+import Pagination from '@/components/Pagination/Index';
 
 export default {
     components: {
         FHeader,
-        Pagination,
         FTable,
+        Pagination,
     },
 
     data: function() {
         return {
-            teams: null,
+            task: null,
+            users: null,
             TeamComp: Team,
             errors: {},
             count: null,
@@ -59,16 +55,17 @@ export default {
     },
 
     methods: {
-        fetchTeams: async function() {
+        fetchSolved: async function() {
             const { page = 1 } = this.$route.query;
+            const { task_id, id } = this.$route.params;
             try {
                 const r = await this.$http.get(
-                    `/users/${this.$route.params.username}/teams/?page=${page}&page_size=${this.pagesize}`
+                    `/contests/${id}/tasks/${task_id}/solved/?page=${page}&page_size=${this.pagesize}`
                 );
-                this.teams = r.data.results.map((team, index) => {
+                this.users = r.data.results.map((user, index) => {
                     return {
                         '#': index + (page - 1) * this.pagesize,
-                        ...team,
+                        ...user,
                     };
                 });
                 this.count = r.data.count;
@@ -76,18 +73,30 @@ export default {
                 this.errors = this.$parse(error.response.data);
             }
         },
+
+        fetchTask: async function() {
+            const { id, task_id } = this.$route.params;
+            try {
+                const r = await this.$http.get(
+                    `/contests/${id}/tasks/${task_id}/`
+                );
+                this.task = r.data;
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
     },
 
     created: async function() {
-        await this.fetchTeams();
+        await this.fetchTask();
+        await this.fetchSolved();
     },
 
     watch: {
         async $route() {
-            await this.fetchTeams();
+            await this.fetchTask();
+            await this.fetchSolved();
         },
     },
-
-    computed: mapState(['user']),
 };
 </script>
