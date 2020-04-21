@@ -11,13 +11,20 @@ class TaskTagSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.TaskTag
         fields = ('id', 'name')
+        extra_kwargs = {
+            'name': {
+                'required': True,
+                'validators': [],
+            },
+        }
 
     @staticmethod
     def validate_name(data):
-        data = data.lower()
-        if api_models.TaskTag.objects.filter(name=data).exists():
-            raise rest_serializers.ValidationError('Tag with this name already exists.')
-        return data
+        return data.lower()
+
+    def create(self, validated_data):
+        instance, _ = api_models.TaskTag.objects.get_or_create(**validated_data)
+        return instance
 
 
 class TaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
