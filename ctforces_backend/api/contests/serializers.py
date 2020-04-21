@@ -233,7 +233,7 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerial
 
     @staticmethod
     def get_hints_method(obj):
-        return api.models.TaskHint.objects.filter(is_published=True, task=obj).values_list('id', flat=True)
+        return obj.hints.filter(is_published=True).values_list('id', flat=True)
 
 
 class ContestFullSerializer(rest_serializers.ModelSerializer):

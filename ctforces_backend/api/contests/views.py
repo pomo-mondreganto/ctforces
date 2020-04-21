@@ -1,6 +1,18 @@
 from collections import defaultdict
 
-from django.db.models import Count, Value as V, OuterRef, Exists, F, Prefetch, IntegerField, Avg
+from django.db.models import (
+    Count,
+    Value as V,
+    OuterRef,
+    Exists,
+    F,
+    Prefetch,
+    IntegerField,
+    Avg,
+    Case,
+    When,
+    BooleanField
+)
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django_filters import rest_framework as filters
@@ -385,6 +397,18 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
         return contest
 
+    @staticmethod
+    def relation_to_task(relation):
+        task = relation.task
+
+        task.is_solved_by_user = relation.is_solved_by_user
+        task.solved_count = relation.solved_count
+        task.main_tag = relation.main_tag
+        task.contest_cost = relation.current_cost
+        task.ordering_number = relation.ordering_number
+
+        return task
+
     def get_queryset(self):
         contest = self.get_contest()
 
@@ -393,12 +417,21 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         else:
             manager = api.models.ContestTaskRelationship.static_current_cost_annotated
 
+        team = self.get_participating_team(contest)
+
         contest_task_relationship_query = manager.filter(
             contest=contest,
         ).annotate(
             solved_count=Count(
                 'solved_by',
                 distinct=True,
+            ),
+            is_solved_by_user=Case(
+                When(
+                    solved_by=team,
+                    then=V(1)),
+                default=V(0),
+                output_field=BooleanField(),
             ),
         ).prefetch_related(
             'task__tags',
@@ -414,29 +447,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if self.action in ['retrieve', 'get_solved', 'submit_flag']:
             return contest_task_relationship_query
 
-        all_solved = set(
-            api.models.ContestTaskRelationship.objects.filter(
-                contest=contest,
-                solved_by=self.get_participating_team(contest),
-                solved_by__isnull=False,
-            ).values_list('task_id', flat=True)
-        )
-
-        tasks = []
-        for relation in contest_task_relationship_query:
-            task = relation.task
-
-            if task.id in all_solved:
-                task.is_solved_by_user = True
-            else:
-                task.is_solved_by_user = False
-
-            task.solved_count = relation.solved_count
-            task.main_tag = relation.main_tag
-            task.contest_cost = relation.current_cost
-            task.ordering_number = relation.ordering_number
-
-            tasks.append(task)
+        tasks = list(map(self.relation_to_task, contest_task_relationship_query))
 
         return tasks
 
@@ -451,7 +462,8 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             raise ValidationError(detail='Invalid task_id.')
 
         try:
-            task = self.get_queryset().get(task_id=task_id).task
+            qs = self.get_queryset()
+            task = self.relation_to_task(qs.get(task_id=task_id))
         except api.models.ContestTaskRelationship.DoesNotExist:
             raise NotFound('No such task.')
 
@@ -464,6 +476,10 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return api.contests.serializers.ContestTaskViewSerializer
         return super(ContestTaskViewSet, self).get_serializer_class()
+
+    def retrieve(self, request, *args, **kwargs):
+        print('Retrieve', self.get_serializer_class())
+        return super(ContestTaskViewSet, self).retrieve(request, *args, **kwargs)
 
     @cache_response(timeout=5, key_func=ContestTaskListKeyConstructor())
     def list(self, request, *args, **kwargs):
