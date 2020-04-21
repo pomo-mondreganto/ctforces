@@ -395,6 +395,11 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
         contest_task_relationship_query = manager.filter(
             contest=contest,
+        ).annotate(
+            solved_count=Count(
+                'solved_by',
+                distinct=True,
+            ),
         ).prefetch_related(
             'task__tags',
         ).select_related(
@@ -426,29 +431,12 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             else:
                 task.is_solved_by_user = False
 
+            task.solved_count = relation.solved_count
             task.main_tag = relation.main_tag
             task.contest_cost = relation.current_cost
             task.ordering_number = relation.ordering_number
 
             tasks.append(task)
-
-        if self.action == 'list':
-            counts = api.models.ContestTaskRelationship.objects.filter(
-                contest=contest,
-            ).annotate(
-                solved_count=Coalesce(
-                    Count(
-                        'solved_by',
-                        distinct=True,
-                    ),
-                    V(0),
-                ),
-            ).values_list('id', 'solved_count')
-
-            per_task_solves = {count[0]: count[1] for count in counts}
-
-            for task in tasks:
-                task.solved_count = per_task_solves.get(task.id, 0)
 
         return tasks
 
