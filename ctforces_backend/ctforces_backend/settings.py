@@ -132,3 +132,4 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20971520
 DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+GUARDIAN_GET_INIT_ANONYMOUS_USER = 'api.models.get_anonymous_user_instance'

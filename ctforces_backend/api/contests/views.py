@@ -353,9 +353,15 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if hasattr(self.request, 'team_participant'):
             return self.request.team_participant
 
-        self.request.team_participant = contest.participants.filter(
-            id__in=self.request.user.teams.only('id'),
-        ).first()
+        helper = api.models.CPRHelper.objects.filter(
+            contest=contest,
+            user=self.request.user.id,
+        ).select_related('cpr__participant').first()
+        if not helper:
+            self.request.team_participant = None
+        else:
+            self.request.team_participant = helper.cpr.participant
+
         return self.request.team_participant
 
     def get_contest(self):

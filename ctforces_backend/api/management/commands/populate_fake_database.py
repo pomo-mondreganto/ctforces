@@ -40,8 +40,8 @@ class Command(BaseCommand):
                 author=author,
                 title=fake.sentence(),
                 body=fake.text(),
-                is_published=random.choice([True, False]),
-                show_on_main_page=random.choice([False] * 5 + [True])
+                is_published=fake.pybool(),
+                show_on_main_page=fake.pybool(),
             )
             p.save()
             results.append(p)
@@ -67,7 +67,7 @@ class Command(BaseCommand):
         for _ in range(count):
             author = random.choice(users[:20])
             solved = list(set(random.choices(users[20:], k=random.randint(1, 50))))
-            tags = list(set(random.choices(tags, k=random.randint(1, 5))))
+            task_tags = list(set(random.choices(tags, k=random.randint(1, 5))))
             task = models.Task(
                 author=author,
                 name=fake.sentence(nb_words=2),
@@ -79,7 +79,7 @@ class Command(BaseCommand):
             )
             task.save()
 
-            task.tags.add(*tags)
+            task.tags.add(*task_tags)
             task.solved_by.add(*solved)
 
             results.append(task)
@@ -110,9 +110,11 @@ class Command(BaseCommand):
 
         for _ in range(count):
             captain = random.choice(users)
+            name = fake.sentence(nb_words=4)
             t = models.Team(
                 captain=captain,
-                name=fake.sentence(nb_words=5),
+                name=name,
+                join_token=models.Team.gen_join_token(name),
             )
 
             t.save()
@@ -191,9 +193,9 @@ class Command(BaseCommand):
         return results
 
     def handle(self, *args, **options):
-        users = self.create_users(100)
-        tags = self.create_tags(50)
-        _ = self.create_posts(users, 100)
+        users = self.create_users(200)
+        tags = self.create_tags(20)
+        _ = self.create_posts(users, 200)
         tasks = self.create_tasks(users, tags, 200)
         _ = self.create_hints(users, tasks, 400)
         teams = self.create_teams(users, 300)

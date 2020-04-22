@@ -14,3 +14,9 @@ class HasViewPostPermission(api_permissions.HasViewPermissionIfPublishedMixin):
 
     def has_permission(self, request, view):
         return True
+
+    def has_object_permission(self, request, view, obj):
+        if obj.show_on_main_page:
+            return True
+
+        return super(HasViewPostPermission, self).has_object_permission(request, view, obj)

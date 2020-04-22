@@ -12,11 +12,11 @@ import psycopg2
 
 
 def database_check():
-    dbname = os.environ.get('CTFORCES_DB_NAME')
-    user = os.environ.get('CTFORCES_DB_USER')
-    password = os.environ.get('CTFORCES_DB_PASSWORD')
-    host = os.environ.get('POSTGRES_HOST', 'ctforces-postgres')
-    port = os.environ.get('POSTGRES_PORT', 5432)
+    dbname = os.environ['POSTGRES_DB']
+    user = os.environ['POSTGRES_USER']
+    password = os.environ['POSTGRES_PASSWORD']
+    host = os.environ['POSTGRES_HOST']
+    port = os.environ['POSTGRES_PORT']
 
     print("HOST: {host}:{port}, DB: {dbname}, USER: {user}".format(
         dbname=dbname,
