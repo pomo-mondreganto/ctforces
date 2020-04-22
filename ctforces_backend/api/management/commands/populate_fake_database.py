@@ -1,6 +1,7 @@
 import random
 
 from django.core.management.base import BaseCommand
+from django.utils.timezone import get_current_timezone, now
 from faker import Faker
 
 from api import models as models
@@ -115,11 +116,77 @@ class Command(BaseCommand):
             )
 
             t.save()
-            parts = list(set(random.choices(users, k=random.randint(0, 40))))
+            parts = list(set(random.choices(users, k=random.randint(0, 40)) + [captain]))
             if parts:
                 t.participants.add(*parts)
 
             results.append(t)
+
+        return results
+
+    @staticmethod
+    def create_contests(users, teams, tasks, count):
+        results = []
+
+        for _ in range(count):
+            author = random.choice(users)
+            end_time = fake.date_time_this_year(before_now=True, after_now=True, tzinfo=get_current_timezone())
+            start_time = fake.date_time_between(start_date='-1y', end_date=end_time, tzinfo=get_current_timezone())
+            running = (end_time > now() >= start_time)
+            finished = end_time <= now()
+            c = models.Contest(
+                author=author,
+                name=fake.sentence(nb_words=2),
+                description=fake.text(),
+                start_time=start_time,
+                end_time=end_time,
+                is_published=fake.pybool(),
+                is_running=running,
+                is_finished=finished,
+                is_registration_open=fake.pybool(),
+                publish_tasks_after_finished=fake.pybool(),
+                is_rated=fake.pybool(),
+                always_recalculate_rating=fake.pybool(),
+                dynamic_scoring=fake.pybool(),
+            )
+
+            c.save()
+
+            participants = list(set(random.choices(teams, k=random.randint(1, 50))))
+            for team in participants:
+                rel = models.ContestParticipantRelationship(contest=c, participant=team)
+                rel.save()
+
+                team_members = team.participants.all()
+                registered_users = list(set(random.choices(team_members, k=random.randint(1, len(team_members)))))
+                to_create = []
+                for u in registered_users:
+                    helper = models.CPRHelper(
+                        contest=c,
+                        user=u,
+                        cpr=rel,
+                    )
+                    to_create.append(helper)
+                models.CPRHelper.objects.bulk_create(to_create, ignore_conflicts=True)
+
+            chosen_tasks = list(set(random.choices(tasks, k=random.randint(1, 50))))
+            for task in chosen_tasks:
+                rel = models.ContestTaskRelationship(
+                    contest=c,
+                    task=task,
+                    main_tag=random.choice(task.tags.all()),
+                    min_cost=fake.pyint(1, 500),
+                    max_cost=fake.pyint(501, 1000),
+                    decay_value=fake.pyint(1, 100),
+                    ordering_number=fake.pyint(1, len(chosen_tasks)),
+                )
+                rel.save()
+
+                if running or finished:
+                    solved = list(set(random.choices(participants, k=random.randint(1, len(participants)))))
+                    rel.solved_by.add(*solved)
+
+            results.append(c)
 
         return results
 
@@ -130,3 +197,4 @@ class Command(BaseCommand):
         tasks = self.create_tasks(users, tags, 200)
         _ = self.create_hints(users, tasks, 400)
         teams = self.create_teams(users, 300)
+        _ = self.create_contests(users=users, teams=teams, tasks=tasks, count=100)
