@@ -35,7 +35,11 @@ def start_contest(task, contest_id):
     contest = get_model('api', 'Contest').objects.filter(query_filter).first()
 
     if not contest:
-        logger.info('Contest not staring, no such contest')
+        logger.info(f'Contest {contest_id} not staring, no such contest')
+        return
+
+    if contest.is_running:
+        logger.info(f'Contest {contest_id} not staring, already started')
         return
 
     logger.info(f'Starting contest {contest.id}')

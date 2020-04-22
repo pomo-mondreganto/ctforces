@@ -17,10 +17,6 @@ from rest_framework import exceptions
 from api.celery_tasks import process_stdimage
 
 
-def get_anonymous_user_instance(User):
-    return User(real_username='AnonymousUser')
-
-
 @deconstructible
 class CustomASCIIUsernameValidator(validators.RegexValidator):
     regex = r'^[\w_-]{5,25}$'
