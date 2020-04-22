@@ -83,12 +83,6 @@ export default {
         fetchTeam: async function() {
             const { id } = this.$route.params;
             try {
-                const r = await this.$http.get(`/teams/${id}/full`);
-                this.token = r.data.join_token;
-            } catch (error) {
-                this.errors = {};
-            }
-            try {
                 const r = await this.$http.get(`/teams/${id}/`);
                 this.team = r.data;
                 this.team.participants_details = this.team.participants_details.map(
@@ -99,6 +93,14 @@ export default {
                         };
                     }
                 );
+                if (this.team.can_edit_team) {
+                    try {
+                        const r = await this.$http.get(`/teams/${id}/full/`);
+                        this.token = r.data.join_token;
+                    } catch (error) {
+                        this.errors = this.$parse(error.response.data);
+                    }
+                }
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }
@@ -118,6 +120,9 @@ export default {
     computed: {
         ...mapState(['user']),
         inTeam: function() {
+            if (this.$types.isNull(this.user)) {
+                return false;
+            }
             return (
                 this.user.id === this.team.captain_details.id ||
                 this.team.participants_details.filter(
