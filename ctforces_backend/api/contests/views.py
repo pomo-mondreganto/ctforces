@@ -78,21 +78,25 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
     def get_queryset(self):
         queryset = super(ContestViewSet, self).get_queryset()
 
+        queryset = queryset.annotate(
+            registered_count=Count('participants', distinct=True),
+        ).select_related(
+            'author',
+        )
+
         if self.action == 'list':
             queryset = queryset.filter(
                 is_published=True,
             ).annotate(
                 is_registered=Exists(
-                    api.models.ContestParticipantRelationship.objects.filter(
-                        registered_users__id=self.request.user.id,
+                    api.models.CPRHelper.objects.filter(
+                        user=self.request.user.id,
                         contest=OuterRef('id'),
                     )
                 ),
             )
 
-        return queryset.annotate(
-            registered_count=Count('participants', distinct=True),
-        )
+        return queryset
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -435,7 +439,8 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             is_solved_by_user=Case(
                 When(
                     solved_by=team,
-                    then=V(1)),
+                    then=V(1),
+                ),
                 default=V(0),
                 output_field=BooleanField(),
             ),
