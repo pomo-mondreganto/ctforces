@@ -6,7 +6,7 @@
         Open
     </router-link>
     <div
-        v-else-if="row[fieldData]"
+        v-else-if="!$types.isNull(user) && row[fieldData]"
         class="unregister"
         @click="aux.unregister(row.id)"
     >
