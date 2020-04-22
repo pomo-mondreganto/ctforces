@@ -424,6 +424,7 @@ ctforces_backend/media/files/*
 ctforces_backend/ctforces_backend/config.json
 
 *.env
+!configs/postgres/environment.env.example
 
 ctforces_react/dist/
 
