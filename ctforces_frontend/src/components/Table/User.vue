@@ -1,5 +1,5 @@
 <template>
-    <user :username="row['username']" :rating="row['rating']" />
+    <user :username="row.username" :rating="row.rating" />
 </template>
 
 <script>

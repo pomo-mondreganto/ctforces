@@ -117,15 +117,15 @@ const routes = [
         },
     },
     {
+        name: 'contest_scoreboard',
+        path: '/contests/:id/scoreboard',
+        component: ContestScoreboard,
+    },
+    {
         path: '/contests/:id',
         component: ContestIndex,
 
         children: [
-            {
-                name: 'contest_scoreboard',
-                path: 'scoreboard',
-                component: ContestScoreboard,
-            },
             {
                 name: 'contest_task_solved',
                 path: 'task/:task_id/solved',

@@ -1,9 +1,5 @@
 <template>
-    <router-link
-        :to="{ name: 'team_index', params: { id: row['id'] } }"
-        class="nlnk link"
-        >{{ row['name'] }}</router-link
-    >
+    <team :id="row.id" :name="row.name" :rating="row.rating" />
 </template>
 
 <script>
