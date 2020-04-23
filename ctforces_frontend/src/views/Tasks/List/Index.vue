@@ -15,14 +15,14 @@
             <div class="mt-1" v-if="!$types.isNull(tasks)">
                 <f-table
                     :fields="[
-                        { name: '#', pos: 'c' },
+                        { name: '#', pos: 'c', grow: 1 },
                         {
                             name: 'Name',
                             pos: 'l',
                             grow: 7,
                             comp: TaskLinkComp,
                         },
-                        { name: 'Cost' },
+                        { name: 'Cost', grow: 1 },
                         {
                             name: 'Tags',
                             grow: 5,
