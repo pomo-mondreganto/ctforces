@@ -1,5 +1,6 @@
 from rest_framework_extensions.key_constructor.bits import (
     QueryParamsKeyBit,
+    KwargsKeyBit,
     UserKeyBit,
 )
 from rest_framework_extensions.key_constructor.constructors import DefaultKeyConstructor
@@ -11,3 +12,4 @@ class ScoreboardKeyConstructor(DefaultKeyConstructor):
 
 class ContestTaskListKeyConstructor(DefaultKeyConstructor):
     user_bit = UserKeyBit()
+    kwargs_bit = KwargsKeyBit()

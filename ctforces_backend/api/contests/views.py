@@ -9,8 +9,6 @@ from django.db.models import (
     Prefetch,
     IntegerField,
     Avg,
-    Case,
-    When,
     BooleanField
 )
 from django.db.models.functions import Coalesce
@@ -428,6 +426,14 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             manager = api.models.ContestTaskRelationship.static_current_cost_annotated
 
         team = self.get_participating_team(contest)
+        if not team:
+            is_solved_by_user = V(0, output_field=BooleanField())
+        else:
+            is_solved_by_user = Exists(
+                team.solved_contest_tasks.filter(
+                    id=OuterRef('id'),
+                ),
+            )
 
         contest_task_relationship_query = manager.filter(
             contest=contest,
@@ -436,17 +442,11 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 'solved_by',
                 distinct=True,
             ),
-            is_solved_by_user=Case(
-                When(
-                    solved_by=team,
-                    then=V(1),
-                ),
-                default=V(0),
-                output_field=BooleanField(),
-            ),
+            is_solved_by_user=is_solved_by_user,
         ).prefetch_related(
             'task__tags',
         ).select_related(
+            'task',
             'task__author',
             'main_tag',
         ).order_by(
@@ -489,7 +489,6 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         return super(ContestTaskViewSet, self).get_serializer_class()
 
     def retrieve(self, request, *args, **kwargs):
-        print('Retrieve', self.get_serializer_class())
         return super(ContestTaskViewSet, self).retrieve(request, *args, **kwargs)
 
     @cache_response(timeout=5, key_func=ContestTaskListKeyConstructor())
