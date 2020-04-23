@@ -77,9 +77,13 @@ export default {
             }
             let sz = 0;
             let lst = 0;
-            for (const task of this.data.main_data) {
+            for (const [index, task] of this.data.main_data.entries()) {
                 sz = Math.max(sz, task.task_name.length);
-                lst = task.task_name.length;
+                lst = Math.max(
+                    lst,
+                    task.task_name.length -
+                        3 * (this.data.main_data.length - index - 1)
+                );
             }
             return {
                 'padding-top': `${sz / 1.337 / Math.sqrt(2)}em`,
