@@ -22,6 +22,7 @@
                 <f-input
                     type="text"
                     name="first_name"
+                    placeholder="First name"
                     v-model="personalInfo.firstName"
                     :errors="errors['first_name']"
                 />
@@ -30,6 +31,7 @@
                 <f-input
                     type="text"
                     name="last_name"
+                    placeholder="Last name"
                     v-model="personalInfo.lastName"
                     :errors="errors['last_name']"
                 />
@@ -38,6 +40,7 @@
                 <f-input
                     type="text"
                     name="telegram"
+                    placeholder="Telegram"
                     v-model="personalInfo.telegram"
                     :errors="errors['telegram']"
                 />
@@ -98,7 +101,9 @@ export default {
     created: async function() {
         await this.$store.dispatch('GET_USER');
 
-        this.personalInfo = this.user.personal_info;
+        this.personalInfo.firstName = this.user.personal_info.first_name;
+        this.personalInfo.lastName = this.user.personal_info.last_name;
+        this.personalInfo.telegram = this.user.personal_info.telegram;
     },
 
     methods: {
@@ -114,10 +119,14 @@ export default {
                     },
                 });
 
+                this.$toasted.success('Changed!');
+
                 await this.$store.dispatch('UPDATE_USER');
                 if ((await this.$store.dispatch('GET_USER')) === null) {
                     this.$router.push({ name: 'login' }).catch(() => {});
                 }
+
+                this.errors = {};
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }
