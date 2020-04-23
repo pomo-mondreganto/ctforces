@@ -76,11 +76,14 @@ export default {
                 return {};
             }
             let sz = 0;
+            let lst = 0;
             for (const task of this.data.main_data) {
                 sz = Math.max(sz, task.task_name.length);
+                lst = task.task_name.length;
             }
             return {
                 'padding-top': `${sz / 1.337 / Math.sqrt(2)}em`,
+                'padding-right': `${lst / Math.sqrt(2)}em`,
                 'font-size': '0.7em',
             };
         },

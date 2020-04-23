@@ -62,7 +62,6 @@ export default {
                     `/contests/${id}/scoreboard/?page=${page}&page_size=${this.pagesize}`
                 );
                 this.data = r.data;
-                console.log(r.data);
                 this.count = r.data.participants.count;
             } catch (error) {
                 this.errors = this.$parse(error.response.data);

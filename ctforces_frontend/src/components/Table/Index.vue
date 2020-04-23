@@ -1,40 +1,38 @@
 <template>
-    <div class="table" v-if="!$types.isNull(data)">
-        <div class="table-head">
-            <div
-                v-for="field of fields"
-                :key="field.name"
-                :class="header({ grow: field.grow, pos: field.pos })"
-            >
-                <div class="table-head-col">
-                    {{ field.name }}
-                </div>
-            </div>
+    <div :style="tableStyles" class="table" v-if="!$types.isNull(data)">
+        <div
+            v-for="(field, index) of fields"
+            :key="field.name"
+            class="table-head"
+            :class="[
+                index === 0 ? 'l' : '',
+                index + 1 === fields.length ? 'r' : '',
+                getPos(field.pos),
+            ]"
+        >
+            <span>
+                {{ field.name }}
+            </span>
         </div>
-        <div class="table-body">
-            <div class="table-row" v-for="(row, index) of data" :key="index">
-                <div
-                    v-for="field of fields"
-                    :key="field.name"
-                    :class="header({ grow: field.grow, pos: field.pos })"
-                >
-                    <div class="table-body-col">
-                        <component
-                            :is="getComponent(field)"
-                            :row="row"
-                            :fieldData="getFieldData(field)"
-                            v-if="$types.isUndefined(field.aux)"
-                        />
-                        <component
-                            :is="getComponent(field)"
-                            :row="row"
-                            :fieldData="getFieldData(field)"
-                            :aux="field.aux"
-                            v-else
-                        />
-                    </div>
-                </div>
-            </div>
+        <div
+            v-for="cell of cells"
+            :key="cell.counter"
+            class="table-cell vc"
+            :class="[cell.right ? 'r' : '', getPos(cell.field.pos)]"
+        >
+            <component
+                :is="getComponent(cell.field)"
+                :row="cell.value"
+                :fieldData="getFieldData(cell.field)"
+                v-if="$types.isUndefined(cell.field.aux)"
+            />
+            <component
+                :is="getComponent(cell.field)"
+                :row="cell.value"
+                :fieldData="getFieldData(cell.field)"
+                :aux="cell.field.aux"
+                v-else
+            />
         </div>
     </div>
 </template>
@@ -66,13 +64,36 @@ export default {
         },
 
         getPos: function(pos) {
-            if (!this.$types.isUndefined(pos)) {
-                return `jc-${pos}`;
+            return `jc-${this.$types.isUndefined(pos) ? 'c' : pos}`;
+        },
+    },
+
+    computed: {
+        cells: function() {
+            let result = [];
+            let counter = 0;
+            for (const value of this.data) {
+                for (const [index, field] of this.fields.entries()) {
+                    result.push({
+                        value,
+                        field,
+                        counter,
+                        right: index + 1 === this.fields.length,
+                    });
+                    counter += 1;
+                }
             }
+            return result;
         },
 
-        header: function({ grow = 1, pos = 'c' }) {
-            return ['ai-c', 'fs-0', 'fb-0', `fg-${grow}`, this.getPos(pos)];
+        tableStyles: function() {
+            let columns = '';
+            for (const field of this.fields) {
+                columns += `${field.grow}fr `;
+            }
+            return {
+                'grid-template-columns': columns,
+            };
         },
     },
 };
@@ -80,44 +101,32 @@ export default {
 
 <style lang="scss" scoped>
 .table {
-    display: flex;
-    flex-flow: column nowrap;
+    display: grid;
 }
 
 .table-head {
-    display: flex;
-    flex-flow: row nowrap;
     background-color: $gray;
-    border-top-right-radius: 0.5em;
-    border-top-left-radius: 0.5em;
-}
-
-.table-head-col {
     padding: 0.8em;
     display: flex;
+
+    &.l {
+        border-top-left-radius: 0.5em;
+    }
+
+    &.r {
+        border-top-right-radius: 0.5em;
+    }
 }
 
-.table-body {
-    display: flex;
-    flex-flow: column nowrap;
-}
-
-.table-row {
-    display: flex;
-    flex-flow: row nowrap;
+.table-cell {
     border-bottom: 0.05em solid $gray;
+    border-left: 0.05em solid $gray;
+    display: flex;
 
-    & > :first-child {
-        border-left: 0.05em solid $gray;
-    }
-
-    & > * {
+    &.r {
         border-right: 0.05em solid $gray;
-        display: flex;
-
-        & > .table-body-col {
-            padding: 0.8em;
-        }
     }
+
+    padding: 0.8em;
 }
 </style>
