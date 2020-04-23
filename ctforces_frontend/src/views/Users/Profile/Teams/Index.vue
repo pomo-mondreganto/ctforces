@@ -11,7 +11,7 @@
             </router-link>
         </div>
         <f-header :text="`${$route.params.username} teams`" />
-        <div class="mt-1" v-if="!$types.isNull(teams)">
+        <div class="mt-1" v-if="!$types.isNull(teams) && teams.length > 0">
             <f-table
                 :fields="[
                     {

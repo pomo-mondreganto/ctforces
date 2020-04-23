@@ -42,6 +42,6 @@ export default {
 }
 
 .header {
-    font-size: 2em;
+    font-size: 1.5em;
 }
 </style>
