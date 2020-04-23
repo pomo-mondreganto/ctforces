@@ -203,14 +203,14 @@ export default {
                 );
                 this.upcoming = r.data.upcoming.map((contest, index) => {
                     return {
-                        '#': index,
+                        '#': 1 + index,
                         ...contest,
                     };
                 });
 
                 this.running = r.data.running.map((contest, index) => {
                     return {
-                        '#': index,
+                        '#': 1 + index,
                         ...contest,
                     };
                 });
@@ -218,7 +218,7 @@ export default {
                 this.finished = r.data.finished.results.map(
                     (contest, index) => {
                         return {
-                            '#': index,
+                            '#': 1 + index + (page - 1) * this.pagesize,
                             ...contest,
                         };
                     }

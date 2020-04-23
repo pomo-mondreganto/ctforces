@@ -67,7 +67,7 @@ export default {
                 );
                 this.teams = r.data.results.map((team, index) => {
                     return {
-                        '#': index + (page - 1) * this.pagesize,
+                        '#': 1 + index + (page - 1) * this.pagesize,
                         ...team,
                     };
                 });

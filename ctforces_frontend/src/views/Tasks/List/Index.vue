@@ -94,7 +94,10 @@ export default {
                     `/tasks/?page=${page}&page_size=${this.pagesize}`
                 );
                 this.tasks = r.data.results.map((row, index) => {
-                    return { '#': index + (page - 1) * this.pagesize, ...row };
+                    return {
+                        '#': 1 + index + (page - 1) * this.pagesize,
+                        ...row,
+                    };
                 });
                 this.count = r.data.count;
             } catch (error) {

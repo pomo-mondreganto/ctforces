@@ -62,6 +62,8 @@
 export default {
     props: {
         data: Object,
+        page: String,
+        pagesize: Number,
     },
 
     data: function() {
@@ -110,7 +112,13 @@ export default {
             ] of this.data.participants.results.entries()) {
                 result.push({
                     type: 'index',
-                    index,
+                    index:
+                        1 +
+                        index +
+                        (this.$types.isUndefined(this.page)
+                            ? 0
+                            : parseInt(this.page, 10) - 1) *
+                            this.pagesize,
                 });
                 result.push({
                     type: 'teamName',
