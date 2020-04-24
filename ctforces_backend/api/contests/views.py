@@ -410,6 +410,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         task = relation.task
 
         task.is_solved_by_user = relation.is_solved_by_user
+        task.is_solved_on_upsolving = relation.is_solved_on_upsolving
         task.solved_count = relation.solved_count
         task.main_tag = relation.main_tag
         task.contest_cost = relation.current_cost
