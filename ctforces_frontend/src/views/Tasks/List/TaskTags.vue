@@ -1,8 +1,6 @@
 <template>
     <div class="tags jc-c">
-        <tag v-for="tag of row[fieldData]" :key="tag.id">
-            {{ tag.name }}
-        </tag>
+        <tag v-for="tag of row[fieldData]" :key="tag.id" :name="tag.name" />
     </div>
 </template>
 

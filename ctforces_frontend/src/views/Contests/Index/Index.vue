@@ -111,7 +111,7 @@ export default {
 }
 
 .running {
-    color: $greenlight;
+    color: $green;
 }
 
 .header {

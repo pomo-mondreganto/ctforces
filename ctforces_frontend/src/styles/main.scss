@@ -5,6 +5,7 @@
 
 html, body {
     height: 100%;
+    overflow-anchor: none;
 }
 
 body {
@@ -13,3 +14,10 @@ body {
 
 @import '@/styles/components/button.scss';
 @import '@/styles/components/user.scss';
+@import '@/styles/components/task.scss';
+@import '@/styles/components/pagination.scss';
+@import '@/styles/components/countdown.scss';
+@import '@/styles/components/sidebar.scss';
+@import '@/styles/components/progressbar.scss';
+@import '~vue-progressbar-component/src/scss/progressbar';
+@import '~vue-select/dist/vue-select.css';

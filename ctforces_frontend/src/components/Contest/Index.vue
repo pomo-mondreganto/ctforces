@@ -14,7 +14,14 @@
                         name: 'contest_task',
                         params: { id: $route.params.id, task_id: task.id },
                     }"
-                    class="task-wrap nlnk"
+                    :class="[
+                        task.is_solved_by_user ? 'solved' : '',
+                        task.is_solved_on_upsolving && !task.is_solved_by_user
+                            ? 'upsolved'
+                            : '',
+                        'task-wrap',
+                        'nlnk',
+                    ]"
                     v-for="(task, index) of taskRow"
                     :key="index"
                 >

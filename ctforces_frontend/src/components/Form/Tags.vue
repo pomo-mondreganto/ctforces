@@ -33,6 +33,7 @@ export default {
 
     props: {
         value: Array,
+        errors: Array,
     },
 
     components: {
@@ -52,9 +53,9 @@ export default {
             }
             try {
                 const resp = await this.$http.get(
-                    `/task_tags/search/?name=${currentTag}`
+                    `/task_tags/?name=${currentTag}`
                 );
-                this.autocompleteTags = resp.data.map(value => {
+                this.autocompleteTags = resp.data.results.map(value => {
                     return { text: value.name };
                 });
             } catch (error) {

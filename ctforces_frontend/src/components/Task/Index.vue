@@ -25,9 +25,11 @@
         </div>
         <div class="tags mt-1 mb-1">
             <span class="tags-h">Tags:</span>
-            <tag v-for="tag of task.tags_details" :key="tag.id">{{
-                tag.name
-            }}</tag>
+            <tag
+                v-for="tag of task.tags_details"
+                :key="tag.id"
+                :name="tag.name"
+            />
         </div>
         <div class="hr"></div>
         <div class="content mt-1">
@@ -55,6 +57,12 @@
                 v-model="flag"
                 :errors="errors['flag']"
                 placeholder="Flag"
+                :customClasses="[
+                    task.is_solved_by_user ? 'solved' : '',
+                    task.is_solved_on_upsolving && !task.is_solved_by_user
+                        ? 'upsolved'
+                        : '',
+                ]"
             />
             <div class="ff">
                 <f-detail :errors="errors['detail']" />

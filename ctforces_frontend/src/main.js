@@ -79,11 +79,11 @@ import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import Paginate from 'vuejs-paginate';
 
 import vSelect from 'vue-select';
-import 'vue-select/dist/vue-select.css';
+import ProgressBar from 'vue-progressbar-component';
 
 Vue.use(Toasted, {
     position: 'bottom-right',
-    duration: 2000,
+    duration: 4000,
     keepOnHover: true,
 });
 
@@ -91,6 +91,7 @@ Vue.component('vue-simplemde', VueSimplemde);
 Vue.component('datetime', VueCtkDateTimePicker);
 Vue.component('paginate', Paginate);
 Vue.component('v-select', vSelect);
+Vue.component('v-progress-bar', ProgressBar);
 
 /* internal components */
 

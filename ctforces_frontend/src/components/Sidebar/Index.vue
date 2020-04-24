@@ -1,7 +1,8 @@
 <template>
     <div class="sidebar">
+        <slot name="top" />
         <card v-if="!$types.isNull(user)" class="mb-2">
-            <div class="sidebar-header">{{ user.username }}</div>
+            <div class="sidebar-header ta-c">{{ user.username }}</div>
             <div class="hr mt-1" />
             <div class="sidebar-profile mt-1">
                 <div class="sidebar-profile-left">
@@ -51,6 +52,7 @@
             />
             <f-detail :errors="errors['detail']" />
         </card>
+        <slot name="bot" />
     </div>
 </template>
 
@@ -100,9 +102,5 @@ export default {
 
     flex-flow: row nowrap;
     justify-content: space-between;
-}
-
-.sidebar-header {
-    font-size: 1.2em;
 }
 </style>

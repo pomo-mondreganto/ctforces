@@ -57,10 +57,11 @@ export default {
                 });
                 await this.$store.dispatch('UPDATE_USER');
 
-                if (!this.$types.isUndefined(this.$route.query.redirect)) {
-                    this.$router
-                        .push({ name: this.$route.query.redirect })
-                        .catch(() => {});
+                const route = localStorage.getItem('route');
+
+                if (!this.$types.isNull(route)) {
+                    localStorage.removeItem('route');
+                    this.$router.push(JSON.parse(route)).catch(() => {});
                 } else {
                     this.$router.push({ name: 'index' }).catch(() => {});
                 }

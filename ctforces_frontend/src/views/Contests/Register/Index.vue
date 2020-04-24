@@ -9,6 +9,11 @@
                     v-if="!$types.isNull(teams)"
                 >
                     <div class="ff">
+                        <div v-if="teams.length === 0" class="ta-c">
+                            <router-link :to="{ name: 'team_create' }"
+                                >Create team</router-link
+                            >
+                        </div>
                         <div class="participants">
                             <div class="team-list">
                                 <card
@@ -115,8 +120,6 @@ export default {
                     this.teams = r.data.results;
                     if (this.teams.length > 0) {
                         this.changeTeam(this.teams[0]);
-                    } else {
-                        this.rerrors['detail'] = ['Register at least one team'];
                     }
                     this.count = r.data.count;
                 } catch (error) {
@@ -139,7 +142,13 @@ export default {
                     registered_users: toRegister,
                 });
 
-                if (this.contest.is_running) {
+                this.$toasted.success('Success!');
+
+                if (
+                    this.contest.is_running &&
+                    toRegister.filter(({ id }) => id === this.user.id).length >
+                        0
+                ) {
                     this.$router
                         .push({
                             name: 'contest_tasks',

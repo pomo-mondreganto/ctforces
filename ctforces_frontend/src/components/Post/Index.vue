@@ -1,12 +1,22 @@
 <template>
     <div v-if="!$types.isNull(post)">
+        <div class="p-r" v-if="!$types.isNull(post) && post.can_edit_post">
+            <div class="a-tr">
+                <router-link
+                    :to="{ name: 'post_edit', params: { id: post.id } }"
+                    class="btn nlnk"
+                >
+                    Edit post
+                </router-link>
+            </div>
+        </div>
         <router-link
             :to="{ name: 'post_index', params: { id: post.id } }"
             class="header link"
         >
             {{ post.title }}
         </router-link>
-        <div class="mt-1">
+        <div class="mt-1-5">
             <span>By </span>
             <user
                 :username="post.author_username"
@@ -42,6 +52,6 @@ export default {
 }
 
 .header {
-    font-size: 2em;
+    font-size: 1.5em;
 }
 </style>

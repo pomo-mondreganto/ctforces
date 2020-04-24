@@ -67,9 +67,3 @@ export default {
     border-bottom-right-radius: 0.4em;
 }
 </style>
-
-<style lang="scss">
-.tabs-content .p-r .a-tr {
-    padding-right: 1em;
-}
-</style>

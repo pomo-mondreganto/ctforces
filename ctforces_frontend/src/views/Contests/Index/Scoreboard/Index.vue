@@ -18,7 +18,11 @@
                 },
             ]"
         >
-            <scoreboard :data="data" />
+            <scoreboard
+                :data="data"
+                :page="$route.query.page"
+                :pagesize="pagesize"
+            />
             <f-detail :errors="errors['detail']" />
             <pagination :count="count" :pagesize="pagesize" />
         </tabs>

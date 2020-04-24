@@ -29,7 +29,6 @@
                     Join token: <span class="token">{{ token }}</span>
                 </div>
                 <f-table
-                    v-if="team.participants_details.length > 0"
                     class="mt-3"
                     :fields="[
                         {
@@ -124,7 +123,6 @@ export default {
                 return false;
             }
             return (
-                this.user.id === this.team.captain_details.id ||
                 this.team.participants_details.filter(
                     ({ id }) => id === this.user.id
                 ).length > 0
