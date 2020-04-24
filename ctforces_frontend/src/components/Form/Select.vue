@@ -1,7 +1,6 @@
 <template>
     <div class="group">
         <v-select
-            class="select"
             :options="options"
             :value="value"
             @input="val => $emit('input', val)"
@@ -35,11 +34,5 @@ export default {
     color: $red;
     margin-top: 0.3em;
     font-size: 0.8em;
-}
-</style>
-
-<style lang="scss">
-.select {
-    width: 100%;
 }
 </style>

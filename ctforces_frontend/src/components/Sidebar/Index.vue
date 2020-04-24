@@ -51,6 +51,7 @@
             />
             <f-detail :errors="errors['detail']" />
         </card>
+        <slot />
     </div>
 </template>
 

@@ -21,9 +21,3 @@ export default {
     },
 };
 </script>
-
-<style lang="scss">
-.countdown {
-    white-space: nowrap;
-}
-</style>

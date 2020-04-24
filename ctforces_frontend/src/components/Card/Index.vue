@@ -10,9 +10,3 @@
     border-radius: 0.4em;
 }
 </style>
-
-<style lang="scss">
-.inside .p-r .a-tr {
-    padding-right: 1em;
-}
-</style>

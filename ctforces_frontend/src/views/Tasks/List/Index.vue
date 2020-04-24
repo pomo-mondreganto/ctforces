@@ -43,7 +43,9 @@
             <pagination :count="count" :pagesize="pagesize" />
         </card>
         <template v-slot:sidebar>
-            <div>123</div>
+            <sidebar>
+                <card>123</card>
+            </sidebar>
         </template>
     </master-layout>
 </template>
@@ -55,6 +57,7 @@ import Tags from './TaskTags';
 import TaskLink from './TaskLink';
 import TaskSolvedLink from './TaskSolvedLink';
 import Pagination from '@/components/Pagination/Index';
+import Sidebar from '@/components/Sidebar/Index';
 import { mapState } from 'vuex';
 
 export default {
@@ -62,6 +65,7 @@ export default {
         FHeader,
         FTable,
         Pagination,
+        Sidebar,
     },
 
     data: function() {
