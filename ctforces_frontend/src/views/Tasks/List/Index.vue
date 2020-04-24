@@ -138,7 +138,7 @@ export default {
                     );
                 } else {
                     r = await this.$http.get(
-                        `/tasks/search/?q=${search}&page=${page}&page_size=${this.pagesize}`
+                        `/tasks/?q=${search}&page=${page}&page_size=${this.pagesize}`
                     );
                 }
 

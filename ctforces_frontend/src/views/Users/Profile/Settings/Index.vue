@@ -1,7 +1,22 @@
 <template>
     <div>
         <f-header text="Settings" />
+        <form @submit.prevent="updateAvatar" v-if="!$types.isNull(user)">
+            <div class="ff">
+                Change avatar:
+                <input
+                    name="avatar"
+                    @change="changeAvatarFile($event.target.files)"
+                    class="input file"
+                    type="file"
+                />
+            </div>
+            <div class="ff">
+                <input type="submit" value="Update" class="btn" />
+            </div>
+        </form>
         <form @submit.prevent="updateSettings" v-if="!$types.isNull(user)">
+            <f-detail :errors="errors['avatar']" />
             <div class="ff">
                 <f-input
                     type="text"
@@ -85,7 +100,6 @@
 import FInput from '@/components/Form/Input';
 import FHeader from '@/components/Form/Header';
 import FCheckbox from '@/components/Form/Checkbox';
-// import FFiles from '@/components/Form/Files';
 
 import { mapState } from 'vuex';
 
@@ -94,7 +108,6 @@ export default {
         FInput,
         FHeader,
         FCheckbox,
-        // FFiles,
     },
 
     data: function() {
@@ -108,6 +121,7 @@ export default {
                 telegram: null,
             },
             errors: {},
+            avatar: null,
         };
     },
 
@@ -120,6 +134,29 @@ export default {
     },
 
     methods: {
+        changeAvatarFile: function(files) {
+            this.avatar = files[0];
+        },
+
+        updateAvatar: async function() {
+            if (this.$types.isNull(this.avatar)) {
+                this.errors = {
+                    avatar: ['No avatar selected'],
+                };
+                return;
+            }
+            let form = new FormData();
+            form.set('name', this.avatar.name);
+            form.append('avatar', this.avatar);
+            try {
+                await this.$http.post('/avatar_upload/', form);
+                await this.$store.dispatch('UPDATE_USER');
+                this.errors = {};
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
+
         updateSettings: async function() {
             try {
                 await this.$http.put('/me/', {
