@@ -27,6 +27,8 @@ import ProfileBlog from '@/views/Users/Profile/Blog/Index';
 import ProfileTeams from '@/views/Users/Profile/Teams/Index';
 
 import PostIndex from '@/views/Posts/Index/Index';
+import PostCreate from '@/views/Posts/Create/Index';
+import PostEdit from '@/views/Posts/Edit/Index';
 
 import TeamCreate from '@/views/Teams/Create/Index';
 import TeamJoin from '@/views/Teams/Join/Index';
@@ -187,6 +189,16 @@ const routes = [
                 component: ProfileTeams,
             },
         ],
+    },
+    {
+        path: '/posts/create',
+        name: 'post_create',
+        component: PostCreate,
+    },
+    {
+        path: '/posts/:id/edit',
+        name: 'post_edit',
+        component: PostEdit,
     },
     {
         path: '/posts/:id',

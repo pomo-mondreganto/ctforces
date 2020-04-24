@@ -1,5 +1,15 @@
 <template>
     <div v-if="!$types.isNull(post)">
+        <div class="p-r" v-if="!$types.isNull(post) && post.can_edit_post">
+            <div class="a-tr">
+                <router-link
+                    :to="{ name: 'post_edit', params: { id: post.id } }"
+                    class="btn nlnk"
+                >
+                    Edit post
+                </router-link>
+            </div>
+        </div>
         <router-link
             :to="{ name: 'post_index', params: { id: post.id } }"
             class="header link"

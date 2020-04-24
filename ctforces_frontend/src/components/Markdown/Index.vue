@@ -1,5 +1,5 @@
 <template>
-    <div class="markdown-body" ref="markdown-body"></div>
+    <div class="markdown-body wb-a" ref="markdown-body"></div>
 </template>
 
 <script>
