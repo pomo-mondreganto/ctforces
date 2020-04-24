@@ -20,6 +20,7 @@ export default {
 
     created: async function() {
         await this.fetchTask();
+        await this.fetchContest();
     },
 
     data: function() {
@@ -28,16 +29,28 @@ export default {
             errors: {},
             serrors: {},
             solved: {},
+            contest: null,
         };
     },
 
     watch: {
         async $route() {
             await this.fetchTask();
+            await this.fetchContest();
         },
     },
 
     methods: {
+        fetchContest: async function() {
+            const { id } = this.$route.params;
+            try {
+                const r = await this.$http.get(`/contests/${id}/`);
+                this.contest = r.data;
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
+
         fetchTask: async function() {
             const { id, task_id } = this.$route.params;
             try {
@@ -67,6 +80,14 @@ export default {
                     }
                 );
                 this.$toasted.success('Valid flag!');
+                if (this.contest.is_finished) {
+                    this.$set(this.task, 'is_solved_on_upsolving', true);
+                    this.$toasted.info(
+                        'Contest is finished. Points will be added to upsolving.'
+                    );
+                } else {
+                    this.$set(this.task, 'is_solved_by_user', true);
+                }
             } catch (error) {
                 this.serrors = this.$parse(error.response.data);
                 if (

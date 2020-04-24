@@ -1,14 +1,12 @@
 <template>
     <div
-        v-if="!$types.isNull(count) && !$types.isNull(page)"
+        v-if="!$types.isNull(count) && !$types.isNull(page) && pageCount > 1"
         class="pl-2 pr-2 mt-1"
     >
         <paginate
             v-model="page"
             :clickHandler="changePage"
-            :page-count="
-                Math.max(1, Math.floor((count + pagesize - 1) / pagesize))
-            "
+            :page-count="pageCount"
             :page-range="5"
             container-class="pagination"
             page-class="page"
@@ -48,6 +46,15 @@ export default {
         let { page = '1' } = this.$route.query;
         page = parseInt(page);
         this.page = page;
+    },
+
+    computed: {
+        pageCount: function() {
+            return Math.max(
+                1,
+                Math.floor((this.count + this.pagesize - 1) / this.pagesize)
+            );
+        },
     },
 };
 </script>

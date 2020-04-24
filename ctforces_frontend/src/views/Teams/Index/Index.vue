@@ -124,7 +124,6 @@ export default {
                 return false;
             }
             return (
-                this.user.id === this.team.captain_details.id ||
                 this.team.participants_details.filter(
                     ({ id }) => id === this.user.id
                 ).length > 0

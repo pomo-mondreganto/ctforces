@@ -14,11 +14,18 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    if (to.matched.some(record => record.meta.auth)) {
+    if (to.meta.auth) {
         if (isNull(await store.dispatch('GET_USER'))) {
+            localStorage.setItem(
+                'route',
+                JSON.stringify({
+                    name: to.name,
+                    query: to.query,
+                    params: to.params,
+                })
+            );
             next({
                 name: 'login',
-                query: { redirect: to.name },
             });
         } else {
             next();

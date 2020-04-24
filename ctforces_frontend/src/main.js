@@ -83,7 +83,7 @@ import 'vue-select/dist/vue-select.css';
 
 Vue.use(Toasted, {
     position: 'bottom-right',
-    duration: 2000,
+    duration: 4000,
     keepOnHover: true,
 });
 

@@ -1,3 +1,7 @@
 .solved {
-    background-color: $greenlight;
+    background-color: $greenlight !important;
+}
+
+.upsolved {
+    background-color: $yellowlight !important;
 }
