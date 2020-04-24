@@ -97,7 +97,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         ).filter(
             Q(tags__name__icontains=search_q) |
             Q(name__icontains=search_q) |
-            Q(author__name__icontains=search_q)
+            Q(author__username__icontains=search_q)
         )
 
         return api_pagination.get_paginated_response(
