@@ -75,7 +75,7 @@ class Command(BaseCommand):
                 flag=fake.sentence(nb_words=2),
                 cost=random.randint(1, 1000),
                 is_published=random.choice([True, False]),
-                show_on_main_page=random.choice([False] * 5 + [True]),
+                show_on_main_page=random.choice([False] * 3 + [True]),
             )
             task.save()
 
@@ -177,6 +177,7 @@ class Command(BaseCommand):
                     contest=c,
                     task=task,
                     main_tag=random.choice(task.tags.all()),
+                    cost=fake.pyint(1, 1000),
                     min_cost=fake.pyint(1, 500),
                     max_cost=fake.pyint(501, 1000),
                     decay_value=fake.pyint(1, 100),

@@ -1,4 +1,4 @@
-from django.db.models import Count, Exists, OuterRef, Q
+from django.db.models import Count, Exists, OuterRef, Q, Prefetch
 from django.utils import timezone
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import mixins as rest_mixins
@@ -87,7 +87,14 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     )
     def search_task(self, request, *_args, **_kwargs):
         search_q = request.query_params.get('q', '')
-        tasks = self.get_queryset().filter(
+        tasks = self.get_queryset().prefetch_related(
+            Prefetch(
+                'tags',
+                queryset=api_models.TaskTag.objects.only('id', 'name'),
+            ),
+        ).select_related(
+            'author',
+        ).filter(
             Q(tags__name__icontains=search_q) |
             Q(name__icontains=search_q) |
             Q(author__name__icontains=search_q)
