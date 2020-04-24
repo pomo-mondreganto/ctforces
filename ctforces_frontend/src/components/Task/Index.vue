@@ -55,6 +55,7 @@
                 v-model="flag"
                 :errors="errors['flag']"
                 placeholder="Flag"
+                :customClasses="[task.is_solved_by_user ? 'solved' : '']"
             />
             <div class="ff">
                 <f-detail :errors="errors['detail']" />

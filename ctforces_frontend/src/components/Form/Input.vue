@@ -4,7 +4,7 @@
             v-bind="$attrs"
             :value="value"
             @input="$emit('input', $event.target.value)"
-            :class="['input', !value ? '' : 'non-empty']"
+            :class="['input', !value ? '' : 'non-empty'].concat(outerClasses)"
             :invalid="invalid"
         />
         <label class="label">{{ placeholder }}</label>
@@ -22,11 +22,19 @@ export default {
         placeholder: String,
         value: String,
         errors: Array,
+        customClasses: Array,
     },
 
     computed: {
         invalid: function() {
             return this.$types.isArray(this.errors) && this.errors.length > 0;
+        },
+
+        outerClasses: function() {
+            if (this.$types.isUndefined(this.customClasses)) {
+                return [];
+            }
+            return this.customClasses;
         },
     },
 };

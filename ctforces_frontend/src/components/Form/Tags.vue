@@ -33,6 +33,7 @@ export default {
 
     props: {
         value: Array,
+        errors: Array,
     },
 
     components: {

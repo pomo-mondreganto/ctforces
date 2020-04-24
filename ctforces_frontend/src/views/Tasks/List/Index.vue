@@ -96,6 +96,7 @@ export default {
                 this.tasks = r.data.results.map((row, index) => {
                     return {
                         '#': 1 + index + (page - 1) * this.pagesize,
+                        customClasses: row.is_solved_by_user ? ['solved'] : [],
                         ...row,
                     };
                 });

@@ -18,7 +18,11 @@
             v-for="cell of cells"
             :key="cell.counter"
             class="table-cell vc"
-            :class="[cell.right ? 'r' : '', getPos(cell.field.pos)]"
+            :class="
+                [cell.right ? 'r' : '', getPos(cell.field.pos)].concat(
+                    getClasses(cell.value)
+                )
+            "
         >
             <component
                 :is="getComponent(cell.field)"
@@ -65,6 +69,13 @@ export default {
 
         getPos: function(pos) {
             return `jc-${this.$types.isUndefined(pos) ? 'c' : pos}`;
+        },
+
+        getClasses: function(obj) {
+            if (this.$types.isUndefined(obj.customClasses)) {
+                return [];
+            }
+            return obj.customClasses;
         },
     },
 
