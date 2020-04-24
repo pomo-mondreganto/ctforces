@@ -20,8 +20,6 @@ class ContestTaskRelationship(models.Model):
     max_cost = models.IntegerField(default=0)
     decay_value = models.IntegerField(default=1)
 
-    ordering_number = models.IntegerField(default=0)
-
     solved_by = models.ManyToManyField(
         'Team',
         related_name='solved_contest_tasks',
@@ -33,12 +31,6 @@ class ContestTaskRelationship(models.Model):
     static_current_cost_annotated = CTRCurrentCostManager(dynamic=False)
 
     class Meta:
-        ordering = (
-            '-ordering_number',
-            'cost',
-            'id',
-        )
-
         unique_together = (
             'contest',
             'task',

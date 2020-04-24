@@ -16,7 +16,6 @@ class ContestTaskInlineAdmin(admin.TabularInline):
                 'fields': (
                     'id',
                     'task',
-                    'ordering_number',
                     'main_tag',
                 ),
             },

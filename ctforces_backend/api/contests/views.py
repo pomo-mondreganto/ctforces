@@ -423,7 +423,6 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         task.solved_count = relation.solved_count
         task.main_tag = relation.main_tag
         task.contest_cost = relation.current_cost
-        task.ordering_number = relation.ordering_number
 
         return task
 
@@ -469,10 +468,6 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             'task',
             'task__author',
             'main_tag',
-        ).order_by(
-            'ordering_number',
-            'cost',
-            'task_id',
         )
 
         if self.action in ['retrieve', 'get_solved', 'submit_flag']:
