@@ -537,7 +537,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             task=task,
         )
 
-        if relation.solved_by.filter(id=team.id).exists():
+        if team and relation.solved_by.filter(id=team.id).exists():
             raise PermissionDenied('Task already solved.')
 
         serializer = api.tasks.serializers.TaskSubmitSerializer(
@@ -545,17 +545,17 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             instance=task,
         )
 
-        if serializer.is_valid(raise_exception=True):
-            if contest.is_running:
-                relation.solved_by.add(team)
-                contest.contest_participant_relationship.filter(
-                    participant_id=self.request.user.id,
-                ).update(
-                    last_solve=timezone.now(),
-                )
+        serializer.is_valid(raise_exception=True)
+        if team and contest.is_running:
+            relation.solved_by.add(team)
+            contest.contest_participant_relationship.filter(
+                participant_id=self.request.user.id,
+            ).update(
+                last_solve=timezone.now(),
+            )
 
-            task.solved_by.add(self.request.user)
-            self.request.user.last_solve = timezone.now()
-            self.request.user.save()
+        task.solved_by.add(self.request.user)
+        self.request.user.last_solve = timezone.now()
+        self.request.user.save()
 
-            return Response('accepted!')
+        return Response('accepted!')
