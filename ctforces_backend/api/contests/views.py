@@ -435,6 +435,15 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 ),
             )
 
+        if self.request.user.is_anonymous:
+            is_solved_on_upsolving = V(0, output_field=BooleanField())
+        else:
+            is_solved_on_upsolving = Exists(
+                self.request.user.solved_tasks.filter(
+                    id=OuterRef('task_id'),
+                ),
+            )
+
         contest_task_relationship_query = manager.filter(
             contest=contest,
         ).annotate(
@@ -443,6 +452,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 distinct=True,
             ),
             is_solved_by_user=is_solved_by_user,
+            is_solved_on_upsolving=is_solved_on_upsolving,
         ).prefetch_related(
             'task__tags',
         ).select_related(

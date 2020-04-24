@@ -4,6 +4,7 @@ from django.db.models import Count, Exists, OuterRef
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
@@ -23,6 +24,7 @@ from api.tasks import serializers as api_tasks_serializers
 from api.teams import serializers as api_teams_serializers
 from api.token_operations import serialize, deserialize
 from api.users import caching as api_users_caching
+from api.users import filters as api_users_filters
 from api.users import serializers as api_users_serializers
 
 
@@ -309,6 +311,8 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     pagination_class = api_pagination.UserDefaultPagination
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = api_users_filters.UserFilter
 
     @action(detail=False, url_name='upsolving_top', url_path='upsolving_top', methods=['get'])
     def get_upsolving_top(self, request):
@@ -347,13 +351,6 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             serializer_class=self.get_serializer,
             request=request,
         )
-
-    @action(detail=False, url_name='search', url_path='search', methods=['get'])
-    def search_users(self, request):
-        username = request.query_params.get('username', '')
-        users_list = api_models.User.objects.only('username').filter(username__istartswith=username)[:10]
-        serializer = self.get_serializer(users_list, many=True)
-        return Response(serializer.data)
 
     @action(detail=True, url_name='tasks', url_path='tasks', methods=['get'])
     def get_users_tasks(self, request, **_kwargs):
