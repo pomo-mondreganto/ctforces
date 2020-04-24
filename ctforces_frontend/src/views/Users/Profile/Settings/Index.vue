@@ -1,5 +1,5 @@
 <template>
-    <card>
+    <div>
         <f-header text="Settings" />
         <form @submit.prevent="updateSettings" v-if="!$types.isNull(user)">
             <div class="ff">
@@ -70,7 +70,7 @@
                 <input type="submit" value="Update" class="btn" />
             </div>
         </form>
-    </card>
+    </div>
 </template>
 
 <script>

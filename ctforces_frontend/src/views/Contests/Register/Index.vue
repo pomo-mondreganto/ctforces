@@ -142,7 +142,13 @@ export default {
                     registered_users: toRegister,
                 });
 
-                if (this.contest.is_running) {
+                this.$toasted.success('Success!');
+
+                if (
+                    this.contest.is_running &&
+                    toRegister.filter(({ id }) => id === this.user.id).length >
+                        0
+                ) {
                     this.$router
                         .push({
                             name: 'contest_tasks',

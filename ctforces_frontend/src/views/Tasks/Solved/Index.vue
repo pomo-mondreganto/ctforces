@@ -1,33 +1,35 @@
 <template>
     <master-layout>
-        <card v-if="!$types.isNull(task)">
-            <f-header :text="`${task.name} solves`" />
-            <div class="mt-1" v-if="!$types.isNull(users)">
-                <f-table
-                    :fields="[
-                        {
-                            name: '#',
-                            pos: 'c',
-                            grow: 1,
-                        },
-                        {
-                            name: 'Name',
-                            pos: 'l',
-                            grow: 11,
-                            comp: UserComp,
-                        },
-                        {
-                            name: 'Rating',
-                            pos: 'c',
-                            key: 'rating',
-                            grow: 3,
-                        },
-                    ]"
-                    :data="users"
-                />
+        <card>
+            <div v-if="!$types.isNull(task)">
+                <f-header :text="`${task.name} solves`" />
+                <div class="mt-1" v-if="!$types.isNull(users)">
+                    <f-table
+                        :fields="[
+                            {
+                                name: '#',
+                                pos: 'c',
+                                grow: 1,
+                            },
+                            {
+                                name: 'Name',
+                                pos: 'l',
+                                grow: 11,
+                                comp: UserComp,
+                            },
+                            {
+                                name: 'Rating',
+                                pos: 'c',
+                                key: 'rating',
+                                grow: 3,
+                            },
+                        ]"
+                        :data="users"
+                    />
+                </div>
+                <f-detail :errors="errors['detail']" />
+                <pagination :count="count" :pagesize="pagesize" />
             </div>
-            <f-detail :errors="errors['detail']" />
-            <pagination :count="count" :pagesize="pagesize" />
         </card>
     </master-layout>
 </template>
