@@ -15,6 +15,7 @@
                         params: { id: $route.params.id, task_id: task.id },
                     }"
                     class="task-wrap nlnk"
+                    :class="[task.is_solved_by_user ? 'solved' : '']"
                     v-for="(task, index) of taskRow"
                     :key="index"
                 >

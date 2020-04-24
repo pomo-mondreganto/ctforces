@@ -61,6 +61,7 @@ export default {
                     flag: flag,
                 });
                 this.$toasted.success('Valid flag!');
+                this.$set(this.task, 'is_solved_by_user', true);
             } catch (error) {
                 this.serrors = this.$parse(error.response.data);
                 if (
