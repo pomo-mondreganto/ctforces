@@ -58,6 +58,12 @@ class CPRSerializer(rest_serializers.ModelSerializer):
             ),
         ]
 
+    @staticmethod
+    def validate_registered_users(data):
+        if not data:
+            raise ValidationError('Need to register at least one team member')
+        return data
+
     def validate_contest(self, contest):
         if not contest.is_published or not contest.is_registration_open:
             raise ValidationError("Contest doesn't exist or registration isn't open yet")
