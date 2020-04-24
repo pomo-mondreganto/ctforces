@@ -318,9 +318,6 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_upsolving_top(self, request):
         users_with_upsolving = self.get_queryset().filter(
             show_in_ratings=True,
-        ).only(
-            'username',
-            'rating',
         ).order_by(
             '-cost_sum',
             'last_solve',
@@ -329,7 +326,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         return api_pagination.get_paginated_response(
             paginator=self.paginator,
             queryset=users_with_upsolving,
-            serializer_class=self.get_serializer,
+            serializer_class=self.get_serializer_class(),
             request=request,
         )
 
@@ -337,9 +334,6 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_rating_top(self, request):
         users_with_rating = api_models.User.objects.filter(
             show_in_ratings=True,
-        ).only(
-            'username',
-            'rating',
         ).order_by(
             '-rating',
             'last_solve',
@@ -348,7 +342,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         return api_pagination.get_paginated_response(
             paginator=self.paginator,
             queryset=users_with_rating,
-            serializer_class=self.get_serializer,
+            serializer_class=self.get_serializer_class(),
             request=request,
         )
 
