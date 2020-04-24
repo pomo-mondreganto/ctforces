@@ -1,4 +1,4 @@
-from django.db.models import Count, Exists, OuterRef, Q
+from django.db.models import Count, Exists, OuterRef
 from django.utils import timezone
 from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
@@ -27,6 +27,8 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
     queryset = api_models.Task.objects.order_by('-publication_time', '-id').select_related('author')
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = api_tasks_filters.TaskFilterSet
 
     action_permission_classes = {
         'retrieve': (api_tasks_permissions.HasViewTaskPermission,),
@@ -49,10 +51,10 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         queryset = super(TaskViewSet, self).get_queryset()
         queryset = queryset.prefetch_related('tags').select_related('author')
 
-        if self.action == 'list' or self.action == 'search_task':
+        if self.action == 'list':
             queryset = queryset.filter(show_on_main_page=True)
 
-        if self.action == 'retrieve' or self.action == 'get_full_task':
+        if self.action in ['retrieve', 'get_full_task']:
             queryset = queryset.prefetch_related('files')
 
         return queryset.annotate(
@@ -80,27 +82,6 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         if self.action == 'retrieve':
             obj.can_edit_task = self.request.user.has_perm('change_task', obj)
         return obj
-
-    @action(
-        detail=False,
-        url_path='search',
-        url_name='search',
-        methods=['get']
-    )
-    def search_task(self, request, *_args, **_kwargs):
-        search_q = request.query_params.get('q', '')
-        tasks = self.get_queryset().filter(
-            Q(tags__name__icontains=search_q) |
-            Q(name__icontains=search_q) |
-            Q(author__username__icontains=search_q)
-        )
-
-        return api_pagination.get_paginated_response(
-            paginator=api_pagination.TaskDefaultPagination(),
-            queryset=tasks,
-            serializer_class=api_tasks_serializers.TaskPreviewSerializer,
-            request=request,
-        )
 
     @action(
         detail=True,
@@ -172,7 +153,7 @@ class TaskTagViewSet(rest_mixins.CreateModelMixin,
     pagination_class = api_pagination.TaskTagDefaultPagination
     queryset = api_models.TaskTag.objects.all()
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_class = api_tasks_filters.TaskTagFilter
+    filterset_class = api_tasks_filters.TaskTagFilterSet
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'create':

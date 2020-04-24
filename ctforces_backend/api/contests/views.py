@@ -311,7 +311,16 @@ class ContestParticipantRelationshipViewSet(rest_viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super(ContestParticipantRelationshipViewSet, self).get_queryset()
+        if self.action == 'delete':
+            qs = qs.select_related('contest')
         return qs.filter(participant__participants__id=self.request.user.id)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        contest = instance.contest
+        if contest.is_running or contest.is_finished:
+            raise ValidationError(detail='Too late to unregister')
+        return super(ContestParticipantRelationshipViewSet, self).destroy(request, *args, **kwargs)
 
 
 class ContestTaskRelationshipViewSet(CustomPermissionsViewSetMixin,
