@@ -1,4 +1,5 @@
 from django.db.models import Avg
+from django_filters import rest_framework as filters
 from guardian.shortcuts import assign_perm
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 import api.models
 from api import pagination as api_pagination
 from api.mixins import CustomPermissionsViewSetMixin
+from api.teams import filters as api_teams_filters
 from api.teams import permissions as api_teams_permissions
 from api.teams import serializers as api_teams_serializers
 
@@ -20,6 +22,8 @@ class TeamViewSet(CustomPermissionsViewSetMixin,
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
     queryset = api.models.Team.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = api_teams_filters.TeamFilter
 
     action_permission_classes = {
         'update': (api_teams_permissions.HasEditTeamPermission,),
@@ -124,10 +128,3 @@ class TeamViewSet(CustomPermissionsViewSetMixin,
         assign_perm('register_team', self.request.user, team)
 
         return Response('ok')
-
-    @action(detail=False, url_name='search', url_path='search', methods=['get'])
-    def search(self, request):
-        name = request.query_params.get('name', '')
-        teams_list = api.models.Team.objects.filter(name__istartswith=name)[:10]
-        serializer = self.get_serializer(teams_list, many=True)
-        return Response(serializer.data)

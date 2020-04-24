@@ -72,6 +72,11 @@ class TaskFileDefaultPagination(PageNumberWithPageSizePagination):
     max_page_size = 50
 
 
+class TaskTagDefaultPagination(PageNumberWithPageSizePagination):
+    page_size = 10
+    max_page_size = 20
+
+
 class PostDefaultPagination(PageNumberWithPageSizePagination):
     page_size = 10
     max_page_size = 20
