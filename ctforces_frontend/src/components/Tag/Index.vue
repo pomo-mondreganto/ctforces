@@ -1,8 +1,19 @@
 <template>
-    <span class="tag wb-a ta-c">
-        <slot />
-    </span>
+    <router-link
+        :to="{ name: 'task_list', query: { tag: name } }"
+        class="nlnk tag wb-a ta-c"
+    >
+        {{ name }}
+    </router-link>
 </template>
+
+<script>
+export default {
+    props: {
+        name: String,
+    },
+};
+</script>
 
 <style lang="scss" scoped>
 .tag {

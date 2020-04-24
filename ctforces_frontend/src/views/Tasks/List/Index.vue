@@ -119,18 +119,20 @@ export default {
         },
 
         async $route() {
-            const { search = null } = this.$route.query;
-            this.search = search;
             await this.fetchTasks();
         },
     },
 
     methods: {
         fetchTasks: async function() {
-            const { search = null, page = 1 } = this.$route.query;
+            const { search = null, tag = null, page = 1 } = this.$route.query;
             try {
                 let r;
-                if (this.$types.isNull(search)) {
+                if (!this.$types.isNull(tag)) {
+                    r = await this.$http.get(
+                        `/tasks/?tag=${tag}&page=${page}&page_size=${this.pagesize}`
+                    );
+                } else if (this.$types.isNull(search)) {
                     r = await this.$http.get(
                         `/tasks/?page=${page}&page_size=${this.pagesize}`
                     );

@@ -25,9 +25,11 @@
         </div>
         <div class="tags mt-1 mb-1">
             <span class="tags-h">Tags:</span>
-            <tag v-for="tag of task.tags_details" :key="tag.id">{{
-                tag.name
-            }}</tag>
+            <tag
+                v-for="tag of task.tags_details"
+                :key="tag.id"
+                :name="tag.name"
+            />
         </div>
         <div class="hr"></div>
         <div class="content mt-1">
