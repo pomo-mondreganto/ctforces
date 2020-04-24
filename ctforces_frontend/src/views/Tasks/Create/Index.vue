@@ -63,6 +63,7 @@
                         :errors="errors['files']"
                     />
                 </div>
+                <progress-bar :value="progress" />
                 <div class="ff">
                     <f-detail :errors="errors['detail']" />
                 </div>
@@ -81,6 +82,7 @@ import FInput from '@/components/Form/Input';
 import FCheckbox from '@/components/Form/Checkbox';
 import FFiles from '@/components/Form/Files';
 import FTags from '@/components/Form/Tags';
+import ProgressBar from '@/components/ProgressBar/Index';
 
 export default {
     components: {
@@ -90,6 +92,7 @@ export default {
         FCheckbox,
         FFiles,
         FTags,
+        ProgressBar,
     },
 
     data: function() {
@@ -103,6 +106,7 @@ export default {
             tags: [],
             autocompleteTags: [],
             errors: {},
+            progress: null,
         };
     },
 
@@ -114,10 +118,12 @@ export default {
                 form.set('name', file.name);
                 form.append('file_field', file);
                 try {
-                    const resp = await this.$http({
-                        url: '/task_files/',
-                        method: 'post',
-                        data: form,
+                    let self = this;
+                    const resp = await this.$http.post('/task_files/', form, {
+                        onUploadProgress: function(progressEvent) {
+                            self.progress =
+                                progressEvent.loaded / progressEvent.total;
+                        },
                     });
                     fileIds.push(resp.data.id);
                 } catch (error) {
@@ -125,6 +131,7 @@ export default {
                     return null;
                 }
             }
+            this.progress = null;
             return fileIds;
         },
 
@@ -134,10 +141,13 @@ export default {
             for (const tag of this.tags) {
                 const tagName = tag.text;
                 const resp = await this.$http.get(
-                    `/task_tags/search/?name=${tagName}`
+                    `/task_tags/?name=${tagName}`
                 );
 
-                if (resp.data.length > 0 && resp.data[0].name == tagName) {
+                if (
+                    resp.data.results.length > 0 &&
+                    resp.data.results[0].name == tagName
+                ) {
                     tagIds.push(resp.data[0].id);
                     continue;
                 }

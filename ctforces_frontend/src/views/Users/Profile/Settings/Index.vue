@@ -46,6 +46,14 @@
                 />
             </div>
             <div class="ff">
+                <f-checkbox
+                    name="hide_personal_info"
+                    v-model="hidePersonalInfo"
+                    label="Hide personal info"
+                    :errors="errors['hide_personal_info']"
+                />
+            </div>
+            <div class="ff">
                 <f-input
                     type="password"
                     name="old_password"
@@ -76,6 +84,8 @@
 <script>
 import FInput from '@/components/Form/Input';
 import FHeader from '@/components/Form/Header';
+import FCheckbox from '@/components/Form/Checkbox';
+// import FFiles from '@/components/Form/Files';
 
 import { mapState } from 'vuex';
 
@@ -83,12 +93,15 @@ export default {
     components: {
         FInput,
         FHeader,
+        FCheckbox,
+        // FFiles,
     },
 
     data: function() {
         return {
             oldPassword: '',
             password: '',
+            hidePersonalInfo: false,
             personalInfo: {
                 firstName: null,
                 lastName: null,
@@ -117,6 +130,7 @@ export default {
                         last_name: this.personalInfo.lastName,
                         telegram: this.personalInfo.telegram,
                     },
+                    hide_personal_info: this.hidePersonalInfo,
                 });
 
                 this.$toasted.success('Changed!');

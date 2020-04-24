@@ -29,7 +29,6 @@
                     Join token: <span class="token">{{ token }}</span>
                 </div>
                 <f-table
-                    v-if="team.participants_details.length > 0"
                     class="mt-3"
                     :fields="[
                         {
