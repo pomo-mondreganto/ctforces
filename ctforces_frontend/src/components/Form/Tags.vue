@@ -55,7 +55,7 @@ export default {
                 const resp = await this.$http.get(
                     `/task_tags/?name=${currentTag}`
                 );
-                this.autocompleteTags = resp.data.map(value => {
+                this.autocompleteTags = resp.data.results.map(value => {
                     return { text: value.name };
                 });
             } catch (error) {
