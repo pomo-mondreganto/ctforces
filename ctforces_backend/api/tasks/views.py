@@ -1,5 +1,6 @@
 from django.db.models import Count, Exists, OuterRef, Q
 from django.utils import timezone
+from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import mixins as rest_mixins
 from rest_framework import serializers as rest_serializers
@@ -12,6 +13,7 @@ from rest_framework.response import Response
 from api import mixins as api_mixins
 from api import models as api_models
 from api import pagination as api_pagination
+from api.tasks import filters as api_tasks_filters
 from api.tasks import permissions as api_tasks_permissions
 from api.tasks import serializers as api_tasks_serializers
 from api.users import serializers as api_users_serializers
@@ -163,22 +165,19 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
 
 class TaskTagViewSet(rest_mixins.CreateModelMixin,
+                     rest_mixins.ListModelMixin,
                      rest_viewsets.GenericViewSet):
     permission_classes = (api_tasks_permissions.HasEditTaskPermissionOrReadOnly,)
     serializer_class = api_tasks_serializers.TaskTagSerializer
+    pagination_class = api_pagination.TaskTagDefaultPagination
     queryset = api_models.TaskTag.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = api_tasks_filters.TaskTagFilter
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'create':
             kwargs['many'] = isinstance(self.request.data, list)
         return super(TaskTagViewSet, self).get_serializer(*args, **kwargs)
-
-    @action(detail=False, url_name='search', url_path='search')
-    def search_tags(self, request):
-        tag_name = request.query_params.get('name', '')
-        tag_list = self.get_queryset().only('name').filter(name__istartswith=tag_name)[:10]
-        serializer = self.get_serializer(tag_list, many=True)
-        return Response(serializer.data)
 
 
 class TaskFileViewSet(rest_mixins.RetrieveModelMixin,
