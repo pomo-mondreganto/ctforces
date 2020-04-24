@@ -137,12 +137,12 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
             )
 
         serializer = api_tasks_serializers.TaskSubmitSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
 
-        if serializer.is_valid(raise_exception=True):
-            instance.solved_by.add(request.user)
-            request.user.last_solve = timezone.now()
-            request.user.save()
-            return Response({'accepted!'})
+        instance.solved_by.add(request.user)
+        request.user.last_solve = timezone.now()
+        request.user.save()
+        return Response({'accepted!'})
 
 
 class TaskTagViewSet(rest_mixins.CreateModelMixin,

@@ -299,9 +299,9 @@ class AvatarUploadView(APIView):
         serializer = api_users_serializers.AvatarUploadSerializer(data=request.data,
                                                                   instance=request.user,
                                                                   context={'request': request})
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
