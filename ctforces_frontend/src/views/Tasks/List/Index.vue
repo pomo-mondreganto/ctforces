@@ -44,13 +44,26 @@
         </card>
         <template v-slot:sidebar>
             <sidebar>
-                <card>123</card>
+                <template v-slot:top>
+                    <card class="mb-2">
+                        <div class="sidebar-header ta-c">Search</div>
+                        <div class="ff">
+                            <f-input
+                                type="text"
+                                name="search"
+                                v-model="search"
+                                placeholder="Search"
+                            />
+                        </div>
+                    </card>
+                </template>
             </sidebar>
         </template>
     </master-layout>
 </template>
 
 <script>
+import FInput from '@/components/Form/Input';
 import FHeader from '@/components/Form/Header';
 import FTable from '@/components/Table/Index';
 import Tags from './TaskTags';
@@ -62,6 +75,7 @@ import { mapState } from 'vuex';
 
 export default {
     components: {
+        FInput,
         FHeader,
         FTable,
         Pagination,
@@ -77,26 +91,55 @@ export default {
             errors: {},
             count: null,
             pagesize: 30,
+            search: null,
         };
     },
 
     created: async function() {
+        const { search = null } = this.$route.query;
+        this.search = search;
         await this.fetchTasks();
     },
 
     watch: {
+        search: async function(value) {
+            if (this.$types.isString(value) && value.length > 0) {
+                const query = Object.assign({}, this.$route.query, {
+                    page: 1,
+                    search: value,
+                });
+                this.$router.push({ query }).catch(() => {});
+            } else {
+                const query = Object.assign({}, this.$route.query, {
+                    page: 1,
+                    search: undefined,
+                });
+                this.$router.push({ query }).catch(() => {});
+            }
+        },
+
         async $route() {
+            const { search = null } = this.$route.query;
+            this.search = search;
             await this.fetchTasks();
         },
     },
 
     methods: {
         fetchTasks: async function() {
-            const { page = 1 } = this.$route.query;
+            const { search = null, page = 1 } = this.$route.query;
             try {
-                const r = await this.$http.get(
-                    `/tasks/?page=${page}&page_size=${this.pagesize}`
-                );
+                let r;
+                if (this.$types.isNull(search)) {
+                    r = await this.$http.get(
+                        `/tasks/?page=${page}&page_size=${this.pagesize}`
+                    );
+                } else {
+                    r = await this.$http.get(
+                        `/tasks/search/?q=${search}&page=${page}&page_size=${this.pagesize}`
+                    );
+                }
+
                 this.tasks = r.data.results.map((row, index) => {
                     return {
                         '#': 1 + index + (page - 1) * this.pagesize,
