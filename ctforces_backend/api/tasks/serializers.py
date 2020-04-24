@@ -30,12 +30,14 @@ class TaskTagSerializer(rest_serializers.ModelSerializer):
 class TaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
         model = api_models.Task
         fields = (
             'author',
+            'author_username',
             'cost',
             'id',
             'is_published',
