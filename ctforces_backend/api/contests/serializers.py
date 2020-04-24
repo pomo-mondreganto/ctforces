@@ -184,6 +184,7 @@ class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, ReadOnlySer
     tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     contest_cost = rest_serializers.IntegerField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
+    is_solved_on_upsolving = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     ordering_number = rest_serializers.IntegerField(read_only=True)
     main_tag_details = TaskTagSerializer(read_only=True, source='main_tag')
@@ -195,6 +196,7 @@ class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, ReadOnlySer
             'author_username',
             'contest_cost',
             'is_solved_by_user',
+            'is_solved_on_upsolving',
             'name',
             'ordering_number',
             'solved_count',
@@ -209,6 +211,7 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerial
     files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
     can_edit_task = rest_serializers.BooleanField(read_only=True)
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
+    is_solved_on_upsolving = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     hints = rest_serializers.SerializerMethodField('get_hints_method')
     contest_cost = rest_serializers.IntegerField(read_only=True)
@@ -225,6 +228,7 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerial
             'files_details',
             'hints',
             'is_solved_by_user',
+            'is_solved_on_upsolving',
             'name',
             'ordering_number',
             'solved_count',
