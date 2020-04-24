@@ -45,7 +45,7 @@ class TeamViewSet(CustomPermissionsViewSetMixin,
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return api_teams_serializers.TeamViewSerializer
-        if self.action == 'list':
+        if self.action in ['list', 'search']:
             return api_teams_serializers.TeamMinimalSerializer
         return api_teams_serializers.TeamFullSerializer
 
@@ -124,3 +124,10 @@ class TeamViewSet(CustomPermissionsViewSetMixin,
         assign_perm('register_team', self.request.user, team)
 
         return Response('ok')
+
+    @action(detail=False, url_name='search', url_path='search', methods=['get'])
+    def search(self, request):
+        name = request.query_params.get('name', '')
+        teams_list = api.models.Team.objects.filter(name__istartswith=name)[:10]
+        serializer = self.get_serializer(teams_list, many=True)
+        return Response(serializer.data)
