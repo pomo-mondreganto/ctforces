@@ -35,6 +35,11 @@ import TeamCreate from '@/views/Teams/Create/Index';
 import TeamJoin from '@/views/Teams/Join/Index';
 import TeamIndex from '@/views/Teams/Index/Index';
 
+import ConfirmEmail from '@/views/Index/ConfirmEmail/Index';
+import PasswordReset from '@/views/Index/PasswordReset/Index';
+import PasswordResetConfirm from '@/views/Index/PasswordResetConfirm/Index';
+import EmailResend from '@/views/Index/EmailResend/Index';
+
 const routes = [
     {
         path: '/',
@@ -50,6 +55,26 @@ const routes = [
         path: '/register',
         name: 'register',
         component: Register,
+    },
+    {
+        path: '/confirm_email',
+        name: 'email_confirm',
+        component: ConfirmEmail,
+    },
+    {
+        path: '/reset_password',
+        name: 'password_reset',
+        component: PasswordReset,
+    },
+    {
+        path: '/reset_password_confirm',
+        name: 'password_reset_confirm',
+        component: PasswordResetConfirm,
+    },
+    {
+        path: '/email_resend',
+        name: 'email_resend',
+        component: EmailResend,
     },
     {
         path: '/teams/create',

@@ -158,7 +158,6 @@ export default {
                 let newTasks = {};
 
                 for (const task of this.tasks) {
-                    console.log(task);
                     newTasks[task.id] = true;
                     if (this.oldTasks[task.id]) {
                         continue;
