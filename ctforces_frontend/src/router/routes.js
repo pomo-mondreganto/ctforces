@@ -9,6 +9,7 @@ import TaskEdit from '@/views/Tasks/Edit/Index';
 import TaskSolved from '@/views/Tasks/Solved/Index';
 
 import ContestCreate from '@/views/Contests/Create/Index';
+import ContestEdit from '@/views/Contests/Edit/Index';
 import ContestIndex from '@/views/Contests/Index/Index';
 import ContestTasks from '@/views/Contests/Index/Index/Index';
 import ContestScoreboard from '@/views/Contests/Index/Scoreboard/Index';
@@ -34,6 +35,11 @@ import TeamCreate from '@/views/Teams/Create/Index';
 import TeamJoin from '@/views/Teams/Join/Index';
 import TeamIndex from '@/views/Teams/Index/Index';
 
+import ConfirmEmail from '@/views/Index/ConfirmEmail/Index';
+import PasswordReset from '@/views/Index/PasswordReset/Index';
+import PasswordResetConfirm from '@/views/Index/PasswordResetConfirm/Index';
+import EmailResend from '@/views/Index/EmailResend/Index';
+
 const routes = [
     {
         path: '/',
@@ -49,6 +55,26 @@ const routes = [
         path: '/register',
         name: 'register',
         component: Register,
+    },
+    {
+        path: '/confirm_email',
+        name: 'email_confirm',
+        component: ConfirmEmail,
+    },
+    {
+        path: '/reset_password',
+        name: 'password_reset',
+        component: PasswordReset,
+    },
+    {
+        path: '/reset_password_confirm',
+        name: 'password_reset_confirm',
+        component: PasswordResetConfirm,
+    },
+    {
+        path: '/email_resend',
+        name: 'email_resend',
+        component: EmailResend,
     },
     {
         path: '/teams/create',
@@ -106,6 +132,14 @@ const routes = [
         path: '/contests/create',
         name: 'contest_create',
         component: ContestCreate,
+        meta: {
+            auth: true,
+        },
+    },
+    {
+        path: '/contests/:id/edit',
+        name: 'contest_edit',
+        component: ContestEdit,
         meta: {
             auth: true,
         },
@@ -194,11 +228,17 @@ const routes = [
         path: '/posts/create',
         name: 'post_create',
         component: PostCreate,
+        meta: {
+            auth: true,
+        },
     },
     {
         path: '/posts/:id/edit',
         name: 'post_edit',
         component: PostEdit,
+        meta: {
+            auth: true,
+        },
     },
     {
         path: '/posts/:id',

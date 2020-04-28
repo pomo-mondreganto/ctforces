@@ -1,5 +1,18 @@
 <template>
     <div>
+        <div
+            class="p-r"
+            v-if="!$types.isNull(contest) && contest.can_edit_contest"
+        >
+            <div class="a-tr">
+                <router-link
+                    :to="{ name: 'contest_edit', params: { id: contest.id } }"
+                    class="btn nlnk"
+                >
+                    Edit contest
+                </router-link>
+            </div>
+        </div>
         <contest :contest="contest" :contest_tasks="contest_tasks" />
         <f-detail :errors="errors['detail']" />
     </div>

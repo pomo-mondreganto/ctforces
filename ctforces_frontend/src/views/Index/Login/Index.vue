@@ -27,6 +27,15 @@
                 <div class="ff">
                     <input type="submit" value="Login" class="btn" />
                 </div>
+                <hr />
+                <div class="aux">
+                    <router-link :to="{ name: 'password_reset' }"
+                        >Forgot password</router-link
+                    >
+                    <router-link :to="{ name: 'email_resend' }"
+                        >Resend email</router-link
+                    >
+                </div>
             </form>
         </card>
     </master-layout>
@@ -72,3 +81,11 @@ export default {
     },
 };
 </script>
+
+<style lang="scss" scoped>
+.aux {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+</style>
