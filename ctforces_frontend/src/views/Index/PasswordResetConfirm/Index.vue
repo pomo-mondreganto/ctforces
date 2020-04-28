@@ -40,19 +40,21 @@ export default {
         FInput,
     },
 
-    created: async function() {
-        const { token } = this.$route.query;
+    methods: {
+        reset: async function() {
+            const { token } = this.$route.query;
 
-        try {
-            await this.$http.post('/reset_password/', {
-                password: this.password,
-                token,
-            });
+            try {
+                await this.$http.post('/reset_password/', {
+                    password: this.password,
+                    token,
+                });
 
-            this.$router.push({ name: 'login' }).catch(() => {});
-        } catch (error) {
-            this.errors = this.$parse(error.response.data);
-        }
+                this.$router.push({ name: 'login' }).catch(() => {});
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
     },
 };
 </script>
