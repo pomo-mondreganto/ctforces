@@ -47,6 +47,7 @@
                         :errors="errors['description']"
                     />
                 </div>
+                <hint-list v-model="hints" />
                 <div class="ff mt-0">
                     <f-checkbox
                         name="is_published"
@@ -76,6 +77,7 @@
 </template>
 
 <script>
+import HintList from '@/components/Form/HintList/Index';
 import Editor from '@/components/Editor/Index';
 import FHeader from '@/components/Form/Header';
 import FInput from '@/components/Form/Input';
@@ -93,6 +95,7 @@ export default {
         FFiles,
         FTags,
         ProgressBar,
+        HintList,
     },
 
     data: function() {
@@ -104,6 +107,7 @@ export default {
             is_published: false,
             attachedFiles: [],
             tags: [],
+            hints: [],
             autocompleteTags: [],
             errors: {},
             progress: null,
@@ -165,6 +169,22 @@ export default {
             return tagIds;
         },
 
+        createHints: async function(taskId) {
+            for (const hint of this.hints) {
+                try {
+                    await this.$http.post('/task_hints/', {
+                        task: taskId,
+                        body: hint.body,
+                        is_published: hint.is_published,
+                    });
+                } catch (error) {
+                    this.errors = this.$parse(error.response.data);
+                    return null;
+                }
+            }
+            return true;
+        },
+
         createTask: async function() {
             const fileIds = await this.createFiles();
             if (this.$types.isNull(fileIds)) {
@@ -185,6 +205,7 @@ export default {
                     tags: tagIds,
                     hints: [],
                 });
+                await this.createHints(resp.data.id);
                 this.$router
                     .push({
                         name: 'task_index',
