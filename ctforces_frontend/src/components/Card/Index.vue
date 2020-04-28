@@ -8,5 +8,6 @@
 .inside {
     border: 0.05em solid rgba($darklight, 0.5);
     border-radius: 0.4em;
+    min-height: 3em;
 }
 </style>

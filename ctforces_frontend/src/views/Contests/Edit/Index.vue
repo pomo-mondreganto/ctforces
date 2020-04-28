@@ -1,8 +1,8 @@
 <template>
     <master-layout>
         <card>
-            <f-header header text="Create contest"></f-header>
-            <form class="mt-2" @submit.prevent="createContest">
+            <f-header header text="Edit contest"></f-header>
+            <form class="mt-2" @submit.prevent="editContest">
                 <div class="ff">
                     <f-input
                         class="mt-1-5"
@@ -76,7 +76,7 @@
                     <f-detail :errors="errors['detail']" />
                 </div>
                 <div class="ff">
-                    <input type="submit" value="Create" class="btn" />
+                    <input type="submit" value="Edit" class="btn" />
                 </div>
             </form>
         </card>
@@ -96,6 +96,7 @@ export default {
             name: null,
             description: null,
             tasks: [],
+            oldTasks: {},
             isPublished: false,
             isRegistrationOpen: false,
             isRated: false,
@@ -106,10 +107,43 @@ export default {
         };
     },
 
+    created: async function() {
+        const { id } = this.$route.params;
+        try {
+            const rc = await this.$http.get(`/contests/${id}/full`);
+            this.name = rc.data.name;
+            this.description = rc.data.description;
+            this.isPublished = rc.data.is_published;
+            this.isRegistrationOpen = rc.data.is_registration_open;
+            this.isRated = rc.data.is_rated;
+            this.publishTasksAfterFinished =
+                rc.data.publish_tasks_after_finished;
+            this.startTime = rc.data.start_time;
+            this.endTime = rc.data.end_time;
+            let self = this;
+            this.tasks = await Promise.all(
+                rc.data.contest_task_relationship_details.map(async task => {
+                    self.oldTasks[task.task] = task.id;
+                    return {
+                        cost: task.cost.toString(),
+                        id: task.task.toString(),
+                        name: task.task_name,
+                        mainTag: task.main_tag_details,
+                        tags: (await this.$http.get(`/tasks/${task.task}/`))
+                            .data.tags_details,
+                    };
+                })
+            );
+        } catch (error) {
+            this.errors = this.$parse(error.response.data);
+        }
+    },
+
     methods: {
-        createContest: async function() {
+        editContest: async function() {
+            const { id: cid } = this.$route.params;
             try {
-                const r = await this.$http.post(`/contests/`, {
+                const r = await this.$http.put(`/contests/${cid}/`, {
                     name: this.name,
                     description: this.description,
                     is_published: this.isPublished,
@@ -121,7 +155,14 @@ export default {
                     end_time: new Date(this.endTime).toISOString(),
                 });
 
+                let newTasks = {};
+
                 for (const task of this.tasks) {
+                    console.log(task);
+                    newTasks[task.id] = true;
+                    if (this.oldTasks[task.id]) {
+                        continue;
+                    }
                     await this.$http.post('/contest_task_relationship/', {
                         task: parseInt(task.id, 10),
                         contest: r.data.id,
@@ -130,9 +171,18 @@ export default {
                     });
                 }
 
+                for (const id in this.oldTasks) {
+                    if (newTasks[id]) {
+                        continue;
+                    }
+                    await this.$http.delete(
+                        `/contest_task_relationship/${this.oldTasks[id]}/`
+                    );
+                }
+
                 this.$router.push({
                     name: 'contest_tasks',
-                    params: { id: r.data.id },
+                    params: { id: cid },
                 });
             } catch (error) {
                 this.errors = this.$parse(error.response.data);

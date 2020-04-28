@@ -1,7 +1,7 @@
 <template>
     <div v-if="!$types.isNull(contest)">
         <div
-            class="mt-1"
+            class="mb-1"
             v-for="taskRow in tasks"
             :key="taskRow[0].main_tag_details.id"
         >

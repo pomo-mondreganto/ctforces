@@ -65,7 +65,7 @@ export default {
                 name: null,
                 cost: null,
                 tags: [],
-                mainTag: null,
+                mainTag: { name: null, id: null },
                 idx: this._.uniqueId('task'),
             });
             this.$emit('input', tasks);

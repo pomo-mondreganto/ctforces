@@ -9,6 +9,7 @@ import TaskEdit from '@/views/Tasks/Edit/Index';
 import TaskSolved from '@/views/Tasks/Solved/Index';
 
 import ContestCreate from '@/views/Contests/Create/Index';
+import ContestEdit from '@/views/Contests/Edit/Index';
 import ContestIndex from '@/views/Contests/Index/Index';
 import ContestTasks from '@/views/Contests/Index/Index/Index';
 import ContestScoreboard from '@/views/Contests/Index/Scoreboard/Index';
@@ -111,6 +112,14 @@ const routes = [
         },
     },
     {
+        path: '/contests/:id/edit',
+        name: 'contest_edit',
+        component: ContestEdit,
+        meta: {
+            auth: true,
+        },
+    },
+    {
         name: 'contest_register',
         path: '/contests/:id/register',
         component: ContestRegister,
@@ -194,11 +203,17 @@ const routes = [
         path: '/posts/create',
         name: 'post_create',
         component: PostCreate,
+        meta: {
+            auth: true,
+        },
     },
     {
         path: '/posts/:id/edit',
         name: 'post_edit',
         component: PostEdit,
+        meta: {
+            auth: true,
+        },
     },
     {
         path: '/posts/:id',

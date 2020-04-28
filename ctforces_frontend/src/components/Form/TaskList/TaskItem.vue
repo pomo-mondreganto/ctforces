@@ -44,7 +44,7 @@
             </div>
             <div class="field vc">
                 <f-select
-                    :value="mainTag.name"
+                    :value="value.mainTag.name"
                     @input="changeMainTag"
                     :options="value.tags.map(({ name }) => name)"
                 />
@@ -68,7 +68,6 @@ export default {
 
     data: function() {
         return {
-            mainTag: { name: null, id: null },
             errors: {},
         };
     },
@@ -83,15 +82,13 @@ export default {
                 newTask['name'] = task.name;
                 newTask['cost'] = task.cost.toString();
                 newTask['tags'] = task.tags_details;
-                this.mainTag = task.tags_details[0];
-                newTask['mainTag'] = this.mainTag.id.toString();
+                newTask['mainTag'] = task.tags_details[0];
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
                 newTask['name'] = null;
                 newTask['cost'] = null;
                 newTask['tags'] = [];
-                this.mainTag = { name: null, id: null };
-                newTask['mainTag'] = this.mainTag.id;
+                newTask['mainTag'] = { name: null, id: null };
             }
             this.$emit('input', newTask);
         },
@@ -101,15 +98,16 @@ export default {
         },
 
         changeMainTag: function(mainTag) {
-            let filtered = this.tags.filter(({ name }) => name === mainTag);
+            let filtered = this.value.tags.filter(
+                ({ name }) => name === mainTag
+            );
             let tag = { name: null, id: null };
             if (filtered.length > 0) {
                 tag = filtered[0];
             }
-            this.mainTag = tag;
             this.$emit('input', {
                 ...this.value,
-                mainTag: this.mainTag.id,
+                mainTag: tag,
             });
         },
     },
