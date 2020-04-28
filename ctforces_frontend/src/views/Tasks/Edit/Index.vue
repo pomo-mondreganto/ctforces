@@ -47,6 +47,7 @@
                         :errors="errors['description']"
                     />
                 </div>
+                <hint-list v-model="hints" />
                 <div class="ff mt-0">
                     <f-checkbox
                         name="is_published"
@@ -76,6 +77,7 @@
 </template>
 
 <script>
+import HintList from '@/components/Form/HintList/Index';
 import Editor from '@/components/Editor/Index';
 import FHeader from '@/components/Form/Header';
 import FInput from '@/components/Form/Input';
@@ -93,6 +95,7 @@ export default {
         FFiles,
         FTags,
         ProgressBar,
+        HintList,
     },
 
     data: function() {
@@ -105,6 +108,8 @@ export default {
             attachedFiles: [],
             errors: {},
             tags: [],
+            hints: [],
+            oldHints: {},
             autocompleteTags: [],
             progress: null,
         };
@@ -121,6 +126,17 @@ export default {
             this.flag = resp.data.flag;
             this.isPublished = resp.data.is_published;
             this.attachedFiles = resp.data.files_details;
+            this.hints = resp.data.hints_details.map(
+                ({ id, body, task, is_published }) => {
+                    this.oldHints[id] = true;
+                    return {
+                        hid: id,
+                        id: task,
+                        body,
+                        is_published,
+                    };
+                }
+            );
             this.tags = resp.data.task_tags_details.map(tag => {
                 return { text: tag.name };
             });
@@ -182,6 +198,42 @@ export default {
             return tagIds;
         },
 
+        createHints: async function(taskId) {
+            try {
+                let newHints = {};
+
+                for (const hint of this.hints) {
+                    if (hint.hid) {
+                        newHints[hint.hid] = true;
+                    }
+                    if (hint.hid && this.oldHints[hint.hid]) {
+                        await this.$http.put(`/task_hints/${hint.hid}/`, {
+                            task: taskId,
+                            body: hint.body,
+                            is_published: hint.is_published,
+                        });
+                    } else {
+                        await this.$http.post('/task_hints/', {
+                            task: taskId,
+                            body: hint.body,
+                            is_published: hint.is_published,
+                        });
+                    }
+                }
+
+                for (const hint_id in this.oldHints) {
+                    if (!newHints[hint_id]) {
+                        await this.$http.delete(`/task_hints/${hint_id}/`);
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+                this.errors = this.$parse(error.response.data);
+                return null;
+            }
+            return true;
+        },
+
         updateTask: async function() {
             const fileIds = await this.createFiles();
             if (this.$types.isNull(fileIds)) {
@@ -205,6 +257,7 @@ export default {
                         hints: [],
                     }
                 );
+                await this.createHints(resp.data.id);
                 this.$router
                     .push({
                         name: 'task_index',

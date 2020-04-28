@@ -160,14 +160,25 @@ export default {
                 for (const task of this.tasks) {
                     newTasks[task.id] = true;
                     if (this.oldTasks[task.id]) {
-                        continue;
+                        await this.$http.put(
+                            `/contest_task_relationship/${
+                                this.oldTasks[task.id]
+                            }/`,
+                            {
+                                task: parseInt(task.id, 10),
+                                contest: r.data.id,
+                                cost: parseInt(task.cost, 10),
+                                main_tag: parseInt(task.mainTag.id, 10),
+                            }
+                        );
+                    } else {
+                        await this.$http.post('/contest_task_relationship/', {
+                            task: parseInt(task.id, 10),
+                            contest: r.data.id,
+                            cost: parseInt(task.cost, 10),
+                            main_tag: parseInt(task.mainTag.id, 10),
+                        });
                     }
-                    await this.$http.post('/contest_task_relationship/', {
-                        task: parseInt(task.id, 10),
-                        contest: r.data.id,
-                        cost: parseInt(task.cost, 10),
-                        main_tag: parseInt(task.mainTag.id, 10),
-                    });
                 }
 
                 for (const id in this.oldTasks) {

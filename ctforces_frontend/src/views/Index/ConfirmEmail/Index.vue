@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="errors === {}">Redirecting...</div>
+        <div v-if="Object.keys(errors).length === 0">Redirecting...</div>
         <f-detail :errors="errors['token']" />
         <f-detail :errors="errors['detail']" />
     </div>
