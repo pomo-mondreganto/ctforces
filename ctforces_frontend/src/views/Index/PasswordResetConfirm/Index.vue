@@ -50,6 +50,8 @@ export default {
                     token,
                 });
 
+                this.$toasted.success('Success!');
+
                 this.$router.push({ name: 'login' }).catch(() => {});
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
