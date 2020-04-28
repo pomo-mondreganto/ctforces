@@ -69,6 +69,9 @@ export default {
                     email: this.email,
                     password: this.password,
                 });
+                this.$toasted.info(
+                    "We've sent a confirmation email. Please check your email"
+                );
                 this.$router.push({ name: 'login' }).catch(() => {});
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
