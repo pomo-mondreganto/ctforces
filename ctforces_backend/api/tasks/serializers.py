@@ -140,6 +140,7 @@ class TaskHintSerializer(rest_serializers.ModelSerializer):
             'author_rating',
             'author_username',
             'body',
+            'id',
             'is_published',
             'task',
         )
