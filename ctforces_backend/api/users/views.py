@@ -311,7 +311,6 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     pagination_class = api_pagination.UserDefaultPagination
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
-    filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = api_users_filters.UserFilter
 
     @action(detail=False, url_name='upsolving_top', url_path='upsolving_top', methods=['get'])

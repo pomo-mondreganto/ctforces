@@ -306,7 +306,6 @@ class ContestParticipantRelationshipViewSet(rest_viewsets.ModelViewSet):
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
     serializer_class = api.contests.serializers.CPRSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('contest_id',)
 
     def get_queryset(self):

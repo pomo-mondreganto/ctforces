@@ -27,7 +27,6 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
     queryset = api_models.Task.objects.order_by('-publication_time', '-id').select_related('author')
-    filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = api_tasks_filters.TaskFilterSet
 
     action_permission_classes = {
@@ -156,7 +155,6 @@ class TaskTagViewSet(rest_mixins.CreateModelMixin,
     serializer_class = api_tasks_serializers.TaskTagSerializer
     pagination_class = api_pagination.TaskTagDefaultPagination
     queryset = api_models.TaskTag.objects.all()
-    filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = api_tasks_filters.TaskTagFilterSet
 
     def get_serializer(self, *args, **kwargs):
@@ -186,24 +184,19 @@ class TaskHintViewSet(api_mixins.CustomPermissionsViewSetMixin,
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api_models.TaskHint.objects.all().select_related('author')
+    queryset = api_models.TaskHint.objects.all().select_related('author', 'task')
     serializer_class = api_tasks_serializers.TaskHintSerializer
 
     action_permission_classes = {
         'retrieve': (api_tasks_permissions.HasViewTaskHintPermission,),
-        'update': (api_tasks_permissions.HasModifyTaskHintsPermission,),
-        'partial_update': (api_tasks_permissions.HasModifyTaskHintsPermission,),
-        'destroy': (api_tasks_permissions.HasModifyTaskHintsPermission,)
+        'update': (api_tasks_permissions.HasEditTaskHintsPermission,),
+        'partial_update': (api_tasks_permissions.HasEditTaskHintsPermission,),
+        'destroy': (api_tasks_permissions.HasEditTaskHintsPermission,)
     }
 
     def get_queryset(self):
         qs = super(TaskHintViewSet, self).get_queryset()
         if self.action == 'list':
-            hints_type = self.request.query_params.get('type', 'published')
-
-            if hints_type == 'published':
-                qs = qs.filter(is_published=True)
-            else:
-                qs = get_objects_for_user(self.request.user, 'view_taskhint', api_models.TaskHint)
+            qs = qs.filter(is_published=True)
 
         return qs

@@ -46,7 +46,7 @@ class HasViewTaskPermission(api_permissions.HasViewPermissionIfPublishedMixin):
         return super(HasViewTaskPermission, self).has_object_permission(request, view, obj)
 
 
-class HasModifyTaskHintsPermission(api_permissions.HasPermissionMixin):
+class HasEditTaskHintsPermission(api_permissions.HasPermissionMixin):
     permission_name = 'api.change_task'
 
     def has_object_permission(self, request, view, obj):

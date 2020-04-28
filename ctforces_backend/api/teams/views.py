@@ -22,7 +22,6 @@ class TeamViewSet(CustomPermissionsViewSetMixin,
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
     queryset = api.models.Team.objects.all()
-    filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = api_teams_filters.TeamFilter
 
     action_permission_classes = {
