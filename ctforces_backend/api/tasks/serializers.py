@@ -114,6 +114,59 @@ class TaskFileViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOn
         }
 
 
+class TaskHintSerializer(rest_serializers.ModelSerializer):
+    task = api_fields.CurrentUserPermissionsFilteredPKRF(
+        read_only=False,
+        perms='change_task',
+        queryset=api_models.Task.objects.all(),
+    )
+
+    author_username = rest_serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username',
+        source='author',
+    )
+
+    author_rating = rest_serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='rating',
+        source='author',
+    )
+
+    class Meta:
+        model = api_models.TaskHint
+        fields = (
+            'author',
+            'author_rating',
+            'author_username',
+            'body',
+            'is_published',
+            'task',
+        )
+
+        extra_kwargs = {
+            'author': {
+                'write_only': True,
+            },
+            'task': {
+                'write_only': True,
+            }
+        }
+
+    def validate_author(self, data):
+        if self.instance and data != self.instance.author:
+            raise ValidationError({'author': 'This field is immutable once set'})
+        return data
+
+    def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
+        instance = super(TaskHintSerializer, self).create(validated_data)
+        assign_perm('view_taskhint', instance.author, instance)
+        assign_perm('change_taskhint', instance.author, instance)
+        assign_perm('delete_taskhint', instance.author, instance)
+        return instance
+
+
 class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
     tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
@@ -145,7 +198,7 @@ class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySe
 
     @staticmethod
     def get_hints_method(obj):
-        return api_models.TaskHint.objects.filter(is_published=True, task=obj).values_list('id', flat=True)
+        return obj.hints.filter(is_published=True).values_list('id', flat=True)
 
 
 class TaskFullSerializer(rest_serializers.ModelSerializer):
@@ -162,6 +215,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
         perms='view_taskfile',
         many=True,
     )
+    hints_details = TaskHintSerializer(read_only=True, many=True, source='hints')
 
     class Meta:
         model = api_models.Task
@@ -175,6 +229,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
             'files_details',
             'flag',
             'hints',
+            'hints_details',
             'id',
             'is_published',
             'name',
@@ -237,56 +292,3 @@ class TaskSubmitSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnly
     def validate_flag(self, flag):
         if flag != self.instance.flag:
             raise rest_serializers.ValidationError('Invalid flag.')
-
-
-class TaskHintSerializer(rest_serializers.ModelSerializer):
-    task = api_fields.CurrentUserPermissionsFilteredPKRF(
-        read_only=False,
-        perms='change_task',
-        queryset=api_models.Task.objects.all(),
-    )
-
-    author_username = rest_serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username',
-        source='author',
-    )
-
-    author_rating = rest_serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='rating',
-        source='author',
-    )
-
-    class Meta:
-        model = api_models.TaskHint
-        fields = (
-            'author',
-            'author_rating',
-            'author_username',
-            'body',
-            'is_published',
-            'task',
-        )
-
-        extra_kwargs = {
-            'author': {
-                'write_only': True,
-            },
-            'task': {
-                'write_only': True,
-            }
-        }
-
-    def validate_author(self, data):
-        if self.instance and data != self.instance.author:
-            raise ValidationError({'author': 'This field is immutable once set'})
-        return data
-
-    def create(self, validated_data):
-        validated_data['author'] = self.context['request'].user
-        instance = super(TaskHintSerializer, self).create(validated_data)
-        assign_perm('view_taskhint', instance.author, instance)
-        assign_perm('change_taskhint', instance.author, instance)
-        assign_perm('delete_taskhint', instance.author, instance)
-        return instance
