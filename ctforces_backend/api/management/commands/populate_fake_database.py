@@ -181,7 +181,6 @@ class Command(BaseCommand):
                     min_cost=fake.pyint(1, 500),
                     max_cost=fake.pyint(501, 1000),
                     decay_value=fake.pyint(1, 100),
-                    ordering_number=fake.pyint(1, len(chosen_tasks)),
                 )
                 rel.save()
 

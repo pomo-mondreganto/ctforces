@@ -158,7 +158,6 @@ class CTRMainSerializer(rest_serializers.ModelSerializer):
             'max_cost',
             'min_cost',
             'decay_value',
-            'ordering_number',
             'solved_count',
             'task',
             'task_name',
@@ -181,7 +180,6 @@ class CTRUpdateSerializer(rest_serializers.ModelSerializer):
             'max_cost',
             'min_cost',
             'decay_value',
-            'ordering_number',
         )
 
 
@@ -192,7 +190,6 @@ class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, ReadOnlySer
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
     is_solved_on_upsolving = rest_serializers.BooleanField(read_only=True)
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
-    ordering_number = rest_serializers.IntegerField(read_only=True)
     main_tag_details = TaskTagSerializer(read_only=True, source='main_tag')
 
     class Meta:
@@ -204,7 +201,6 @@ class ContestTaskPreviewSerializer(rest_serializers.ModelSerializer, ReadOnlySer
             'is_solved_by_user',
             'is_solved_on_upsolving',
             'name',
-            'ordering_number',
             'solved_count',
             'tags_details',
             'main_tag_details',
@@ -221,7 +217,6 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerial
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     hints = rest_serializers.SerializerMethodField('get_hints_method')
     contest_cost = rest_serializers.IntegerField(read_only=True)
-    ordering_number = rest_serializers.IntegerField(read_only=True)
 
     class Meta:
         model = api.models.Task
@@ -236,7 +231,6 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerial
             'is_solved_by_user',
             'is_solved_on_upsolving',
             'name',
-            'ordering_number',
             'solved_count',
             'tags_details',
         )

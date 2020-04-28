@@ -31,11 +31,13 @@ INSTALLED_APPS = [
     'rest_framework_tricks',
     'rest_framework_nested',
     'django_filters',
+    'silk',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'silk.middleware.SilkyMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -132,3 +134,14 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20971520
 DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
+
+def is_user_silk_authorized(user):
+    return user.is_superuser
+
+
+SILKY_PYTHON_PROFILER = True
+SILKY_AUTHENTICATION = True
+SILKY_AUTHORISATION = True
+SILKY_PERMISSIONS = is_user_silk_authorized
+SILKY_META = True

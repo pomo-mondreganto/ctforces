@@ -49,6 +49,10 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
 
     def get_queryset(self):
         queryset = super(TaskViewSet, self).get_queryset()
+
+        if self.action == 'get_solved':
+            return queryset.prefetch_related('solved_by')
+
         queryset = queryset.prefetch_related('tags').select_related('author')
 
         if self.action == 'list':
