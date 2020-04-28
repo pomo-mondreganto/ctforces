@@ -23,6 +23,14 @@
                 >{{ solved.number }} solves</router-link
             >
         </div>
+        <div class="hints mt-1" v-if="task.hints.length > 0">
+            <hint
+                :num="index + 1"
+                :id="hint"
+                v-for="(hint, index) of task.hints"
+                :key="index"
+            />
+        </div>
         <div class="tags mt-1 mb-1">
             <span class="tags-h">Tags:</span>
             <tag
@@ -75,6 +83,7 @@
 </template>
 
 <script>
+import Hint from '@/components/Hint/Index';
 import Tag from '@/components/Tag/Index';
 import { mediaUrl } from '@/config';
 import Markdown from '@/components/Markdown/Index';
@@ -92,6 +101,7 @@ export default {
         Tag,
         Markdown,
         FInput,
+        Hint,
     },
 
     data: function() {
