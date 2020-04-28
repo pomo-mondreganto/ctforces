@@ -24,12 +24,20 @@
 </template>
 
 <script>
+import FInput from '@/components/Form/Input';
+import FHeader from '@/components/Form/Header';
+
 export default {
     data: function() {
         return {
             password: null,
             errors: {},
         };
+    },
+
+    components: {
+        FHeader,
+        FInput,
     },
 
     created: async function() {
