@@ -513,7 +513,8 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         ).solved_by.annotate(
             rating=Subquery(
                 api.models.ContestParticipantRelationship.objects.filter(
-                    participant__id=OuterRef('id'),
+                    contest=contest,
+                    participant=OuterRef('id'),
                 ).values('rating'),
             ),
         ).order_by('-id').all()
