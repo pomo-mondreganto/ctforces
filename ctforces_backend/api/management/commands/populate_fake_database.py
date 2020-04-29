@@ -157,13 +157,14 @@ class Command(BaseCommand):
 
             participants = list(set(random.choices(teams, k=random.randint(1, 50))))
             for team in participants:
-                user_ratings = list(map(lambda x: x.rating, participants))
+                team_members = team.participants.all()
+                registered_users = list(set(random.choices(team_members, k=random.randint(1, len(team_members)))))
+
+                user_ratings = list(map(lambda x: x.rating, registered_users))
                 team_rating = RatingSystem.get_team_rating(user_ratings)
                 rel = models.ContestParticipantRelationship(contest=c, participant=team, rating=team_rating)
                 rel.save()
 
-                team_members = team.participants.all()
-                registered_users = list(set(random.choices(team_members, k=random.randint(1, len(team_members)))))
                 to_create = []
                 for u in registered_users:
                     helper = models.CPRHelper(
