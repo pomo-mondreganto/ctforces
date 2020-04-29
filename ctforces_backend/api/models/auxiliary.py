@@ -9,8 +9,8 @@ from django.contrib.auth.models import UserManager
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Sum, Q, Value as V, FileField, F, Count
-from django.db.models.functions import Coalesce, Greatest, Ceil
+from django.db.models import Sum, Q, Value as V, FileField, F, Count, Avg
+from django.db.models.functions import Coalesce, Greatest, Ceil, Sqrt
 from django.utils.deconstruct import deconstructible
 from rest_framework import exceptions
 
@@ -43,6 +43,18 @@ class UserUpsolvingAnnotatedManager(UserManager):
                 ),
                 V(0),
             )
+        )
+
+
+class TeamRatingAnnotatedManager(models.Manager):
+    def get_queryset(self):
+        qs = super(TeamRatingAnnotatedManager, self).get_queryset()
+        return qs.prefetch_related(
+            'participants',
+        ).annotate(
+            rating=Sqrt(
+                Avg(F('participants__rating') ** 2, distinct=True),
+            ),
         )
 
 

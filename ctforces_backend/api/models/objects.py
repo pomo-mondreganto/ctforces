@@ -18,6 +18,7 @@ from .auxiliary import (
     CustomASCIIUsernameValidator,
     TagNameValidator,
     UserUpsolvingAnnotatedManager,
+    TeamRatingAnnotatedManager,
 )
 
 
@@ -98,6 +99,9 @@ class Team(models.Model):
         blank=True,
     )
 
+    objects = models.Manager()
+    rating_annotated = TeamRatingAnnotatedManager()
+
     @staticmethod
     def gen_join_token(name):
         return f'{name}:{secrets.token_hex(16)}'
@@ -107,6 +111,8 @@ class Team(models.Model):
         permissions = (
             ('register_team', 'Can register teams for a contest'),
         )
+
+        default_manager_name = 'objects'
 
 
 class Post(models.Model):

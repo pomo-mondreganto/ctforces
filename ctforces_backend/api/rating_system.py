@@ -1,8 +1,8 @@
 import math
+from typing import List
 
 
 class RatingSystem:
-
     @staticmethod
     def __get_probability(a, b):
         return 1.0 / (1.0 + math.pow(10.0, (b - a) / 3000.0))
@@ -10,6 +10,10 @@ class RatingSystem:
     @staticmethod
     def __get_geometrical_mean(a, b):
         return math.sqrt(a * b)
+
+    @staticmethod
+    def get_team_rating(user_ratings: List[int]) -> int:
+        return int(sum(user_ratings) / len(user_ratings))
 
     def __init__(self, ratings):
         self.ratings = ratings

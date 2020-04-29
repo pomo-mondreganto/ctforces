@@ -1,5 +1,3 @@
-from django.db.models import Avg
-from django_filters import rest_framework as filters
 from guardian.shortcuts import assign_perm
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
@@ -21,7 +19,7 @@ class TeamViewSet(CustomPermissionsViewSetMixin,
     pagination_class = api_pagination.TeamDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api.models.Team.objects.all()
+    queryset = api.models.Team.rating_annotated.select_related('captain').all()
     filterset_class = api_teams_filters.TeamFilter
 
     action_permission_classes = {
@@ -33,17 +31,6 @@ class TeamViewSet(CustomPermissionsViewSetMixin,
     }
 
     klass = api.models.Team
-
-    def get_queryset(self):
-        qs = super(TeamViewSet, self).get_queryset()
-        qs = qs.select_related(
-            'captain',
-        ).prefetch_related(
-            'participants',
-        ).annotate(
-            rating=Avg('participants__rating', distinct=True),
-        )
-        return qs
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

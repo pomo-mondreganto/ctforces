@@ -8,12 +8,10 @@ from django.db.models import (
     F,
     Prefetch,
     IntegerField,
-    Avg,
-    BooleanField
+    BooleanField,
+    Subquery,
 )
-from django.db.models.functions import Coalesce
 from django.utils import timezone
-from django_filters import rest_framework as filters
 from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
 from rest_framework import viewsets as rest_viewsets
@@ -207,9 +205,6 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
             contest=contest,
         ).select_related(
             'participant',
-        ).prefetch_related('registered_users').annotate(
-            cost_sum=Coalesce(participant_cost_sum_subquery, V(0)),
-            rating=Avg('registered_users__rating', distinct=True),
         ).only(
             'participant',
             'last_solve',
@@ -250,10 +245,6 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         contest = self.get_object()
         queryset = api.models.ContestParticipantRelationship.objects.filter(
             contest=contest,
-        ).prefetch_related(
-            'registered_users'
-        ).annotate(
-            rating=Avg('registered_users__rating', distinct=True),
         ).order_by('-id')
         paginator = api.pagination.ContestRegistrationsPagination()
         page = paginator.paginate_queryset(queryset=queryset, request=self.request)
@@ -520,7 +511,11 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             task=task,
             contest=contest,
         ).solved_by.annotate(
-            rating=Avg('participants__rating', distinct=True),
+            rating=Subquery(
+                api.models.ContestParticipantRelationship.objects.filter(
+                    participant__id=OuterRef('id'),
+                ).values('rating'),
+            ),
         ).order_by('-id').all()
 
         return api.pagination.get_paginated_response(
