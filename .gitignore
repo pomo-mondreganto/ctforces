@@ -428,4 +428,6 @@ ctforces_backend/ctforces_backend/config.json
 
 ctforces_react/dist/
 
-!volumes/media/avatars/default_avatar*.png
+!volumes/media/avatars/default_avatar.main.png
+!volumes/media/avatars/default_avatar.png
+!volumes/media/avatars/default_avatar.small.png
