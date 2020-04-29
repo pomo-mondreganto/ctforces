@@ -54,6 +54,9 @@ class HasPermissionOrReadOnlyMixin(permissions.BasePermission):
 class HasViewPermissionIfPublishedMixin(HasPermissionMixin):
     is_published_field_name = 'is_published'
 
+    def has_permission(self, request, view):
+        return True
+
     def has_object_permission(self, request, view, obj):
         if self.permission_name is None:
             raise AssertionError('You must specify permission_name')

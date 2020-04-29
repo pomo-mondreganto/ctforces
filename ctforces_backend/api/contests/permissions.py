@@ -25,6 +25,3 @@ class HasDeleteContestPermission(HasPermissionMixin):
 
 class HasViewContestPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_contest'
-
-    def has_permission(self, request, view):
-        return True
