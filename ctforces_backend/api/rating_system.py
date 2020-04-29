@@ -13,7 +13,7 @@ class RatingSystem:
 
     @staticmethod
     def get_team_rating(user_ratings: List[int]) -> int:
-        return int(sum(user_ratings) / len(user_ratings))
+        return sum(user_ratings)
 
     def __init__(self, ratings):
         self.ratings = ratings
