@@ -21,7 +21,7 @@ export default {
             await this.$http.post('/confirm_email/', {
                 token,
             });
-
+            this.$toasted.success('Success!');
             this.$router.push({ name: 'login' }).catch(() => {});
         } catch (error) {
             this.errors = this.$parse(error.response.data);

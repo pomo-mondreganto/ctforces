@@ -24,6 +24,9 @@
 </template>
 
 <script>
+import FInput from '@/components/Form/Input';
+import FHeader from '@/components/Form/Header';
+
 export default {
     data: function() {
         return {
@@ -32,19 +35,28 @@ export default {
         };
     },
 
-    created: async function() {
-        const { token } = this.$route.query;
+    components: {
+        FHeader,
+        FInput,
+    },
 
-        try {
-            await this.$http.post('/reset_password/', {
-                password: this.password,
-                token,
-            });
+    methods: {
+        reset: async function() {
+            const { token } = this.$route.query;
 
-            this.$router.push({ name: 'login' }).catch(() => {});
-        } catch (error) {
-            this.errors = this.$parse(error.response.data);
-        }
+            try {
+                await this.$http.post('/reset_password/', {
+                    password: this.password,
+                    token,
+                });
+
+                this.$toasted.success('Success!');
+
+                this.$router.push({ name: 'login' }).catch(() => {});
+            } catch (error) {
+                this.errors = this.$parse(error.response.data);
+            }
+        },
     },
 };
 </script>
