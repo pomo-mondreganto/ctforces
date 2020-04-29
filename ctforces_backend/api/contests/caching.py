@@ -17,3 +17,8 @@ class ContestTaskListKeyConstructor(DefaultKeyConstructor):
     user_bit = UserKeyBit()
     args_bit = ArgsKeyBit()
     kwargs_bit = KwargsKeyBit()
+
+
+class ContestTaskSolvedKeyConstructor(DefaultKeyConstructor):
+    args_bit = ArgsKeyBit()
+    kwargs_bit = KwargsKeyBit()

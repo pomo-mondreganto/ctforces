@@ -11,6 +11,7 @@ from django.db.models import (
     BooleanField,
     Subquery,
 )
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
@@ -21,13 +22,13 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework.response import Response
 from rest_framework_extensions.cache.decorators import cache_response
 
+import api.contests.caching
 import api.contests.permissions
 import api.contests.serializers
 import api.models
 import api.pagination
 import api.tasks.serializers
 import api.teams.serializers
-from api.contests.caching import ScoreboardKeyConstructor, ContestTaskListKeyConstructor
 from api.database_functions import SubquerySum
 from api.mixins import (
     CustomPermissionsQuerysetViewSetMixin,
@@ -205,10 +206,12 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
             contest=contest,
         ).select_related(
             'participant',
+        ).annotate(
+            cost_sum=Coalesce(participant_cost_sum_subquery, V(0)),
         ).only(
             'participant',
             'last_solve',
-            'registered_users',
+            'rating',
         ).order_by('-cost_sum', 'last_solve')
 
         return relations
@@ -226,7 +229,6 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         for relation in relations_page:
             participant = relation.participant
             participant.rating = relation.rating
-            participant.registered_users = relation.registered_users
             participant.cost_sum = relation.cost_sum
             participant.last_contest_solve = relation.last_solve
             participants.append(participant)
@@ -253,7 +255,7 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
 
     @cache_response(
         timeout=5,
-        key_func=ScoreboardKeyConstructor(),
+        key_func=api.contests.caching.ScoreboardKeyConstructor(),
     )
     @action(
         detail=True,
@@ -267,7 +269,7 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
 
     @cache_response(
         timeout=60,
-        key_func=ScoreboardKeyConstructor(),
+        key_func=api.contests.caching.ScoreboardKeyConstructor(),
     )
     @action(
         detail=True,
@@ -496,10 +498,11 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         return super(ContestTaskViewSet, self).retrieve(request, *args, **kwargs)
 
-    @cache_response(timeout=5, key_func=ContestTaskListKeyConstructor())
+    @cache_response(timeout=5, key_func=api.contests.caching.ContestTaskListKeyConstructor())
     def list(self, request, *args, **kwargs):
         return super(ContestTaskViewSet, self).list(request, *args, **kwargs)
 
+    @cache_response(timeout=5, key_func=api.contests.caching.ContestTaskSolvedKeyConstructor())
     @action(detail=True,
             url_name='solved',
             url_path='solved',
