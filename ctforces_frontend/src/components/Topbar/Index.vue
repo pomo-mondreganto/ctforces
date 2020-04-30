@@ -14,7 +14,6 @@
             <svg
                 @click="changeTheme"
                 class="theme-img"
-                width="576.41px"
                 height="576.409px"
                 viewBox="0 0 576.41 576.409"
             >
@@ -53,6 +52,7 @@
         <div class="logreg vc mr-0-5">
             <login-button />
             <register-button />
+            <hamburger />
         </div>
     </div>
 </template>
@@ -61,12 +61,14 @@
 import LoginButton from './LoginButton';
 import RegisterButton from './RegisterButton';
 import NavButton from './NavButton';
+import Hamburger from './Hamburger';
 
 export default {
     components: {
         LoginButton,
         RegisterButton,
         NavButton,
+        Hamburger,
     },
 
     data: function() {
@@ -137,5 +139,9 @@ export default {
 .logreg {
     display: flex;
     flex: 3 1 0;
+
+    @media only screen and (max-width: 991px) {
+        flex: 2 1 0;
+    }
 }
 </style>

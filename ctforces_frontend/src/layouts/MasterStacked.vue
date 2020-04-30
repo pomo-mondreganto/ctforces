@@ -44,9 +44,9 @@ export default {
     }
 
     .layout {
-        @media only screen and (min-width: 992px) {
-            display: flex;
+        display: flex;
 
+        @media only screen and (min-width: 992px) {
             flex-flow: row nowrap;
 
             align-items: flex-start;
@@ -64,13 +64,16 @@ export default {
         }
 
         @media only screen and (max-width: 991px) {
+            flex-flow: column-reverse nowrap;
+
             & > :nth-child(1) {
                 border: none;
-                width: calc(100% - 2em);
             }
 
             & > :nth-child(2) {
-                width: 100%;
+                padding-left: 1em;
+                padding-right: 1em;
+                margin-bottom: 2em;
             }
         }
     }

@@ -35,7 +35,12 @@
                 }}</span>
             </div>
         </div>
-        <img class="user-avatar" :src="`${serverUrl}${user.avatar_main}`" />
+        <div class="user-avatar">
+            <img
+                class="user-avatar-img"
+                :src="`${serverUrl}${user.avatar_main}`"
+            />
+        </div>
     </div>
     <f-detail :errors="errors['detail']" v-else />
 </template>
@@ -87,12 +92,15 @@ export default {
 }
 
 .user-info {
-    flex: 1 1 0;
+    flex: 2 1 0;
 }
 
 .user-avatar {
     flex: 1 1 0;
-    max-width: 30%;
+
+    .user-avatar-img {
+        width: 100%;
+    }
 }
 
 .username {

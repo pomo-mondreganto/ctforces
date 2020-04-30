@@ -48,6 +48,7 @@
                             grow: 3,
                             comp: TimerComp,
                             key: 'end_time',
+                            nowrap: true,
                         },
                         {
                             name: '',
@@ -89,6 +90,7 @@
                             grow: 3,
                             comp: TimerComp,
                             key: 'start_time',
+                            nowrap: true,
                         },
                         {
                             name: '',

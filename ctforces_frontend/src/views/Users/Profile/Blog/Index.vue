@@ -11,12 +11,17 @@
             </router-link>
         </div>
         <f-header :text="`${$route.params.username} blog`" />
-        <div
-            v-for="(post, index) of posts"
-            :key="post.id"
-            :class="index > 0 ? 'mt-3' : 'pt-1'"
-        >
-            <post :post="post" />
+        <div v-if="!$types.isNull(posts) && posts.length > 0">
+            <div
+                v-for="(post, index) of posts"
+                :key="post.id"
+                :class="index > 0 ? 'mt-3' : 'pt-1'"
+            >
+                <post :post="post" />
+            </div>
+        </div>
+        <div v-else-if="!$types.isNull(posts) && posts.length === 0">
+            No records here
         </div>
         <f-detail :errors="errors['detail']" />
         <pagination :count="count" :pagesize="pagesize" />
@@ -32,7 +37,7 @@ import { mapState } from 'vuex';
 export default {
     data: function() {
         return {
-            posts: [],
+            posts: null,
             errors: {},
             count: null,
             pagesize: 10,

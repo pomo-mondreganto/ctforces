@@ -22,7 +22,7 @@
                             grow: 7,
                             comp: TaskLinkComp,
                         },
-                        { name: 'Cost', grow: 1 },
+                        { name: 'Cost', grow: 2 },
                         {
                             name: 'Tags',
                             grow: 5,

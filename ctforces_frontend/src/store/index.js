@@ -7,11 +7,16 @@ export default new Vuex.Store({
     state: {
         user: null,
         userRequested: false,
+        sidebar: true,
     },
     mutations: {
         SET_USER: (state, user) => {
             state.user = user;
             state.userRequested = true;
+        },
+
+        TOGGLE_SIDEBAR: state => {
+            state.sidebar = !state.sidebar;
         },
     },
     actions: {
@@ -24,6 +29,7 @@ export default new Vuex.Store({
                 context.commit('SET_USER', null);
             }
         },
+
         GET_USER: async function(context) {
             if (context.state.userRequested) {
                 return context.state.user;
@@ -32,6 +38,10 @@ export default new Vuex.Store({
             await context.dispatch('UPDATE_USER');
 
             return context.state.user;
+        },
+
+        TOGGLE_SIDEBAR: function(context) {
+            context.commit('TOGGLE_SIDEBAR');
         },
     },
     modules: {},
