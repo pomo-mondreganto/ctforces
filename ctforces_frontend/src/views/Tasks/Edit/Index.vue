@@ -227,7 +227,6 @@ export default {
                     }
                 }
             } catch (error) {
-                console.log(error);
                 this.errors = this.$parse(error.response.data);
                 return null;
             }

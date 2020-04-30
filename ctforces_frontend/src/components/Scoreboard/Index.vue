@@ -5,13 +5,13 @@
         :style="wrapStyles"
     >
         <div class="scoreboard" :style="grid">
-            <div><div class="p-0-5"></div></div>
-            <div><div class="p-0-5"></div></div>
-            <div><div class="p-0-5"></div></div>
+            <div class="hide-on-width"><div class="p-0-5"></div></div>
+            <div class="hide-on-width"><div class="p-0-5"></div></div>
+            <div class="hide-on-width"><div class="p-0-5"></div></div>
             <div
                 v-for="(task, index) of data.main_data"
                 :key="-index - 1"
-                class="task-name-wrap"
+                class="task-name-wrap hide-on-width"
                 :class="data.main_data.length > threshold ? 'r' : 'bl'"
             >
                 <div
@@ -28,6 +28,7 @@
                 :class="[
                     teamTask.type === 'index' ? '' : 'bl',
                     teamTask.text === '+' ? 'solved' : '',
+                    teamTask.type === 'solved' ? 'hide-on-width' : '',
                 ]"
             >
                 <template v-if="teamTask.type === 'index'">
@@ -169,12 +170,26 @@ export default {
 .scoreboard {
     display: grid;
     white-space: nowrap;
+
+    @media only screen and (max-width: 991px) {
+        grid-template-columns: auto 1fr auto !important;
+        font-size: 1.5em;
+    }
+}
+
+.hide-on-width {
+    @media only screen and (max-width: 991px) {
+        display: none;
+    }
 }
 
 .bt {
     @include use-theme {
         border-top: 0.05em solid $gray;
     }
+
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
 }
 
 .bl {
