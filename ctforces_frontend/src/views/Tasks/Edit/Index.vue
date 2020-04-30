@@ -77,26 +77,26 @@
 </template>
 
 <script>
-import HintList from '@/components/Form/HintList/Index';
-import Editor from '@/components/Editor/Index';
-import FHeader from '@/components/Form/Header';
-import FInput from '@/components/Form/Input';
-import FCheckbox from '@/components/Form/Checkbox';
-import FFiles from '@/components/Form/Files';
-import FTags from '@/components/Form/Tags';
-import ProgressBar from '@/components/ProgressBar/Index';
+    import HintList from '@/components/Form/HintList/Index';
+    import Editor from '@/components/Editor/Index';
+    import FHeader from '@/components/Form/Header';
+    import FInput from '@/components/Form/Input';
+    import FCheckbox from '@/components/Form/Checkbox';
+    import FFiles from '@/components/Form/Files';
+    import FTags from '@/components/Form/Tags';
+    import ProgressBar from '@/components/ProgressBar/Index';
 
-export default {
-    components: {
-        FHeader,
-        FInput,
-        Editor,
-        FCheckbox,
-        FFiles,
-        FTags,
-        ProgressBar,
-        HintList,
-    },
+    export default {
+        components: {
+            FHeader,
+            FInput,
+            Editor,
+            FCheckbox,
+            FFiles,
+            FTags,
+            ProgressBar,
+            HintList,
+        },
 
     data: function() {
         return {
@@ -227,7 +227,6 @@ export default {
                     }
                 }
             } catch (error) {
-                console.log(error);
                 this.errors = this.$parse(error.response.data);
                 return null;
             }

@@ -1,4 +1,4 @@
-version: "2.2"
+version: "2.4"
 
 services:
   django:
@@ -53,6 +53,7 @@ services:
       - ./configs/nginx/robots.txt:/var/www/ctforces/robots.txt:ro
       - ./volumes/static:/static:ro
       - ./volumes/media:/media:ro
+      - ./ctforces_frontend/dist:/front:ro
     ports:
       - "8000:80"
     restart: on-failure
