@@ -1,5 +1,6 @@
 <template>
     <router-link
+        class="link nlnk"
         :to="{ name: 'contest_tasks', params: { id: row.id } }"
         v-if="(!$types.isNull(user) && user.is_admin) || row[fieldData]"
     >
@@ -7,6 +8,7 @@
     </router-link>
     <div v-else-if="!row.is_registration_open">Closed</div>
     <router-link
+        class="link nlnk register"
         :to="{ name: 'contest_register', params: { id: row.id } }"
         v-else
     >
@@ -26,3 +28,12 @@ export default {
     computed: mapState(['user']),
 };
 </script>
+
+<style lang="scss" scoped>
+.register {
+    @include use-theme {
+        color: $green;
+    }
+    cursor: pointer;
+}
+</style>

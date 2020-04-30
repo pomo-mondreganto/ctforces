@@ -13,6 +13,9 @@ export default {
 <style lang="scss" scoped>
 .header {
     font-size: 1.6em;
-    color: $black;
+
+    @include use-theme {
+        color: $black;
+    }
 }
 </style>

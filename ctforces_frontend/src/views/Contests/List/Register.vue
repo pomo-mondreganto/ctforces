@@ -1,5 +1,6 @@
 <template>
     <router-link
+        class="link nlnk"
         v-if="!$types.isNull(user) && user.is_admin"
         :to="{ name: 'contest_tasks', params: { id: row.id } }"
     >
@@ -14,6 +15,7 @@
     </div>
     <div v-else-if="!row.is_registration_open">Closed</div>
     <router-link
+        class="link nlnk register"
         :to="{ name: 'contest_register', params: { id: row.id } }"
         v-else
     >
@@ -37,7 +39,16 @@ export default {
 
 <style lang="scss" scoped>
 .unregister {
-    color: $reddanger;
+    @include use-theme {
+        color: $reddanger;
+    }
+    cursor: pointer;
+}
+
+.register {
+    @include use-theme {
+        color: $green;
+    }
     cursor: pointer;
 }
 </style>

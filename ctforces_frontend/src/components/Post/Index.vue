@@ -48,7 +48,9 @@ export default {
 
 <style lang="scss" scoped>
 .content {
-    border-left: 0.3em solid $gray;
+    @include use-theme {
+        border-left: 0.3em solid $gray;
+    }
 }
 
 .header {

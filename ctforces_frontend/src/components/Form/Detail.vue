@@ -25,7 +25,9 @@ export default {
 }
 
 .error {
-    color: $red;
+    @include use-theme {
+        color: $red;
+    }
     margin-top: 0.3em;
     font-size: 0.8em;
     width: 100%;

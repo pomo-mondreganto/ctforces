@@ -107,11 +107,15 @@ export default {
 
 <style lang="scss" scoped>
 .upcoming {
-    color: $reddanger;
+    @include use-theme {
+        color: $reddanger;
+    }
 }
 
 .running {
-    color: $green;
+    @include use-theme {
+        color: $green;
+    }
 }
 
 .header {

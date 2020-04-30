@@ -60,7 +60,7 @@ export default {
             const { page = 1 } = this.$route.query;
             try {
                 const r = await this.$http.get(
-                    `/users/rating_top/?page=${page}&page_size=${this.pagesize}`
+                    `/users/?ordering=-rating,last_solve&page=${page}&page_size=${this.pagesize}`
                 );
                 this.users = r.data.results.map((user, index) => {
                     return {

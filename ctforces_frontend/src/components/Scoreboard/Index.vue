@@ -172,15 +172,21 @@ export default {
 }
 
 .bt {
-    border-top: 0.05em solid $gray;
+    @include use-theme {
+        border-top: 0.05em solid $gray;
+    }
 }
 
 .bl {
-    border-left: 0.05em solid $gray;
+    @include use-theme {
+        border-left: 0.05em solid $gray;
+    }
 }
 
 .solved {
-    background-color: $greenlight;
+    @include use-theme {
+        background-color: $greenlight;
+    }
 }
 
 .task-name-wrap.r {

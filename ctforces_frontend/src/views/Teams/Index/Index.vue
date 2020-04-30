@@ -134,6 +134,8 @@ export default {
 
 <style lang="scss" scoped>
 .token {
-    color: $bluedark;
+    @include use-theme {
+        color: $bluedark;
+    }
 }
 </style>

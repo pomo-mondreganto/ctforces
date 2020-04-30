@@ -19,7 +19,7 @@
                 :username="task.author_username"
                 :rating="task.author_rating"
             />,
-            <router-link :to="solved.link"
+            <router-link :to="solved.link" class="link nlnk"
                 >{{ solved.number }} solves</router-link
             >
         </div>
@@ -125,7 +125,9 @@ export default {
 }
 
 .content {
-    border-left: 0.3em solid $gray;
+    @include use-theme {
+        border-left: 0.3em solid $gray;
+    }
 }
 
 .markdown {

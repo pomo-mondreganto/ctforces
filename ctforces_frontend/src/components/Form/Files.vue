@@ -62,7 +62,9 @@ export default {
 
 <style lang="scss" scoped>
 .error {
-    color: $red;
+    @include use-theme {
+        color: $red;
+    }
     margin-top: 0.3em;
     font-size: 0.8em;
 }
@@ -81,11 +83,5 @@ export default {
 .file-list-name {
     display: flex;
     flex: 0 0 100em;
-}
-
-.error {
-    color: $red;
-    margin-top: 0.3em;
-    font-size: 0.8em;
 }
 </style>

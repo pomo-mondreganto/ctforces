@@ -79,9 +79,11 @@ export default {
 
     created: async function() {
         try {
-            const r = await this.$http.get('/users/rating_top/?page_size=10');
+            const r = await this.$http.get(
+                '/users/?ordering=-rating,last_solve&page_size=10'
+            );
             this.users = r.data.results.map((user, index) => {
-                return { '#': index, ...user };
+                return { '#': index + 1, ...user };
             });
         } catch (error) {
             this.errors = this.$parse(error.response.data);

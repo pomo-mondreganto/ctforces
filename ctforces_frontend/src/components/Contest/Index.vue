@@ -76,11 +76,15 @@ export default {
     cursor: pointer;
     flex: 0 1 auto;
     min-width: 13em;
-    border: 0.05em solid rgba($darklight, 0.5);
+    @include use-theme {
+        border: 0.05em solid rgba($darklight, 0.5);
+    }
     border-radius: 0.4em;
     margin-right: 1em;
     margin-bottom: 1em;
-    background-color: rgba($bluelight, 0.3);
+    @include use-theme {
+        background-color: rgba($bluelight, 0.3);
+    }
 }
 
 .task {
@@ -91,12 +95,16 @@ export default {
 
 .name {
     margin-top: 0.5em;
-    color: $black;
+    @include use-theme {
+        color: $black;
+    }
 }
 
 .cost {
     margin-top: 1em;
     margin-bottom: 0.5em;
-    color: $black;
+    @include use-theme {
+        color: $black;
+    }
 }
 </style>
