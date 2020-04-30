@@ -19,9 +19,9 @@ from api.celery_tasks import process_stdimage
 
 @deconstructible
 class CustomASCIIUsernameValidator(validators.RegexValidator):
-    regex = r'^[\w_-]{5,25}$'
+    regex = r'^[\w_-]{3,15}$'
     message = (
-        'Username needs to contain from 3 to 25 English letters, '
+        'Username needs to contain from 3 to 15 English letters, '
         'numbers, and -/_ characters'
     )
     flags = re.ASCII
