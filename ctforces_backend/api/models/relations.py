@@ -61,6 +61,7 @@ class ContestParticipantRelationship(models.Model):
             'participant',
         )
 
+
 class CPRHelper(models.Model):
     contest = models.ForeignKey('Contest', on_delete=models.CASCADE, related_name='cpr_helpers')
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='cpr_helpers')
