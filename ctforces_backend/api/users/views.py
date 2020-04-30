@@ -4,7 +4,6 @@ from django.db.models import Count, Exists, OuterRef
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
@@ -312,38 +311,6 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
     filterset_class = api_users_filters.UserFilter
-
-    @action(detail=False, url_name='upsolving_top', url_path='upsolving_top', methods=['get'])
-    def get_upsolving_top(self, request):
-        users_with_upsolving = self.get_queryset().filter(
-            show_in_ratings=True,
-        ).order_by(
-            '-cost_sum',
-            'last_solve',
-        )
-
-        return api_pagination.get_paginated_response(
-            paginator=self.paginator,
-            queryset=users_with_upsolving,
-            serializer_class=self.get_serializer_class(),
-            request=request,
-        )
-
-    @action(detail=False, url_name='rating_top', url_path='rating_top', methods=['get'])
-    def get_rating_top(self, request):
-        users_with_rating = api_models.User.objects.filter(
-            show_in_ratings=True,
-        ).order_by(
-            '-rating',
-            'last_solve',
-        )
-
-        return api_pagination.get_paginated_response(
-            paginator=self.paginator,
-            queryset=users_with_rating,
-            serializer_class=self.get_serializer_class(),
-            request=request,
-        )
 
     @action(detail=True, url_name='tasks', url_path='tasks', methods=['get'])
     def get_users_tasks(self, request, **_kwargs):
