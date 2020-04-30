@@ -200,7 +200,6 @@ export default {
 }
 
 .team-name {
-    white-space: nowrap;
     display: inline-block;
 }
 </style>

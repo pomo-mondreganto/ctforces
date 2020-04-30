@@ -9,8 +9,8 @@
                         type="text"
                         name="title"
                         v-model="title"
-                        :errors="errors['tiel']"
-                        placeholder="title"
+                        :errors="errors['title']"
+                        placeholder="Title"
                     />
                 </div>
                 <div class="ff">

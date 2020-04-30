@@ -3,7 +3,7 @@
         <div
             v-for="(field, index) of fields"
             :key="field.name"
-            class="table-head wb-w"
+            class="table-head"
             :class="[
                 index === 0 ? 'l' : '',
                 index + 1 === fields.length ? 'r' : '',

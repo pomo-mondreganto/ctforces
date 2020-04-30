@@ -6,7 +6,7 @@
 html, body {
     height: 100%;
     overflow-anchor: none;
-    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 body:not(.dark-theme) {
