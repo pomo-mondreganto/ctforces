@@ -17,8 +17,10 @@ export default {
 
 <style lang="scss" scoped>
 .tag {
-    border: 0.05em solid $graytags;
-    color: $graytags;
+    @include use-theme {
+        border: 0.05em solid $graytags;
+        color: $graytags;
+    }
     border-radius: 0.2em;
     font-size: 0.9em;
     padding: 0.3em;
@@ -27,8 +29,10 @@ export default {
     margin: 0.15em;
 
     &:hover {
-        background-color: $graytags;
-        color: $white;
+        @include use-theme {
+            background-color: $graytags;
+            color: $white;
+        }
         cursor: pointer;
     }
 }

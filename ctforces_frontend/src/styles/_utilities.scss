@@ -4,6 +4,10 @@
     outline-width: 0;
 }
 
+.td-n {
+    text-decoration: none !important;
+}
+
 .a-tr {
     position: absolute;
     right: 0;
@@ -12,7 +16,9 @@
 }
 
 .hr {
-    border-bottom: 1px solid $gray;
+    @include use-theme {
+        border-bottom: 1px solid $gray;
+    }
 }
 
 
@@ -70,7 +76,9 @@
 .link {
     text-decoration: none;
     outline: none;
-    color: blue;
+    @include use-theme {
+        color: $bluedark;
+    }
     cursor: pointer;
 }
 

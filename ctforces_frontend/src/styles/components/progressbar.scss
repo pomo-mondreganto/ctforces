@@ -1,3 +1,5 @@
 .pb-success {
-    background-color: $green !important;
+    @include use-theme {
+        background-color: $green !important;
+    }
 }

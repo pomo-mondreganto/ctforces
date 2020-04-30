@@ -204,7 +204,9 @@ export default {
 
     &:hover,
     &.chosen {
-        background-color: $gray;
+        @include use-theme {
+            background-color: $gray;
+        }
     }
 }
 
@@ -226,7 +228,9 @@ export default {
 
     &:hover,
     &.chosen {
-        background-color: $gray;
+        @include use-theme {
+            background-color: $gray;
+        }
     }
 }
 </style>

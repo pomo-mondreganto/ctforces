@@ -38,7 +38,7 @@ export default {
     flex-flow: column nowrap;
 
     & > :nth-child(2) {
-        flex-grow: 1;
+        flex: 1 1 0;
     }
 
     .layout {
@@ -50,10 +50,12 @@ export default {
         & > :nth-child(1) {
             flex: 2.2 1 0;
             margin-right: 3em;
+            min-width: 0;
         }
 
         & > :nth-child(2) {
             flex: 1 1 0;
+            min-width: 0;
         }
     }
 }

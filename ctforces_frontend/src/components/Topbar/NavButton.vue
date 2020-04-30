@@ -25,13 +25,17 @@ export default {
 <style lang="scss" scoped>
 .menu-nav {
     cursor: pointer;
-    width: 15%;
-    color: $darklight;
+    flex: 1 0 0;
+    @include use-theme {
+        color: $darklight;
+    }
 }
 
 .active,
 .menu-nav:hover {
-    color: $black;
+    @include use-theme {
+        color: $black;
+    }
     font-weight: 800;
 }
 </style>

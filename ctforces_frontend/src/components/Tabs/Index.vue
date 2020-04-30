@@ -3,7 +3,7 @@
         <div class="tabs-tabs">
             <router-link
                 :to="tab.to"
-                class="tab nlnk"
+                class="tab nlnk link td-n"
                 v-for="tab of tabs"
                 :key="tab.name"
                 :class="$route.name === tab.to.name ? 'active' : ''"
@@ -45,23 +45,29 @@ export default {
     cursor: pointer;
 
     &:not(.active) {
-        border-bottom: 1px solid rgba($darklight, 0.2);
+        @include use-theme {
+            border-bottom: 1px solid rgba($darklight, 0.2);
+        }
     }
 
     &.active,
     &:hover {
         border-top-left-radius: 0.4em;
         border-top-right-radius: 0.4em;
-        border-top: 1px solid rgba($darklight, 0.2);
-        border-left: 1px solid rgba($darklight, 0.2);
-        border-right: 1px solid rgba($darklight, 0.2);
+        @include use-theme {
+            border-top: 1px solid rgba($darklight, 0.2);
+            border-left: 1px solid rgba($darklight, 0.2);
+            border-right: 1px solid rgba($darklight, 0.2);
+        }
     }
 }
 
 .tabs-content {
-    border-left: 1px solid rgba($darklight, 0.2);
-    border-right: 1px solid rgba($darklight, 0.2);
-    border-bottom: 1px solid rgba($darklight, 0.2);
+    @include use-theme {
+        border-left: 1px solid rgba($darklight, 0.2);
+        border-right: 1px solid rgba($darklight, 0.2);
+        border-bottom: 1px solid rgba($darklight, 0.2);
+    }
     padding: 1em;
     border-bottom-left-radius: 0.4em;
     border-bottom-right-radius: 0.4em;

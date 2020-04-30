@@ -6,7 +6,19 @@
 html, body {
     height: 100%;
     overflow-anchor: none;
-    word-break: break-all;
+    overflow-wrap: break-word;
+}
+
+body:not(.dark-theme) {
+    @include set-theme(def);
+    background-color: $white;
+    color: $black;
+}
+
+body.dark-theme {
+    @include set-theme(dark);
+    background-color: $white;
+    color: $black;
 }
 
 body {
@@ -14,6 +26,9 @@ body {
 }
 
 @import '@/styles/components/button.scss';
+@import '@/styles/components/tags.scss';
+@import '@/styles/components/editor.scss';
+@import '@/styles/components/markdown.scss';
 @import '@/styles/components/user.scss';
 @import '@/styles/components/task.scss';
 @import '@/styles/components/pagination.scss';

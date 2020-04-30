@@ -3,7 +3,9 @@
     display: flex;
     flex-flow: row nowrap;
 
-    border: 1px solid $darklight;
+    @include use-theme {
+        border: 1px solid $darklight;
+    }
     border-radius: 1em;
 
     .page,
@@ -18,11 +20,15 @@
         justify-content: center;
 
         &:not(:last-child) {
-            border-right: 1px solid $gray;
+            @include use-theme {
+                border-right: 1px solid $gray;
+            }
         }
 
         &.active {
-            background-color: $gray;
+            @include use-theme {
+                background-color: $gray;
+            }
         }
 
         & .page-link {

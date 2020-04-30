@@ -2,9 +2,11 @@
 
 .btn {
     display: block;
-    background-color: $bluebtn;
-    border-color: $bluebtn;
-    color: $white;
+    @include use-theme {
+        background-color: $bluedark;
+        border-color: $bluedark;
+        color: $white;
+    }
     padding: 0.5em;
     border-radius: 0.3em;
     transition: all 0.3s ease 0s;
@@ -16,18 +18,24 @@
     box-sizing: border-box;
 
     &.red {
-        background-color: $red;
-        border-color: $red;
+        @include use-theme {
+            background-color: $red;
+            border-color: $red;
+        }
     }
 
     &.green {
-        background-color: $green;
-        border-color: $green;
+        @include use-theme {
+            background-color: $green;
+            border-color: $green;
+        }
     }
 
     &.disabled {
-        background-color: $gray;
-        border-color: $gray;
+        @include use-theme {
+            background-color: $gray;
+            border-color: $gray;
+        }
     }
 }
 

@@ -50,25 +50,37 @@ $border: 0.05em;
 }
 
 .input:disabled {
-    background-color: $gray;
+    @include use-theme {
+        background-color: $gray;
+    }
 }
 
 .input {
+    @include use-theme {
+        color: $black;
+        background-color: $white;
+    }
     padding: 0;
     outline: none;
     font-family: inherit;
     font-size: $height-label;
     height: $height-input * (1em / $height-label);
     padding-left: 0.4em;
-    border: $border * (1em / $height-label) solid $darklight;
+    @include use-theme {
+        border: $border * (1em / $height-label) solid $darklight;
+    }
     border-radius: (1em / $height-label) * 0.3em;
 
     &:focus {
-        border-color: $bluelight;
+        @include use-theme {
+            border-color: $bluelight;
+        }
     }
 
     &[invalid] {
-        border-color: $reddanger;
+        @include use-theme {
+            border-color: $reddanger;
+        }
     }
 
     &:focus + .label,
@@ -76,7 +88,9 @@ $border: 0.05em;
         font-size: 85%;
         top: -1.2em;
         left: 0;
-        color: rgba($black, 1);
+        @include use-theme {
+            color: rgba($black, 1);
+        }
     }
 
     width: calc(100% - 0.4em - #{$border * (1em / $height-label)});
@@ -89,12 +103,16 @@ $border: 0.05em;
     top: (1em / $height-label) * ($height-input + 2 * $border) / 2 - 0.5em;
     left: 0.4em;
     transition: all 200ms;
-    color: rgba($black, 0.5);
+    @include use-theme {
+        color: rgba($black, 0.5);
+    }
     pointer-events: none;
 }
 
 .error {
-    color: $red;
+    @include use-theme {
+        color: $red;
+    }
     margin-top: 0.3em;
     font-size: 0.8em;
 }

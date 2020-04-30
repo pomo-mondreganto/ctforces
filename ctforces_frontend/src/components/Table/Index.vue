@@ -3,7 +3,7 @@
         <div
             v-for="(field, index) of fields"
             :key="field.name"
-            class="table-head wb-w"
+            class="table-head"
             :class="[
                 index === 0 ? 'l' : '',
                 index + 1 === fields.length ? 'r' : '',
@@ -116,7 +116,9 @@ export default {
 }
 
 .table-head {
-    background-color: $gray;
+    @include use-theme {
+        background-color: $gray;
+    }
     padding: 0.8em;
     display: flex;
 
@@ -130,12 +132,16 @@ export default {
 }
 
 .table-cell {
-    border-bottom: 0.05em solid $gray;
-    border-left: 0.05em solid $gray;
+    @include use-theme {
+        border-bottom: 0.05em solid $gray;
+        border-left: 0.05em solid $gray;
+    }
     display: flex;
 
     &.r {
-        border-right: 0.05em solid $gray;
+        @include use-theme {
+            border-right: 0.05em solid $gray;
+        }
     }
 
     padding: 0.8em;

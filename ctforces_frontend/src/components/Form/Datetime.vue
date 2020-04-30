@@ -28,7 +28,9 @@ export default {
 
 <style lang="scss" scoped>
 .error {
-    color: $red;
+    @include use-theme {
+        color: $red;
+    }
     margin-top: 0.3em;
     font-size: 0.8em;
 }

@@ -1,3 +1,5 @@
 .user-red {
-    color: red;
+    @include use-theme {
+        color: $red;
+    }
 }

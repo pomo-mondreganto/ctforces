@@ -40,7 +40,7 @@ $border: 0.05em;
 
 .group {
     display: flex;
-    flex-direction: row;
+    flex-flow: row nowrap;
     align-items: center;
     padding-left: 0.2em;
 }
@@ -51,11 +51,15 @@ $border: 0.05em;
     font-family: inherit;
     font-size: $height-label;
     height: $height-input * (1em / $height-label);
-    border: $border * (1em / $height-label) solid $darklight;
+    @include use-theme {
+        border: $border * (1em / $height-label) solid $darklight;
+    }
     border-radius: (1em / $height-label) * 0.3em;
 
     &[invalid] {
-        border-color: $reddanger;
+        @include use-theme {
+            border-color: $reddanger;
+        }
     }
 }
 
@@ -69,7 +73,9 @@ $border: 0.05em;
 }
 
 .error {
-    color: $red;
+    @include use-theme {
+        color: $red;
+    }
     margin-top: 0.3em;
     font-size: 0.8em;
 }

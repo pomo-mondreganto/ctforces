@@ -29,10 +29,14 @@
                 </div>
                 <hr />
                 <div class="aux">
-                    <router-link :to="{ name: 'password_reset' }"
+                    <router-link
+                        class="link nlnk"
+                        :to="{ name: 'password_reset' }"
                         >Forgot password</router-link
                     >
-                    <router-link :to="{ name: 'email_resend' }"
+                    <router-link
+                        class="link nlnk"
+                        :to="{ name: 'email_resend' }"
                         >Resend email</router-link
                     >
                 </div>

@@ -44,15 +44,19 @@ export default {
 
 <style lang="scss" scoped>
 .register-button {
-    color: $white;
-    background-color: $darklight;
-    border-color: $darklight;
+    @include use-theme {
+        color: $white;
+        background-color: $darklight;
+        border-color: $darklight;
+    }
     flex: 1 1 0;
 }
 
 .logout-button {
-    background-color: $red;
-    border-color: $red;
+    @include use-theme {
+        background-color: $red;
+        border-color: $red;
+    }
     flex: 1 1 0;
 }
 </style>

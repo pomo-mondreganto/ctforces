@@ -101,6 +101,8 @@ export default {
 }
 
 .personal-info {
-    color: $darklight;
+    @include use-theme {
+        color: $darklight;
+    }
 }
 </style>

@@ -1,7 +1,11 @@
 .solved {
-    background-color: $greenlight !important;
+    @include use-theme {
+        background-color: $greenlight !important;
+    }
 }
 
 .upsolved {
-    background-color: $yellowlight !important;
+    @include use-theme {
+        background-color: $yellowlight !important;
+    }
 }

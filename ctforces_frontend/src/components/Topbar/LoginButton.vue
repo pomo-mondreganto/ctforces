@@ -25,15 +25,19 @@ export default {
 
 <style lang="scss" scoped>
 .login-button {
-    color: $white;
-    background-color: $green;
-    border-color: $green;
+    @include use-theme {
+        color: $white;
+        background-color: $green;
+        border-color: $green;
+    }
     flex: 1 1 0;
 }
 
 .profile-button {
-    background-color: $bluebtn;
-    border-color: $bluebtn;
+    @include use-theme {
+        background-color: $bluedark;
+        border-color: $bluedark;
+    }
     flex: 1 1 0;
 }
 </style>
