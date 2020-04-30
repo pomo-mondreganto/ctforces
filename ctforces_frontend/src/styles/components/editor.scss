@@ -1,0 +1,28 @@
+.editor {
+
+    .CodeMirror {
+        @include use-theme {
+            background-color: $white;
+            color: $black;
+        }
+    }
+
+    .CodeMirror-selected {
+        @include use-theme {
+            background-color: $bluelight;
+        }
+    }
+
+    .CodeMirror-cursor {
+        @include use-theme {
+            border-left-color: $black;
+        }
+    }
+
+    .editor-toolbar a {
+        @include use-theme {
+            background-color: $white;
+            color: $black !important;
+        }
+    }
+}

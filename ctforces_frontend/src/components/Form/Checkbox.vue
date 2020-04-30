@@ -40,7 +40,7 @@ $border: 0.05em;
 
 .group {
     display: flex;
-    flex-direction: row;
+    flex-flow: row nowrap;
     align-items: center;
     padding-left: 0.2em;
 }

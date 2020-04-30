@@ -45,10 +45,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.editor {
-    min-width: 0;
-}
-
 .error {
     @include use-theme {
         color: $red;

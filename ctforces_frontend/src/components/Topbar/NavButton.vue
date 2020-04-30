@@ -25,7 +25,7 @@ export default {
 <style lang="scss" scoped>
 .menu-nav {
     cursor: pointer;
-    width: 15%;
+    flex: 1 0 0;
     @include use-theme {
         color: $darklight;
     }

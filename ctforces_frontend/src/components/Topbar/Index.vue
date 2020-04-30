@@ -113,34 +113,29 @@ export default {
         color: $black;
     }
     font-size: 1.5em;
-    flex-grow: 2;
-    flex-basis: 0;
+    flex: 2 1 0;
     padding: 0.3em;
     cursor: pointer;
 }
 
 .navigation {
-    flex-grow: 10;
-    flex-basis: 0;
+    flex: 10 1 0;
 }
 
 .theme {
-    flex-grow: 1;
-    flex-basis: 0;
+    flex: 1 1 0;
     padding-right: 0.5em;
     .theme-img {
         cursor: pointer;
         @include use-theme {
             fill: rgba($black, 0.2);
         }
-        max-width: 100%;
         max-height: 3.5em;
     }
 }
 
 .logreg {
     display: flex;
-    flex-grow: 3;
-    flex-basis: 0;
+    flex: 3 1 0;
 }
 </style>

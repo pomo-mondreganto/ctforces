@@ -71,7 +71,7 @@ export default {
 
 .file-list {
     display: flex;
-    flex-direction: row;
+    flex-flow: row nowrap;
     align-items: center;
 }
 
