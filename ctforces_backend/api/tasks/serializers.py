@@ -1,6 +1,5 @@
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
-from rest_framework.exceptions import ValidationError
 
 from api import fields as api_fields
 from api import mixins as api_mixins
@@ -50,7 +49,7 @@ class TaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
 
 
 class TaskFileMainSerializer(rest_serializers.ModelSerializer):
-    task_details = TaskPreviewSerializer(read_only=True, source='task')
+    owner = rest_serializers.HiddenField(default=rest_serializers.CurrentUserDefault())
 
     class Meta:
         model = api_models.TaskFile
@@ -59,7 +58,7 @@ class TaskFileMainSerializer(rest_serializers.ModelSerializer):
             'id',
             'name',
             'owner',
-            'task_details',
+            'task',
             'upload_time',
         )
         extra_kwargs = {
@@ -79,17 +78,11 @@ class TaskFileMainSerializer(rest_serializers.ModelSerializer):
         self.filename = data.name
         return data
 
-    def validate_owner(self, data):
-        if self.instance and data != self.instance.owner:
-            raise ValidationError({'owner': 'This field is immutable once set'})
-        return data
-
     def validate(self, attrs):
         attrs['name'] = self.filename
         return attrs
 
     def create(self, validated_data):
-        validated_data['owner'] = self.context['request'].user
         instance = super(TaskFileMainSerializer, self).create(validated_data)
         assign_perm('view_taskfile', instance.owner, instance)
         assign_perm('change_taskfile', instance.owner, instance)
@@ -115,6 +108,7 @@ class TaskFileViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOn
 
 
 class TaskHintSerializer(rest_serializers.ModelSerializer):
+    author = rest_serializers.HiddenField(default=rest_serializers.CurrentUserDefault())
     task = api_fields.CurrentUserPermissionsFilteredPKRF(
         read_only=False,
         perms='change_task',
@@ -145,22 +139,7 @@ class TaskHintSerializer(rest_serializers.ModelSerializer):
             'task',
         )
 
-        extra_kwargs = {
-            'author': {
-                'write_only': True,
-            },
-            'task': {
-                'write_only': True,
-            }
-        }
-
-    def validate_author(self, data):
-        if self.instance and data != self.instance.author:
-            raise ValidationError({'author': 'This field is immutable once set'})
-        return data
-
     def create(self, validated_data):
-        validated_data['author'] = self.context['request'].user
         instance = super(TaskHintSerializer, self).create(validated_data)
         assign_perm('view_taskhint', instance.author, instance)
         assign_perm('change_taskhint', instance.author, instance)
@@ -203,6 +182,7 @@ class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySe
 
 
 class TaskFullSerializer(rest_serializers.ModelSerializer):
+    author = rest_serializers.HiddenField(default=rest_serializers.CurrentUserDefault())
     solved_count = rest_serializers.IntegerField(read_only=True)
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
@@ -240,18 +220,6 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
             'task_tags_details',
         )
 
-        extra_kwargs = {
-            'author': {
-                'write_only': True,
-            },
-            'publication_time': {
-                'read_only': True,
-            },
-            'tags': {
-                'write_only': True,
-            },
-        }
-
     @staticmethod
     def validate_tags(data):
         if len(data) < 1:
@@ -266,13 +234,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
             raise rest_serializers.ValidationError('You are allowed to include 5 files or less.')
         return data
 
-    def validate_owner(self, data):
-        if self.instance and data != self.instance.owner:
-            raise ValidationError({'owner': 'This field is immutable once set'})
-        return data
-
     def create(self, validated_data):
-        validated_data['author'] = self.context['request'].user
         instance = super(TaskFullSerializer, self).create(validated_data)
         assign_perm('view_task', instance.author, instance)
         assign_perm('change_task', instance.author, instance)

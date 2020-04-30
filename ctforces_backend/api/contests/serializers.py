@@ -170,12 +170,6 @@ class CTRMainSerializer(rest_serializers.ModelSerializer):
             'task_name',
         )
 
-        extra_kwargs = {
-            'main_tag': {
-                'write_only': True,
-            },
-        }
-
 
 class CTRUpdateSerializer(rest_serializers.ModelSerializer):
     class Meta:
@@ -248,6 +242,7 @@ class ContestTaskViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerial
 
 
 class ContestFullSerializer(rest_serializers.ModelSerializer):
+    author = rest_serializers.HiddenField(default=rest_serializers.CurrentUserDefault())
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     registered_count = rest_serializers.IntegerField(read_only=True)
     contest_task_relationship_details = CTRMainSerializer(
@@ -279,19 +274,7 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
             'updated_at',
         )
 
-        extra_kwargs = {
-            'author': {
-                'write_only': True,
-            },
-        }
-
-    def validate_author(self, data):
-        if self.instance and data != self.instance.author:
-            raise ValidationError({'author': 'This field is immutable once set'})
-        return data
-
     def create(self, validated_data):
-        validated_data['author'] = self.context['request'].user
         instance = super(ContestFullSerializer, self).create(validated_data)
         assign_perm('view_contest', instance.author, instance)
         assign_perm('change_contest', instance.author, instance)
@@ -330,7 +313,6 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializer
     class Meta:
         model = api.models.Contest
         fields = (
-            'author',
             'author_username',
             'can_edit_contest',
             'created_at',
@@ -346,12 +328,6 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializer
             'start_time',
             'updated_at',
         )
-
-        extra_kwargs = {
-            'author': {
-                'write_only': True,
-            },
-        }
 
 
 class ContestScoreboardParticipantSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMixin):
