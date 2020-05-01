@@ -1,5 +1,9 @@
 <template>
-    <div :style="tableStyles" class="table" v-if="!$types.isNull(data)">
+    <div
+        :style="tableStyles"
+        class="table"
+        v-if="!$types.isNull(data) && data.length > 0"
+    >
         <div
             v-for="(field, index) of fields"
             :key="field.name"
@@ -19,9 +23,9 @@
             :key="cell.counter"
             class="table-cell vc"
             :class="
-                [cell.right ? 'r' : '', getPos(cell.field.pos)].concat(
-                    getClasses(cell.value)
-                )
+                [cell.right ? 'r' : '']
+                    .concat(getClasses(cell.value))
+                    .concat(getPos(cell.field.pos))
             "
         >
             <component
@@ -38,6 +42,9 @@
                 v-else
             />
         </div>
+    </div>
+    <div v-else-if="!$types.isNull(data) && data.length === 0">
+        No records here
     </div>
 </template>
 
@@ -68,7 +75,10 @@ export default {
         },
 
         getPos: function(pos) {
-            return `jc-${this.$types.isUndefined(pos) ? 'c' : pos}`;
+            return [
+                `jc-${this.$types.isUndefined(pos) ? 'c' : pos}`,
+                pos === 'l' ? 'pl-0-5' : '',
+            ];
         },
 
         getClasses: function(obj) {
@@ -100,7 +110,9 @@ export default {
         tableStyles: function() {
             let columns = '';
             for (const field of this.fields) {
-                columns += `${field.grow}fr `;
+                columns += `minmax(${field.nowrap ? 'auto' : '0'}, ${
+                    field.grow
+                }fr) `;
             }
             return {
                 'grid-template-columns': columns,
@@ -119,6 +131,7 @@ export default {
     @include use-theme {
         background-color: $gray;
     }
+
     padding: 0.8em;
     display: flex;
 
@@ -136,7 +149,12 @@ export default {
         border-bottom: 0.05em solid $gray;
         border-left: 0.05em solid $gray;
     }
+
     display: flex;
+
+    & > :first-child {
+        max-width: 100%;
+    }
 
     &.r {
         @include use-theme {
@@ -144,6 +162,7 @@ export default {
         }
     }
 
-    padding: 0.8em;
+    padding-top: 0.8em;
+    padding-bottom: 0.8em;
 }
 </style>

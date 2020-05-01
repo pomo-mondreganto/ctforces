@@ -30,7 +30,12 @@ export default {
         background-color: $green;
         border-color: $green;
     }
+
     flex: 1 1 0;
+
+    @media only screen and (max-width: 991px) {
+        display: none;
+    }
 }
 
 .profile-button {
@@ -38,6 +43,11 @@ export default {
         background-color: $bluedark;
         border-color: $bluedark;
     }
+
     flex: 1 1 0;
+
+    @media only screen and (max-width: 991px) {
+        display: none;
+    }
 }
 </style>

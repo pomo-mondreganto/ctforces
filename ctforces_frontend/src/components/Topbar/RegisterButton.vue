@@ -6,9 +6,14 @@
     >
         Register
     </router-link>
-    <button v-else class="btn logout-button out ml-0-5" @click="logout">
+    <a
+        href="#"
+        v-else
+        class="nlnk btn logout-button out ml-0-5"
+        @click="logout"
+    >
         Logout
-    </button>
+    </a>
 </template>
 
 <script>
@@ -50,6 +55,10 @@ export default {
         border-color: $darklight;
     }
     flex: 1 1 0;
+
+    @media only screen and (max-width: 991px) {
+        display: none;
+    }
 }
 
 .logout-button {
@@ -58,5 +67,9 @@ export default {
         border-color: $red;
     }
     flex: 1 1 0;
+
+    @media only screen and (max-width: 991px) {
+        display: none;
+    }
 }
 </style>

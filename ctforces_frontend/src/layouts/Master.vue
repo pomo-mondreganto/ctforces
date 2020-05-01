@@ -6,9 +6,11 @@
         <container>
             <div class="layout">
                 <slot />
-                <slot name="sidebar">
-                    <sidebar />
-                </slot>
+                <div class="sidebar-wrapper">
+                    <slot name="sidebar">
+                        <sidebar />
+                    </slot>
+                </div>
             </div>
         </container>
         <footer class="ta-c mt-2">
@@ -42,20 +44,34 @@ export default {
     }
 
     .layout {
-        display: flex;
-        flex-flow: row nowrap;
+        @media only screen and (min-width: 992px) {
+            display: flex;
 
-        align-items: flex-start;
+            flex-flow: row nowrap;
 
-        & > :nth-child(1) {
-            flex: 2.2 1 0;
-            margin-right: 3em;
-            min-width: 0;
+            align-items: flex-start;
+
+            & > :nth-child(1) {
+                flex: 2.2 1 0;
+                margin-right: 3em;
+                min-width: 0;
+            }
+
+            & > :nth-child(2) {
+                flex: 1 1 0;
+                min-width: 0;
+            }
         }
 
-        & > :nth-child(2) {
-            flex: 1 1 0;
-            min-width: 0;
+        @media only screen and (max-width: 991px) {
+            & > :nth-child(1) {
+                border: none;
+                width: calc(100% - 2em);
+            }
+
+            & > :nth-child(2) {
+                width: 100%;
+            }
         }
     }
 }

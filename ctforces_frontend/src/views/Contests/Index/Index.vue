@@ -1,5 +1,5 @@
 <template>
-    <master-layout>
+    <master-layout-stacked>
         <tabs
             :tabs="[
                 {
@@ -20,50 +20,60 @@
         >
             <router-view />
         </tabs>
-        <template v-slot:sidebar v-if="!$types.isNull(contest)">
-            <card>
-                <div class="header">
-                    {{ contest.name }}
-                </div>
-                <div class="author mt-1 mb-2">
-                    By
-                    <user
-                        :username="contest.author_username"
-                        :rating="contest.author_rating"
-                    />
-                </div>
-                <div v-if="contest.is_running">
-                    Contest is <span class="running">running</span>
-                    <div class="mt-1">
-                        <countdown
-                            :time="new Date(contest.end_time) - new Date()"
-                        >
-                            <template v-slot="props"
-                                >Time Remaining：{{
-                                    $time(props.time)
-                                }}</template
+        <template v-slot:sidebar>
+            <div>
+                <card class="pl-2" v-if="!$types.isNull(contest)">
+                    <div class="header">
+                        {{ contest.name }}
+                    </div>
+                    <div class="author mt-1 mb-2">
+                        By
+                        <user
+                            :username="contest.author_username"
+                            :rating="contest.author_rating"
+                        />
+                    </div>
+                    <div v-if="contest.is_running">
+                        Contest is <span class="running">running</span>
+                        <div class="mt-1">
+                            <countdown
+                                :time="new Date(contest.end_time) - new Date()"
                             >
-                        </countdown>
+                                <template v-slot="props">
+                                    <span class="countdown-more"
+                                        >Time Remaining：</span
+                                    >
+                                    <span class="countdown">{{
+                                        $time(props.time)
+                                    }}</span>
+                                </template>
+                            </countdown>
+                        </div>
                     </div>
-                </div>
-                <div v-else-if="contest.is_finished">
-                    Contest is <span class="finished">finished</span>
-                </div>
-                <div v-else>
-                    Contest is <span class="upcoming">upcoming</span>
-                    <div class="mt-1">
-                        <countdown
-                            :time="new Date(contest.start_time) - new Date()"
-                            v-slot="props"
-                        >
-                            Starts in {{ $time(props.time) }}
-                        </countdown>
+                    <div v-else-if="contest.is_finished">
+                        Contest is <span class="finished">finished</span>
                     </div>
-                </div>
-                <f-detail :errors="errors['detail']" />
-            </card>
+                    <div v-else>
+                        Contest is <span class="upcoming">upcoming</span>
+                        <div class="mt-1">
+                            <countdown
+                                :time="
+                                    new Date(contest.start_time) - new Date()
+                                "
+                                v-slot="props"
+                            >
+                                <span class="countdown-more">Starts in </span>
+                                <span class="countdown">{{
+                                    $time(props.time)
+                                }}</span>
+                            </countdown>
+                        </div>
+                    </div>
+                    <f-detail :errors="errors['detail']" />
+                </card>
+            </div>
         </template>
-    </master-layout>
+    </master-layout-stacked>
 </template>
 
 <script>
@@ -120,5 +130,11 @@ export default {
 
 .header {
     font-size: 2em;
+}
+
+@media only screen and (max-width: 1199px) {
+    .countdown-more {
+        display: none;
+    }
 }
 </style>

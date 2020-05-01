@@ -100,6 +100,7 @@ import FDetail from '@/components/Form/Detail';
 import User from '@/components/User/Index';
 import Team from '@/components/Team/Index';
 import Master from '@/layouts/Master';
+import MasterStacked from '@/layouts/MasterStacked';
 import Full from '@/layouts/Full';
 import Countdown from '@/components/Countdown/Index';
 
@@ -108,6 +109,7 @@ Vue.component('f-detail', FDetail);
 Vue.component('user', User);
 Vue.component('team', Team);
 Vue.component('master-layout', Master);
+Vue.component('master-layout-stacked', MasterStacked);
 Vue.component('full-layout', Full);
 Vue.component('countdown', Countdown);
 

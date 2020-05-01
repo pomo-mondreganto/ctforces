@@ -19,8 +19,11 @@
                         }}</span>
                     </div>
                 </div>
-                <div class="sidebar-profile-right">
-                    <img :src="`${serverUrl}${user.avatar_small}`" />
+                <div class="sidebar-profile-right vc">
+                    <img
+                        class="sidebar-logo"
+                        :src="`${serverUrl}${user.avatar_small}`"
+                    />
                 </div>
             </div>
         </card>
@@ -34,11 +37,12 @@
                         name: '#',
                         pos: 'c',
                         grow: 1,
+                        nowrap: true,
                     },
                     {
                         name: 'Name',
                         pos: 'l',
-                        grow: 11,
+                        grow: 7,
                         comp: UserComp,
                     },
                     {
@@ -104,5 +108,24 @@ export default {
 
     flex-flow: row nowrap;
     justify-content: space-between;
+}
+
+.sidebar-profile-left {
+    flex: 1 0 auto;
+}
+
+.sidebar-profile-right {
+    min-width: 0;
+    flex: 3 1 0;
+
+    .sidebar-logo {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .sidebar {
+        display: none;
+    }
 }
 </style>

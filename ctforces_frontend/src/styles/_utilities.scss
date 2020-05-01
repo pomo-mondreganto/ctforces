@@ -13,6 +13,10 @@
     right: 0;
     top: 0;
     min-width: min-content;
+    font-size: 1vw;
+    @media only screen and (max-width: 991px) {
+        font-size: 1em;
+    }
 }
 
 .hr {
