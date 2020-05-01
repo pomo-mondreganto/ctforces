@@ -82,7 +82,7 @@ class User(AbstractUser):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=25, null=False, blank=False, unique=True)
     join_token = models.CharField(max_length=255, null=False, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
