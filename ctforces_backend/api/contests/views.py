@@ -9,7 +9,6 @@ from django.db.models import (
     Prefetch,
     IntegerField,
     BooleanField,
-    Subquery,
 )
 from django.db.models.functions import Coalesce
 from django.utils import timezone
@@ -211,7 +210,6 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         ).only(
             'participant',
             'last_solve',
-            'rating',
         ).order_by('-cost_sum', 'last_solve')
 
         return relations
@@ -228,7 +226,6 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         participants = []
         for relation in relations_page:
             participant = relation.participant
-            participant.rating = relation.rating
             participant.cost_sum = relation.cost_sum
             participant.last_contest_solve = relation.last_solve
             participants.append(participant)
@@ -513,14 +510,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         solved_participants_queryset = api.models.ContestTaskRelationship.objects.get(
             task=task,
             contest=contest,
-        ).solved_by.annotate(
-            rating=Subquery(
-                api.models.ContestParticipantRelationship.objects.filter(
-                    contest=contest,
-                    participant=OuterRef('id'),
-                ).values('rating'),
-            ),
-        ).order_by('-id').all()
+        ).solved_by.order_by('-id').all()
 
         return api.pagination.get_paginated_response(
             paginator=api.pagination.UserDefaultPagination(),

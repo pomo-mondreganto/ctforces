@@ -19,7 +19,7 @@ class TeamViewSet(CustomPermissionsViewSetMixin,
     pagination_class = api_pagination.TeamDefaultPagination
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api.models.Team.rating_annotated.select_related('captain').all()
+    queryset = api.models.Team.objects.select_related('captain').all()
     filterset_class = api_teams_filters.TeamFilter
 
     action_permission_classes = {

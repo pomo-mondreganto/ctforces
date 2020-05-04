@@ -7,8 +7,6 @@ from api.users import serializers as api_users_serializers
 
 
 class TeamMinimalSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMixin):
-    rating = rest_serializers.IntegerField(read_only=True)
-
     class Meta:
         model = api_models.Team
         fields = (
@@ -42,7 +40,18 @@ class TeamViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMix
             'participants_details',
             'can_edit_team',
             'can_delete_team',
+            'rating',
+            'max_rating',
         )
+
+        extra_kwargs = {
+            'rating': {
+                'read_only': True,
+            },
+            'max_rating': {
+                'read_only': True,
+            },
+        }
 
 
 class TeamFullSerializer(rest_serializers.ModelSerializer):
@@ -68,10 +77,21 @@ class TeamFullSerializer(rest_serializers.ModelSerializer):
             'created_at',
             'captain_details',
             'captain',
+            'rating',
+            'max_rating',
             'participants_details',
             'can_edit_team',
             'can_delete_team',
         )
+
+        extra_kwargs = {
+            'rating': {
+                'read_only': True,
+            },
+            'max_rating': {
+                'read_only': True,
+            },
+        }
 
     def validate_captain(self, captain):
         if self.instance and captain:

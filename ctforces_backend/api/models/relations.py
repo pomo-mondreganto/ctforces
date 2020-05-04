@@ -47,8 +47,6 @@ class ContestParticipantRelationship(models.Model):
     delta = models.IntegerField(null=True, blank=True)
     has_opened_contest = models.BooleanField(default=False)
 
-    rating = models.IntegerField()
-
     registered_users = models.ManyToManyField(
         'User',
         related_name='contest_participant_relationship',
