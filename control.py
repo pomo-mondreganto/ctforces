@@ -119,6 +119,7 @@ def setup_django(config):
     host = email_config['host']
     user = email_config['user']
     port = email_config['port']
+    password = email_config['password']
 
     django_config = [
         "# THIS FILE IS MANAGED BY 'control.py'",
@@ -128,6 +129,7 @@ def setup_django(config):
         f'DJANGO_EMAIL_HOST={host}',
         f'DJANGO_EMAIL_USER={user}',
         f'DJANGO_EMAIL_PORT={port}',
+        f'DJANGO_EMAIL_PASSWORD={password}',
         'DOCKER_CONTAINER=1',
     ]
 
