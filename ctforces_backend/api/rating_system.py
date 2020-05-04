@@ -4,7 +4,7 @@ import math
 class RatingSystem:
     @staticmethod
     def __get_probability(a, b):
-        return 1.0 / (1.0 + math.pow(10.0, (b - a) / 3000.0))
+        return 1.0 / (1.0 + math.pow(10.0, (b - a) / 5000.0))
 
     @staticmethod
     def __get_geometrical_mean(a, b):
@@ -24,8 +24,8 @@ class RatingSystem:
 
     def __get_satisfaction(self, s, p):
         left = 0
-        right = 50000
-        for iteration in range(300):
+        right = 200000
+        for iteration in range(100):
             mid = (left + right) / 2
             if self.__get_seed((p, mid)) < s:
                 right = mid
@@ -79,20 +79,21 @@ if __name__ == "__main__":
     import random
 
     for test in range(100):
+        print(f'Test {test}')
         data = []
         teams_cnt = random.randint(1, 50)
         for team in range(teams_cnt):
             members_cnt = random.randint(1, 10)
             for member in range(members_cnt):
-                rating = random.randint(1, 100000)
+                rating = random.randint(1, 10000)
                 data.append((team + 1, rating))
         rs = RatingSystem(data)
         delta = rs.calculate()
 
         for i in range(len(data)):
             for j in range(len(data)):
-                print(data[i], data[j], delta[i], delta[j])
+                cur_state = f'{data[i]} {data[j]} {delta[i]} {delta[j]}'
                 if data[i][0] > data[j][0] and data[i][1] < data[j][1]:
-                    assert data[i][1] + delta[i] < data[j][1] + delta[j]
+                    assert data[i][1] + delta[i] < data[j][1] + delta[j], cur_state
                 if data[i][0] < data[j][0] and data[i][1] < data[j][1]:
-                    assert delta[i] > delta[j]
+                    assert delta[i] > delta[j], cur_state
