@@ -1,65 +1,59 @@
-version: "2.2"
+version: "2.4"
 
 services:
   django:
     build:
       context: .
-      dockerfile: ./configs/django.Dockerfile
+      dockerfile: ./configs/django/Dockerfile
     volumes:
       - ./volumes/static:/static
       - ./volumes/media:/media
-      - ./volumes/socks:/socks
-      - ./volumes/server_logs:/logs
-    depends_on:
-      - postgres
-      - redis
     restart: on-failure
-    container_name: ctforces_django
     env_file:
-      - ./configs/environment.env
-    sysctls:
-      - net.core.somaxconn=2048
+      - ./configs/django/environment.env
+      - ./configs/postgres/environment.env
+      - ./configs/rabbitmq/environment.env
 
   celery:
     build:
       context: .
-      dockerfile: ./configs/celery.Dockerfile
+      dockerfile: ./configs/celery/Dockerfile
     volumes:
       - ./volumes/celery:/celery
       - ./volumes/media:/media
-    depends_on:
-      - rabbitmq
     restart: on-failure
-    container_name: ctforces_celery
     env_file:
-      - configs/environment.env
+      - ./configs/django/environment.env
+      - ./configs/postgres/environment.env
+      - ./configs/rabbitmq/environment.env
+    environment:
+      - CELERY_CONTAINER_TYPE=worker
 
   flower:
     build:
       context: .
-      dockerfile: configs/flower.Dockerfile
+      dockerfile: configs/celery/Dockerfile
     volumes:
       - ./volumes/celery:/celery
       - ./volumes/media:/media
-      - ./volumes/socks:/socks
-    depends_on:
-      - rabbitmq
-      - celery
     restart: on-failure
-    container_name: ctforces_flower
     env_file:
-      - configs/environment.env
+      - ./configs/django/environment.env
+      - ./configs/postgres/environment.env
+      - ./configs/rabbitmq/environment.env
+      - ./configs/celery/flower.env
+    environment:
+      - CELERY_CONTAINER_TYPE=flower
 
   nginx:
     image: nginx:1.15.9-alpine
     volumes:
-      - ./configs/nginx:/etc/nginx/conf.d
-      - ./configs/nginx.proxy_params:/etc/nginx/proxy_params
-      - ./configs/robots.txt:/var/www/ctforces/robots.txt
+      - ./configs/nginx/app.conf:/etc/nginx/conf.d/default.conf
+      - ./configs/nginx/proxy_params:/etc/nginx/proxy_params
+      - ./configs/nginx/robots.txt:/var/www/ctforces/robots.txt:ro
       - ./volumes/static:/static:ro
-      - ./volumes/socks:/socks
       - ./volumes/media:/media:ro
-      - ./volumes/react_build:/react_build:ro
+      - ./ctforces_frontend/dist:/front:ro
       - ./volumes/certbot/conf:/etc/letsencrypt
       - ./volumes/certbot/www:/var/www/certbot
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
@@ -67,9 +61,6 @@ services:
       - "80:80"
       - "443:443"
     restart: on-failure
-    container_name: ctforces_nginx
-    sysctls:
-      - net.core.somaxconn=2048
 
   certbot:
     image: certbot/certbot
@@ -78,39 +69,26 @@ services:
       - ./volumes/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     restart: on-failure
-    container_name: ctforces_certbot
 
   postgres:
-    build:
-      context: .
-      dockerfile: configs/postgres.Dockerfile
+    image: postgres:12.1
     volumes:
-      - ./volumes/db/postgresql/data:/var/lib/postgresql/data
+      - ./volumes/db/data:/var/lib/postgresql/data
     restart: on-failure
-    container_name: ctforces_postgres
     env_file:
-      - ./configs/environment.env
+      - ./configs/postgres/environment.env
 
   redis:
-    image: redis:5.0.3-alpine
-    container_name: ctforces_redis
+    image: redis:5.0.9-alpine
+    restart: on-failure
+    sysctls:
+      net.core.somaxconn: 1024
 
   rabbitmq:
     hostname: rabbitmq
-    image: rabbitmq:3.7.14-management-alpine
+    image: rabbitmq:3.8.3-management-alpine
     restart: on-failure
-    container_name: ctforces_rabbitmq
+    ports:
+      - "15672:15672"
     env_file:
-      - configs/environment.env
-
-  react_init:
-    build:
-      context: .
-      dockerfile: configs/react.Dockerfile
-    volumes:
-      - ./volumes/react_build:/react_build
-      - ./volumes/react_cache:/cache
-    restart: on-failure
-    container_name: ctforces_react_init
-    env_file:
-      - configs/environment.env
+      - configs/rabbitmq/environment.env

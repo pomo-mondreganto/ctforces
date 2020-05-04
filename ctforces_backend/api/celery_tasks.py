@@ -2,12 +2,11 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.core.mail import send_mail
-from django.db.models import IntegerField, Value as V, Subquery, OuterRef, Q
-from django.db.models.functions import Coalesce
+from django.db.models import F
+from django.db.models.functions import Greatest
 from django.utils import timezone
 from stdimage.utils import render_variations
 
-from api import database_functions as api_database_functions
 from api.rating_system import RatingSystem
 
 get_model = apps.get_model
@@ -22,20 +21,18 @@ def process_stdimage(file_name, variations, storage):
     obj.save()
 
 
-@shared_task(bind=True)
-def start_contest(task, contest_id):
-    task_id = task.request.id
+@shared_task
+def start_contest(contest_id):
+    logger.info(f'Request to start contest_id {contest_id}')
 
-    query_filter = Q(celery_start_task_id=task_id)
-    if contest_id:
-        query_filter &= Q(id=contest_id)
-
-    logger.info(f'Request to start contest_id {contest_id}, task {task_id}')
-
-    contest = get_model('api', 'Contest').objects.filter(query_filter).first()
+    contest = get_model('api', 'Contest').objects.filter(id=contest_id).first()
 
     if not contest:
-        logger.info('Contest not staring, no such contest')
+        logger.info(f'Contest {contest_id} not staring, no such contest')
+        return
+
+    if contest.is_running:
+        logger.info(f'Contest {contest_id} not staring, already started')
         return
 
     logger.info(f'Starting contest {contest.id}')
@@ -44,17 +41,11 @@ def start_contest(task, contest_id):
     contest.save()
 
 
-@shared_task(bind=True)
-def end_contest(task, contest_id):
-    task_id = task.request.id
+@shared_task
+def end_contest(contest_id):
+    logger.info(f'Request to end contest_id {contest_id}')
 
-    query_filter = Q(celery_end_task_id=task_id)
-    if contest_id:
-        query_filter &= Q(id=contest_id)
-
-    logger.info(f'Request to end contest_id {contest_id}, task {task_id}')
-
-    contest = get_model('api', 'Contest').objects.filter(query_filter).first()
+    contest = get_model('api', 'Contest').objects.filter(id=contest_id).first()
 
     if not contest:
         logger.info('Contest not ending, no such contest')
@@ -86,92 +77,60 @@ def recalculate_rating(contest_id):
         logger.info('No such contest')
         return
 
-    contest_cost_subquery = Subquery(
-        get_model('api', 'ContestTaskRelationship').objects.filter(
-            contest_id=contest.id,
-            task_id=OuterRef('task_id'),
-        ).values('cost'),
-        output_field=IntegerField(),
+    relations = contest.get_scoreboard_relations_queryset().prefetch_related(
+        'registered_users',
     )
 
-    user_cost_sum_subquery = api_database_functions.SubquerySum(
-        get_model('api', 'ContestTaskParticipantSolvedRelationship').objects.filter(
-            contest_id=contest.id,
-            participant_id=OuterRef('id'),
-        ).annotate(
-            cost=Coalesce(
-                contest_cost_subquery,
-                V(0),
-            )
-        ).values('cost'),
-        output_field=IntegerField(),
-        field_name='cost',
-    )
+    teams = []
+    for relation in relations:
+        team = relation.participant
+        team.cost_sum = relation.cost_sum
+        team.last_contest_solve = relation.last_solve
 
-    last_contest_solve_subquery = Subquery(
-        get_model('api', 'ContestParticipantRelationship').objects.filter(
-            contest=contest,
-            participant=OuterRef('id'),
-        ).values('last_solve')
-    )
-
-    participants = contest.participants.all()
-
-    if not contest.always_recalculate_rating:
-        participants = participants.annotate(
-            has_opened_contest=Subquery(
-                get_model('api', 'ContestParticipantRelationship').objects.filter(
-                    contest=contest,
-                    participant=OuterRef('id'),
-                ).values('has_opened_contest'),
+        team.players = sorted(
+            list(
+                relation.registered_users.all()
             ),
-        ).filter(has_opened_contest=True)
-
-    participants = participants.annotate(
-        cost_sum=Coalesce(
-            user_cost_sum_subquery,
-            V(0),
-        ),
-        last_contest_solve=last_contest_solve_subquery,
-        contests_participated=api_database_functions.SubqueryCount(
-            get_model('api', 'ContestParticipantRelationship').objects.filter(
-                participant=OuterRef('id'),
-                contest__id__lte=contest_id,
-                contest__is_rated=True,
-                has_opened_contest=True,
-            )
+            key=lambda x: x.rating,
+            reverse=True,
         )
-    ).order_by(
-        '-cost_sum',
-        'last_contest_solve',
-    ).values_list(
-        'id',
-        'cost_sum',
-        'rating',
-        'max_rating',
-        'contests_participated',
-    )
+        teams.append(team)
 
-    ratings = [player[2] for player in participants]
-    rs = RatingSystem(ratings)
-    deltas = rs.calculate()
+    logger.info(f"Got team list for rating recalculation: {teams}")
 
-    for i, player in enumerate(participants):
-        get_model('api', 'User').objects.filter(id=player[0]).update(
-            rating=player[2] + deltas[i],
-            has_participated_in_rated_contest=True,
+    players = []
+    team_ratings = []
+    player_ratings = []
+    for i, team in enumerate(teams):
+        team_ratings.append((i + 1, team.rating))
+        players.extend(team.players)
+        player_ratings.extend(((i + 1, player.rating) for player in team.players))
+
+    logger.info(f"Team rating data: {team_ratings}")
+    logger.info(f"Player rating data: {player_ratings}")
+
+    team_rs = RatingSystem(team_ratings)
+    player_rs = RatingSystem(player_ratings)
+    team_deltas = team_rs.calculate()
+    player_deltas = player_rs.calculate()
+
+    for team, delta in zip(teams, team_deltas):
+        get_model('api', 'Team').objects.filter(id=team.id).update(
+            rating=F('rating') + delta,
+            max_rating=Greatest(F('max_rating'), F('rating') + delta),
         )
         get_model('api', 'ContestParticipantRelationship').objects.filter(
-            participant_id=player[0],
+            participant=team,
             contest=contest,
-        ).update(
-            delta=deltas[i],
+        ).update(delta=delta)
+
+    for player, delta in zip(players, player_deltas):
+        get_model('api', 'User').objects.filter(id=player.id).update(
+            rating=F('rating') + delta,
+            max_rating=Greatest(F('max_rating'), F('rating') + delta),
         )
 
-        if player[2] + deltas[i] > player[3] or player[4] == 1:
-            get_model('api', 'User').objects.filter(id=player[0]).update(
-                max_rating=player[2] + deltas[i],
-            )
+    logger.info(f'Done recalculating rating for contest {contest_id}')
 
 
 @shared_task
@@ -190,10 +149,10 @@ def publish_tasks(contest_id):
 
 
 @shared_task
-def send_users_mail(subject, message, html_message, from_email, recipient_list):
+def send_users_mail(subject, text_message, html_message, from_email, recipient_list):
     send_mail(
         subject=subject,
-        message=message,
+        message=text_message,
         from_email=from_email,
         recipient_list=recipient_list,
         html_message=html_message,

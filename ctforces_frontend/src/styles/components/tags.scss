@@ -1,0 +1,15 @@
+.vue-tags-input {
+    min-width: 100%;
+
+    @include use-theme {
+        background-color: $white;
+    }
+
+    .ti-new-tag-input,
+    .ti-autocomplete {
+        @include use-theme {
+            color: $black;
+            background-color: $white;
+        }
+    }
+}

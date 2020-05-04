@@ -1,5 +1,6 @@
 from django.db.models import Count, Exists, OuterRef
 from django.utils import timezone
+from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import mixins as rest_mixins
 from rest_framework import serializers as rest_serializers
@@ -12,6 +13,7 @@ from rest_framework.response import Response
 from api import mixins as api_mixins
 from api import models as api_models
 from api import pagination as api_pagination
+from api.tasks import filters as api_tasks_filters
 from api.tasks import permissions as api_tasks_permissions
 from api.tasks import serializers as api_tasks_serializers
 from api.users import serializers as api_users_serializers
@@ -25,6 +27,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
     queryset = api_models.Task.objects.order_by('-publication_time', '-id').select_related('author')
+    filterset_class = api_tasks_filters.TaskFilterSet
 
     action_permission_classes = {
         'retrieve': (api_tasks_permissions.HasViewTaskPermission,),
@@ -46,8 +49,16 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
     def get_queryset(self):
         queryset = super(TaskViewSet, self).get_queryset()
 
-        if self.action == 'list' or self.action == 'search_by_tag':
+        if self.action == 'get_solved':
+            return queryset.prefetch_related('solved_by')
+
+        queryset = queryset.prefetch_related('tags').select_related('author')
+
+        if self.action == 'list':
             queryset = queryset.filter(show_on_main_page=True)
+
+        if self.action in ['retrieve', 'get_full_task']:
+            queryset = queryset.prefetch_related('files')
 
         return queryset.annotate(
             solved_count=Count(
@@ -60,7 +71,7 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
                     solved_by__id=self.request.user.id or -1,
                 )
             ),
-        ).prefetch_related('tags', 'files')
+        )
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -74,23 +85,6 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         if self.action == 'retrieve':
             obj.can_edit_task = self.request.user.has_perm('change_task', obj)
         return obj
-
-    @action(
-        detail=False,
-        url_path='search_tag',
-        url_name='search_tag',
-        methods=['get']
-    )
-    def search_by_tag(self, request, *_args, **_kwargs):
-        tag_name = request.query_params.get('name', '')
-        tasks = self.get_queryset().filter(tags__name=tag_name)
-
-        return api_pagination.get_paginated_response(
-            paginator=api_pagination.TaskDefaultPagination(),
-            queryset=tasks,
-            serializer_class=api_tasks_serializers.TaskPreviewSerializer,
-            request=request,
-        )
 
     @action(
         detail=True,
@@ -133,36 +127,40 @@ class TaskViewSet(api_mixins.CustomPermissionsViewSetMixin,
         if self.request.user.has_perm('api.change_task', instance):
             raise rest_serializers.ValidationError(
                 {
-                    'flag': 'You cannot submit that task',
+                    'flag': 'You cannot submit this task',
+                },
+            )
+
+        # to avoid updating last_solve incorrectly later
+        if instance.solved_by.filter(id=request.user.id).exists():
+            raise rest_serializers.ValidationError(
+                {
+                    'flag': 'You already submitted this task',
                 },
             )
 
         serializer = api_tasks_serializers.TaskSubmitSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
 
-        if serializer.is_valid(raise_exception=True):
-            instance.solved_by.add(request.user)
-            request.user.last_solve = timezone.now()
-            request.user.save()
-            return Response({'accepted!'})
+        instance.solved_by.add(request.user)
+        request.user.last_solve = timezone.now()
+        request.user.save()
+        return Response({'accepted!'})
 
 
 class TaskTagViewSet(rest_mixins.CreateModelMixin,
+                     rest_mixins.ListModelMixin,
                      rest_viewsets.GenericViewSet):
     permission_classes = (api_tasks_permissions.HasEditTaskPermissionOrReadOnly,)
     serializer_class = api_tasks_serializers.TaskTagSerializer
+    pagination_class = api_pagination.TaskTagDefaultPagination
     queryset = api_models.TaskTag.objects.all()
+    filterset_class = api_tasks_filters.TaskTagFilterSet
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'create':
             kwargs['many'] = isinstance(self.request.data, list)
         return super(TaskTagViewSet, self).get_serializer(*args, **kwargs)
-
-    @action(detail=False, url_name='search', url_path='search')
-    def search_tags(self, request):
-        tag_name = request.query_params.get('name', '')
-        tag_list = self.get_queryset().only('name').filter(name__istartswith=tag_name)[:10]
-        serializer = self.get_serializer(tag_list, many=True)
-        return Response(serializer.data)
 
 
 class TaskFileViewSet(rest_mixins.RetrieveModelMixin,
@@ -186,24 +184,19 @@ class TaskHintViewSet(api_mixins.CustomPermissionsViewSetMixin,
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
-    queryset = api_models.TaskHint.objects.all().select_related('author')
+    queryset = api_models.TaskHint.objects.all().select_related('author', 'task')
     serializer_class = api_tasks_serializers.TaskHintSerializer
 
     action_permission_classes = {
         'retrieve': (api_tasks_permissions.HasViewTaskHintPermission,),
-        'update': (api_tasks_permissions.HasModifyTaskHintsPermission,),
-        'partial_update': (api_tasks_permissions.HasModifyTaskHintsPermission,),
-        'destroy': (api_tasks_permissions.HasModifyTaskHintsPermission,)
+        'update': (api_tasks_permissions.HasEditTaskHintsPermission,),
+        'partial_update': (api_tasks_permissions.HasEditTaskHintsPermission,),
+        'destroy': (api_tasks_permissions.HasEditTaskHintsPermission,)
     }
 
     def get_queryset(self):
         qs = super(TaskHintViewSet, self).get_queryset()
         if self.action == 'list':
-            hints_type = self.request.query_params.get('type', 'published')
-
-            if hints_type == 'published':
-                qs = qs.filter(is_published=True)
-            else:
-                qs = get_objects_for_user(self.request.user, 'view_taskhint', api_models.TaskHint)
+            qs = qs.filter(is_published=True)
 
         return qs

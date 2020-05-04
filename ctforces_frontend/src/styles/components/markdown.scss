@@ -1,0 +1,6 @@
+.markdown-body {
+    @include use-theme {
+        background-color: $white;
+        color: $black;
+    }
+}

@@ -13,6 +13,12 @@ class CurrentUserFilteredPKRF(PrimaryKeyRelatedField):
 
 
 class CurrentUserPermissionsFilteredPKRF(PrimaryKeyRelatedField):
+    default_error_messages = {
+        'required': 'This field is required.',
+        'does_not_exist': 'Invalid pk "{pk_value}" - object does not exist or you have no access to it.',
+        'incorrect_type': 'Incorrect type. Expected pk value, received {data_type}.',
+    }
+
     def __init__(self, perms, additional_queryset=None, **kwargs):
         super(CurrentUserPermissionsFilteredPKRF, self).__init__(**kwargs)
         self.perms = perms

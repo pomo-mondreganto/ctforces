@@ -1,0 +1,48 @@
+@mixin use-theme {
+    body.dark-theme & {
+        @include set-theme(dark);
+        @content;
+    }
+
+    body:not(.dark-theme) & {
+        @include set-theme(def);
+        @content;
+    }
+}
+
+@mixin set-theme($theme) {
+    $green: #26de81 !global;
+    $red: #fc5c65 !global;
+    $dark: #4b6584 !global;
+    $light: #f8f9fa !global;
+    $black: #000000 !global;
+    $white: #ffffff !global;
+    $darklight: #85878a !global;
+    $bluelight: #45aaf2 !global;
+    $reddanger: #eb3b5a !global;
+    $greenlight: #89ffc4 !global;
+    $bluedark: #3867d6 !global;
+    $bluebtn: #007bff !global;
+    $gray: #d3d3d3 !global;
+    $graytags: #6c757d !global;
+    $yellowlight: #f5ff6b !global;
+    $topbarshadow: #eeeeee !global;
+
+    @if $theme == dark {
+        $green: #1c995a !global;
+        $red: #c74950 !global;
+        $dark: #4b6584 !global;
+        $light: #333333 !global;
+        $black: #dddddd !global;
+        $white: #222222 !global;
+        $darklight: #85878a !global;
+        $bluelight: #45aaf2 !global;
+        $reddanger: #eb3b5a !global;
+        $greenlight: #224422 !global;
+        $bluedark: #2b53b1 !global;
+        $gray: #727272 !global;
+        $graytags: #5c7b8d !global;
+        $yellowlight: #a6ae35 !global;
+        $topbarshadow: #545454 !global;
+    }
+}

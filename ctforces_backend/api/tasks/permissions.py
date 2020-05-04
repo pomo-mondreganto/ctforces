@@ -36,11 +36,14 @@ class HasCreateTaskFilePermissionOrReadOnly(api_permissions.HasPermissionOrReadO
 class HasViewTaskPermission(api_permissions.HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_task'
 
-    def has_permission(self, request, view):
-        return True
+    def has_object_permission(self, request, view, obj):
+        if obj.show_on_main_page:
+            return True
+
+        return super(HasViewTaskPermission, self).has_object_permission(request, view, obj)
 
 
-class HasModifyTaskHintsPermission(api_permissions.HasPermissionMixin):
+class HasEditTaskHintsPermission(api_permissions.HasPermissionMixin):
     permission_name = 'api.change_task'
 
     def has_object_permission(self, request, view, obj):

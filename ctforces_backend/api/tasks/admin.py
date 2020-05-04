@@ -48,7 +48,7 @@ class TaskFileInlineAdmin(admin.TabularInline):
     raw_id_fields = ('owner',)
 
 
-class CustomTaskAdmin(GuardedModelAdmin):
+class TaskAdmin(GuardedModelAdmin):
     inlines = (TaskHintInlineAdmin, TaskFileInlineAdmin)
     list_display = (
         'id',
@@ -103,7 +103,6 @@ class CustomTaskAdmin(GuardedModelAdmin):
     )
 
     filter_horizontal = (
-        'solved_by',
         'tags',
     )
 
@@ -128,7 +127,7 @@ class CustomTaskAdmin(GuardedModelAdmin):
         return obj.solved_count
 
     def get_queryset(self, request):
-        return super(CustomTaskAdmin, self).get_queryset(request).annotate(
+        return super(TaskAdmin, self).get_queryset(request).annotate(
             solved_count=Count('solved_by')
         ).select_related('author')
 
@@ -194,3 +193,31 @@ class TaskFileFullAdmin(GuardedModelAdmin):
 
     readonly_fields = ('upload_time',)
     raw_id_fields = ('owner',)
+
+
+class TaskTagAdmin(GuardedModelAdmin):
+    model = api_models.TaskTag
+
+    list_display = (
+        'id',
+        'name',
+    )
+
+    list_display_links = (
+        'id',
+        'name',
+    )
+
+    fieldsets = (
+        (
+            'Main info',
+            {
+                'fields': (
+                    'id',
+                    'name',
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = ('id',)

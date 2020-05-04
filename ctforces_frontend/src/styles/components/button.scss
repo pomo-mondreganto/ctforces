@@ -1,0 +1,45 @@
+@import '@/styles/global/_variables.scss';
+
+.btn {
+    display: block;
+    @include use-theme {
+        background-color: $bluedark;
+        border-color: $bluedark;
+        color: $white;
+    }
+    padding: 0.5em;
+    border-radius: 0.3em;
+    transition: all 0.3s ease 0s;
+    border-style: solid;
+    border-width: 0.05em;
+
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+
+    &.red {
+        @include use-theme {
+            background-color: $red;
+            border-color: $red;
+        }
+    }
+
+    &.green {
+        @include use-theme {
+            background-color: $green;
+            border-color: $green;
+        }
+    }
+
+    &.disabled {
+        @include use-theme {
+            background-color: $gray;
+            border-color: $gray;
+        }
+    }
+}
+
+.btn:hover {
+    border-radius: 3em;
+    transition: all 0.3s ease 0s;
+}

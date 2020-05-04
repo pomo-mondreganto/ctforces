@@ -1,15 +1,14 @@
 from django.contrib import admin
-from django.db.models import Value as V, Count, OuterRef
+from django.db.models import Value as V, Count
 from django.db.models.functions import Coalesce
 from guardian.admin import GuardedModelAdmin
 
-from api import database_functions as api_database_functions
-from api import models as api_models
+import api.models
 
 
 class ContestTaskInlineAdmin(admin.TabularInline):
     classes = ('collapse',)
-    model = api_models.ContestTaskRelationship
+    model = api.models.ContestTaskRelationship
     fieldsets = (
         (
             'Main info',
@@ -17,9 +16,18 @@ class ContestTaskInlineAdmin(admin.TabularInline):
                 'fields': (
                     'id',
                     'task',
-                    'cost',
-                    'ordering_number',
                     'main_tag',
+                ),
+            },
+        ),
+        (
+            'Scoring',
+            {
+                'fields': (
+                    'cost',
+                    'min_cost',
+                    'max_cost',
+                    'decay_value',
                 ),
             },
         ),
@@ -28,14 +36,17 @@ class ContestTaskInlineAdmin(admin.TabularInline):
             {
                 'fields': (
                     'solved_count',
+                    'solved_by',
                 )
             }
         )
     )
 
     readonly_fields = ('solved_count',)
+
     raw_id_fields = (
         'task',
+        'solved_by',
     )
 
     @staticmethod
@@ -45,19 +56,14 @@ class ContestTaskInlineAdmin(admin.TabularInline):
     def get_queryset(self, request):
         return super(ContestTaskInlineAdmin, self).get_queryset(request).annotate(
             solved_count=Coalesce(
-                api_database_functions.SubqueryCount(
-                    api_models.ContestTaskParticipantSolvedRelationship.objects.filter(
-                        contest_id=OuterRef('contest_id'),
-                        task_id=OuterRef('task_id'),
-                    )
-                ),
+                Count('solved_by'),
                 V(0),
             )
         )
 
 
 class ContestParticipantInlineAdmin(admin.TabularInline):
-    model = api_models.ContestParticipantRelationship
+    model = api.models.ContestParticipantRelationship
     classes = ('collapse',)
     fieldsets = (
         (
@@ -67,6 +73,7 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
                     'id',
                     'participant',
                     'last_solve',
+                    'registered_users',
                 ),
             },
         ),
@@ -78,10 +85,11 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
 
     raw_id_fields = (
         'participant',
+        'registered_users',
     )
 
 
-class CustomContestAdmin(GuardedModelAdmin):
+class ContestAdmin(GuardedModelAdmin):
     inlines = (
         ContestTaskInlineAdmin,
         ContestParticipantInlineAdmin,
@@ -117,6 +125,7 @@ class CustomContestAdmin(GuardedModelAdmin):
                     'name',
                     'description',
                     'author',
+                    'dynamic_scoring',
                 ),
             },
         ),
@@ -173,7 +182,7 @@ class CustomContestAdmin(GuardedModelAdmin):
         return obj.registered_count
 
     def get_queryset(self, request):
-        return super(CustomContestAdmin, self).get_queryset(request).annotate(
+        return super(ContestAdmin, self).get_queryset(request).annotate(
             registered_count=Count('participants', distinct=True),
         ).prefetch_related('tasks', 'participants')
 

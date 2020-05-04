@@ -10,24 +10,33 @@ class TaskTagSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = api_models.TaskTag
         fields = ('id', 'name')
+        extra_kwargs = {
+            'name': {
+                'required': True,
+                'validators': [],
+            },
+        }
 
     @staticmethod
     def validate_name(data):
-        data = data.lower()
-        if api_models.TaskTag.objects.filter(name=data).exists():
-            raise rest_serializers.ValidationError('Tag with this name already exists.')
-        return data
+        return data.lower()
+
+    def create(self, validated_data):
+        instance, _ = api_models.TaskTag.objects.get_or_create(**validated_data)
+        return instance
 
 
 class TaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
+    author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
         model = api_models.Task
         fields = (
             'author',
+            'author_username',
             'cost',
             'id',
             'is_published',
@@ -40,7 +49,7 @@ class TaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
 
 
 class TaskFileMainSerializer(rest_serializers.ModelSerializer):
-    task_details = TaskPreviewSerializer(read_only=True, source='task')
+    owner = rest_serializers.HiddenField(default=rest_serializers.CurrentUserDefault())
 
     class Meta:
         model = api_models.TaskFile
@@ -49,7 +58,7 @@ class TaskFileMainSerializer(rest_serializers.ModelSerializer):
             'id',
             'name',
             'owner',
-            'task_details',
+            'task',
             'upload_time',
         )
         extra_kwargs = {
@@ -74,7 +83,6 @@ class TaskFileMainSerializer(rest_serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        validated_data['owner'] = self.context['request'].user
         instance = super(TaskFileMainSerializer, self).create(validated_data)
         assign_perm('view_taskfile', instance.owner, instance)
         assign_perm('change_taskfile', instance.owner, instance)
@@ -97,6 +105,46 @@ class TaskFileViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOn
                 'use_url': False,
             },
         }
+
+
+class TaskHintSerializer(rest_serializers.ModelSerializer):
+    author = rest_serializers.HiddenField(default=rest_serializers.CurrentUserDefault())
+    task = api_fields.CurrentUserPermissionsFilteredPKRF(
+        read_only=False,
+        perms='change_task',
+        queryset=api_models.Task.objects.all(),
+    )
+
+    author_username = rest_serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username',
+        source='author',
+    )
+
+    author_rating = rest_serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='rating',
+        source='author',
+    )
+
+    class Meta:
+        model = api_models.TaskHint
+        fields = (
+            'author',
+            'author_rating',
+            'author_username',
+            'body',
+            'id',
+            'is_published',
+            'task',
+        )
+
+    def create(self, validated_data):
+        instance = super(TaskHintSerializer, self).create(validated_data)
+        assign_perm('view_taskhint', instance.author, instance)
+        assign_perm('change_taskhint', instance.author, instance)
+        assign_perm('delete_taskhint', instance.author, instance)
+        return instance
 
 
 class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
@@ -130,10 +178,11 @@ class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySe
 
     @staticmethod
     def get_hints_method(obj):
-        return api_models.TaskHint.objects.filter(is_published=True, task=obj).values_list('id', flat=True)
+        return obj.hints.filter(is_published=True).values_list('id', flat=True)
 
 
 class TaskFullSerializer(rest_serializers.ModelSerializer):
+    author = rest_serializers.HiddenField(default=rest_serializers.CurrentUserDefault())
     solved_count = rest_serializers.IntegerField(read_only=True)
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     files_details = TaskFileViewSerializer(many=True, read_only=True, source='files')
@@ -147,6 +196,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
         perms='view_taskfile',
         many=True,
     )
+    hints_details = TaskHintSerializer(read_only=True, many=True, source='hints')
 
     class Meta:
         model = api_models.Task
@@ -160,6 +210,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
             'files_details',
             'flag',
             'hints',
+            'hints_details',
             'id',
             'is_published',
             'name',
@@ -168,18 +219,6 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
             'tags',
             'task_tags_details',
         )
-
-        extra_kwargs = {
-            'author': {
-                'write_only': True,
-            },
-            'publication_time': {
-                'read_only': True,
-            },
-            'tags': {
-                'write_only': True,
-            },
-        }
 
     @staticmethod
     def validate_tags(data):
@@ -196,7 +235,6 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        validated_data['author'] = self.context['request'].user
         instance = super(TaskFullSerializer, self).create(validated_data)
         assign_perm('view_task', instance.author, instance)
         assign_perm('change_task', instance.author, instance)
@@ -217,51 +255,3 @@ class TaskSubmitSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnly
     def validate_flag(self, flag):
         if flag != self.instance.flag:
             raise rest_serializers.ValidationError('Invalid flag.')
-
-
-class TaskHintSerializer(rest_serializers.ModelSerializer):
-    task = api_fields.CurrentUserPermissionsFilteredPKRF(
-        read_only=False,
-        perms='change_task',
-        queryset=api_models.Task.objects.all(),
-    )
-
-    author_username = rest_serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username',
-        source='author',
-    )
-
-    author_rating = rest_serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='rating',
-        source='author',
-    )
-
-    class Meta:
-        model = api_models.TaskHint
-        fields = (
-            'author',
-            'author_rating',
-            'author_username',
-            'body',
-            'is_published',
-            'task',
-        )
-
-        extra_kwargs = {
-            'author': {
-                'write_only': True,
-            },
-            'task': {
-                'write_only': True,
-            }
-        }
-
-    def create(self, validated_data):
-        validated_data['author'] = self.context['request'].user
-        instance = super(TaskHintSerializer, self).create(validated_data)
-        assign_perm('view_taskhint', instance.author, instance)
-        assign_perm('change_taskhint', instance.author, instance)
-        assign_perm('delete_taskhint', instance.author, instance)
-        return instance

@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
         self.stdout.write(f'Got {len(contest_ids)} contests')
 
-        self.stdout.write(f'Starting reting recalculation')
+        self.stdout.write(f'Starting rating recalculation')
         for i, contest_id in enumerate(contest_ids):
             api_tasks.recalculate_rating(contest_id)
             self.stdout.write(f'Contest {contest_id} done, {len(contest_ids) - i - 1} left')

@@ -1,0 +1,26 @@
+flower:
+  username: admin
+  password: secret
+
+db:
+  host: postgres
+  port: 5432
+  user: ctforces_admin
+  password: secret
+  dbname: ctforces
+
+rabbitmq:
+  host: rabbitmq
+  user: ctforces_admin
+  port: 5672
+  vhost: ctforces
+  password: secret
+
+django:
+  debug: true
+  email:
+    url: "http://127.0.0.1:8000"
+    host: 'smtp.yandex.ru'
+    user: 'noreply@ctforces.com'
+    port: 587
+    password: secret

@@ -12,5 +12,8 @@ class HasEditPostPermissionOrReadOnly(api_permissions.HasPermissionOrReadOnlyMix
 class HasViewPostPermission(api_permissions.HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_post'
 
-    def has_permission(self, request, view):
-        return True
+    def has_object_permission(self, request, view, obj):
+        if obj.show_on_main_page:
+            return True
+
+        return super(HasViewPostPermission, self).has_object_permission(request, view, obj)

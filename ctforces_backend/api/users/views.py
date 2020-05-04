@@ -18,11 +18,12 @@ from rest_framework_extensions.cache.decorators import cache_response
 from api import celery_tasks as api_tasks
 from api import models as api_models
 from api import pagination as api_pagination
-from api.contests import serializers as api_contests_serializers
 from api.posts import serializers as api_posts_serializers
 from api.tasks import serializers as api_tasks_serializers
+from api.teams import serializers as api_teams_serializers
 from api.token_operations import serialize, deserialize
 from api.users import caching as api_users_caching
+from api.users import filters as api_users_filters
 from api.users import serializers as api_users_serializers
 
 
@@ -49,8 +50,8 @@ class UserCreateView(CreateAPIView):
 
         api_tasks.send_users_mail.delay(
             subject='CTForces account confirmation',
-            message=message_plain,
-            from_email='CTForces team',
+            text_message=message_plain,
+            from_email='noreply@ctforces.com',
             recipient_list=[user_email],
             html_message=message_html,
         )
@@ -122,8 +123,8 @@ class ActivationEmailResendView(APIView):
 
         api_tasks.send_users_mail.delay(
             subject='CTForces account confirmation',
-            message=message_plain,
-            from_email='CTForces team',
+            text_message=message_plain,
+            from_email='noreply@ctforces.com',
             recipient_list=[email],
             html_message=message_html,
         )
@@ -172,8 +173,8 @@ class PasswordResetRequestView(APIView):
 
         api_tasks.send_users_mail.delay(
             subject='CTForces password reset',
-            message=message_plain,
-            from_email='CTForces team',
+            text_message=message_plain,
+            from_email='noreply@ctforces.com',
             recipient_list=[email],
             html_message=message_html,
         )
@@ -297,9 +298,9 @@ class AvatarUploadView(APIView):
         serializer = api_users_serializers.AvatarUploadSerializer(data=request.data,
                                                                   instance=request.user,
                                                                   context={'request': request})
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
@@ -309,51 +310,7 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     pagination_class = api_pagination.UserDefaultPagination
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
-
-    @action(detail=False, url_name='upsolving_top', url_path='upsolving_top', methods=['get'])
-    def get_upsolving_top(self, request):
-        users_with_upsolving = self.get_queryset().filter(
-            show_in_ratings=True,
-        ).only(
-            'username',
-            'rating',
-        ).order_by(
-            '-cost_sum',
-            'last_solve',
-        )
-
-        return api_pagination.get_paginated_response(
-            paginator=self.paginator,
-            queryset=users_with_upsolving,
-            serializer_class=self.get_serializer,
-            request=request,
-        )
-
-    @action(detail=False, url_name='rating_top', url_path='rating_top', methods=['get'])
-    def get_rating_top(self, request):
-        users_with_rating = api_models.User.objects.filter(
-            show_in_ratings=True,
-        ).only(
-            'username',
-            'rating',
-        ).order_by(
-            '-rating',
-            'last_solve',
-        )
-
-        return api_pagination.get_paginated_response(
-            paginator=self.paginator,
-            queryset=users_with_rating,
-            serializer_class=self.get_serializer,
-            request=request,
-        )
-
-    @action(detail=False, url_name='search', url_path='search', methods=['get'])
-    def search_users(self, request):
-        username = request.query_params.get('username', '')
-        users_list = api_models.User.objects.only('username').filter(username__istartswith=username)[:10]
-        serializer = self.get_serializer(users_list, many=True)
-        return Response(serializer.data)
+    filterset_class = api_users_filters.UserFilter
 
     @action(detail=True, url_name='tasks', url_path='tasks', methods=['get'])
     def get_users_tasks(self, request, **_kwargs):
@@ -404,46 +361,15 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
             request=request,
         )
 
-    @action(detail=True, url_name='contests', url_path='contests', methods=['get'])
-    def get_users_contests(self, request, **_kwargs):
-        contests_type = request.query_params.get('type', 'all')
+    @action(detail=True, url_name='teams', url_path='teams', methods=['get'])
+    def get_users_teams(self, request, **_kwargs):
         user = self.get_object()
-        queryset = api_models.Contest.objects.filter(is_published=True)
-
-        if contests_type == 'all':
-            queryset = (queryset | get_objects_for_user(request.user, 'view_contest', api_models.Contest)).distinct()
-
-        queryset = queryset.filter(author=user).annotate(
-            is_registered=Exists(
-                api_models.ContestParticipantRelationship.objects.filter(
-                    participant_id=self.request.user.id,
-                    contest=OuterRef('id'),
-                )
-            ),
-        )
+        queryset = user.teams.all()
         queryset = queryset.order_by('-id')
 
-        upcoming_queryset = queryset.filter(is_running=False, is_finished=False)
-        running_queryset = queryset.filter(is_running=True)
-        finished_queryset = queryset.filter(is_finished=True)
-
-        upcoming = api_contests_serializers.ContestPreviewSerializer(upcoming_queryset, many=True).data
-        running = api_contests_serializers.ContestPreviewSerializer(running_queryset, many=True).data
-
-        paginator, finished = api_pagination.get_paginated_data(
-            api_pagination.ContestDefaultPagination(),
-            finished_queryset,
-            api_contests_serializers.ContestPreviewSerializer,
-            request,
+        return api_pagination.get_paginated_response(
+            paginator=api_pagination.TeamDefaultPagination(),
+            queryset=queryset,
+            serializer_class=api_teams_serializers.TeamMinimalSerializer,
+            request=request,
         )
-
-        if paginator:
-            finished = paginator.get_paginated_response(finished).data
-
-        response_data = {
-            'upcoming': upcoming,
-            'running': running,
-            'finished': finished,
-        }
-
-        return Response(response_data)

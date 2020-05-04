@@ -2,7 +2,7 @@ from django.utils import timezone
 from guardian.admin import GuardedModelAdmin
 
 
-class CustomPostAdmin(GuardedModelAdmin):
+class PostAdmin(GuardedModelAdmin):
     list_display = (
         'id',
         'title',
@@ -59,7 +59,7 @@ class CustomPostAdmin(GuardedModelAdmin):
     )
 
     def get_queryset(self, request):
-        return super(CustomPostAdmin, self).get_queryset(request).select_related('author')
+        return super(PostAdmin, self).get_queryset(request).select_related('author')
 
     def publish(self, _request, queryset):
         queryset.update(is_published=True, publication_time=timezone.now())
