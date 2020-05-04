@@ -1,10 +1,10 @@
 #!/bin/bash
 
-domains=(ctforces.com www.ctforces.com ctforces.ru www.ctforces.ru ctforces.informatics.ru)
+domains=(ctforces.com www.ctforces.com ctforces.ru www.ctforces.ru)
 rsa_key_size=4096
 data_path="./volumes/certbot"
 email="admin@ctforces.com" # Adding a valid address is strongly recommended
-staging=$STAGING                  # Set to 1 if you're testing your setup to avoid hitting request limits
+staging=$STAGING           # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path" ]; then
     read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
