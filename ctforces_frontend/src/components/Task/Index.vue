@@ -51,6 +51,7 @@
             <a
                 :href="`${mediaUrl}/${file.file_field}`"
                 target="_blank"
+                class="nlnk link"
                 v-for="file of task.files_details"
                 :key="file.id"
             >
