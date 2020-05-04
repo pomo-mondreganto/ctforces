@@ -7,10 +7,8 @@ from django.db.models import (
     Exists,
     F,
     Prefetch,
-    IntegerField,
     BooleanField,
 )
-from django.db.models.functions import Coalesce
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
@@ -28,7 +26,6 @@ import api.models
 import api.pagination
 import api.tasks.serializers
 import api.teams.serializers
-from api.database_functions import SubquerySum
 from api.mixins import (
     CustomPermissionsQuerysetViewSetMixin,
     CustomPermissionsViewSetMixin,
@@ -185,37 +182,8 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
             'main_data': result_data,
         })
 
-    @staticmethod
-    def get_scoreboard_relations_queryset(contest):
-        if contest.dynamic_scoring:
-            manager = api.models.ContestTaskRelationship.dynamic_current_cost_annotated
-        else:
-            manager = api.models.ContestTaskRelationship.static_current_cost_annotated
-
-        participant_cost_sum_subquery = SubquerySum(
-            manager.filter(
-                contest=contest,
-                solved_by__id=OuterRef('participant_id'),
-            ).values('current_cost'),
-            output_field=IntegerField(),
-            field_name='current_cost',
-        )
-
-        relations = api.models.ContestParticipantRelationship.objects.filter(
-            contest=contest,
-        ).select_related(
-            'participant',
-        ).annotate(
-            cost_sum=Coalesce(participant_cost_sum_subquery, V(0)),
-        ).only(
-            'participant',
-            'last_solve',
-        ).order_by('-cost_sum', 'last_solve')
-
-        return relations
-
     def get_ordered_scoreboard_users_page(self, contest):
-        relations_queryset = self.get_scoreboard_relations_queryset(contest)
+        relations_queryset = contest.get_scoreboard_relations_queryset()
 
         users_paginator = api.pagination.ScoreboardPagination()
         relations_page = users_paginator.paginate_queryset(
@@ -276,7 +244,7 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
     )
     def get_ctftime_scoreboard(self, _request, *_args, **_kwargs):
         contest = self.get_object()
-        relations_queryset = self.get_scoreboard_relations_queryset(contest)
+        relations_queryset = contest.get_scoreboard_relations_queryset()
 
         standings = []
         for i, relation in enumerate(relations_queryset):

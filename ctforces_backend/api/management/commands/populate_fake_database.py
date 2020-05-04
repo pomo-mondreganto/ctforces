@@ -5,7 +5,6 @@ from django.utils.timezone import get_current_timezone, now
 from faker import Faker
 
 from api import models as models
-from api.rating_system import RatingSystem
 
 fake = Faker()
 
@@ -19,6 +18,7 @@ class Command(BaseCommand):
 
         for _ in range(count):
             username = fake.simple_profile()['username']
+            username += fake.pystr(max_chars=15 - len(username))
             u = models.User(
                 email=fake.email(),
                 username=username,
@@ -112,10 +112,13 @@ class Command(BaseCommand):
         for _ in range(count):
             captain = random.choice(users)
             name = fake.sentence(nb_words=4)
+            rating = random.randint(0, 5000)
             t = models.Team(
                 captain=captain,
                 name=name,
                 join_token=models.Team.gen_join_token(name),
+                rating=rating,
+                max_rating=rating,
             )
 
             t.save()
@@ -160,9 +163,7 @@ class Command(BaseCommand):
                 team_members = team.participants.all()
                 registered_users = list(set(random.choices(team_members, k=random.randint(1, len(team_members)))))
 
-                user_ratings = list(map(lambda x: x.rating, registered_users))
-                team_rating = RatingSystem.get_team_rating(user_ratings)
-                rel = models.ContestParticipantRelationship(contest=c, participant=team, rating=team_rating)
+                rel = models.ContestParticipantRelationship(contest=c, participant=team)
                 rel.save()
 
                 to_create = []

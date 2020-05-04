@@ -1,5 +1,4 @@
 import math
-from typing import List
 
 
 class RatingSystem:
@@ -10,10 +9,6 @@ class RatingSystem:
     @staticmethod
     def __get_geometrical_mean(a, b):
         return math.sqrt(a * b)
-
-    @staticmethod
-    def get_team_rating(user_ratings: List[int]) -> int:
-        return sum(user_ratings)
 
     def __init__(self, ratings):
         self.ratings = ratings

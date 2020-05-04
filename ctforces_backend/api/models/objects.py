@@ -4,12 +4,15 @@ from celery import current_app
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import IntegerField, OuterRef, Value as V
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework_tricks.models.fields import NestedProxyField
 from stdimage.models import StdImageField
 
 from api import celery_tasks
+from api.database_functions import SubquerySum
 from .auxiliary import (
     CustomImageSizeValidator,
     CustomUploadTo,
@@ -19,6 +22,7 @@ from .auxiliary import (
     TagNameValidator,
     UserUpsolvingAnnotatedManager,
 )
+from .relations import ContestTaskRelationship, ContestParticipantRelationship
 
 
 class User(AbstractUser):
@@ -301,3 +305,34 @@ class Contest(models.Model):
 
     def __str__(self):
         return f"Contest object ({self.id}:{self.name})"
+
+    def get_scoreboard_relations_queryset(self):
+        if self.dynamic_scoring:
+            manager = ContestTaskRelationship.dynamic_current_cost_annotated
+        else:
+            manager = ContestTaskRelationship.static_current_cost_annotated
+
+        participant_cost_sum_subquery = SubquerySum(
+            manager.filter(
+                contest=self,
+                solved_by__id=OuterRef('participant_id'),
+            ).values('current_cost'),
+            output_field=IntegerField(),
+            field_name='current_cost',
+        )
+
+        relations = ContestParticipantRelationship.objects.filter(
+            contest=self,
+        ).select_related(
+            'participant',
+        ).annotate(
+            cost_sum=Coalesce(participant_cost_sum_subquery, V(0)),
+        ).only(
+            'participant',
+            'last_solve',
+        ).order_by('-cost_sum', 'last_solve')
+
+        if not self.always_recalculate_rating:
+            relations = relations.filter(has_opened_contest=True)
+
+        return relations
