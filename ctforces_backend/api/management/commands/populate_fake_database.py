@@ -166,6 +166,8 @@ class Command(BaseCommand):
                 rel = models.ContestParticipantRelationship(contest=c, participant=team)
                 rel.save()
 
+                rel.registered_users.add(*registered_users)
+
                 to_create = []
                 for u in registered_users:
                     helper = models.CPRHelper(

@@ -39,7 +39,6 @@ class CPRSerializer(rest_serializers.ModelSerializer):
             'id',
             'contest',
             'participant',
-            'rating',
             'participant_details',
             'registered_users',
             'registered_users_details',
@@ -256,6 +255,7 @@ class ContestFullSerializer(rest_serializers.ModelSerializer):
         fields = (
             'author',
             'author_username',
+            'always_recalculate_rating',
             'contest_task_relationship_details',
             'created_at',
             'description',
