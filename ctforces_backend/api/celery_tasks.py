@@ -2,10 +2,12 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.core.mail import send_mail
-from django.db.models import Q, F
+from django.db.models import F
 from django.db.models.functions import Greatest
 from django.utils import timezone
 from stdimage.utils import render_variations
+
+from api.rating_system import RatingSystem
 
 get_model = apps.get_model
 
@@ -19,17 +21,11 @@ def process_stdimage(file_name, variations, storage):
     obj.save()
 
 
-@shared_task(bind=True)
-def start_contest(task, contest_id):
-    task_id = task.request.id
+@shared_task
+def start_contest(contest_id):
+    logger.info(f'Request to start contest_id {contest_id}')
 
-    query_filter = Q(celery_start_task_id=task_id)
-    if contest_id:
-        query_filter &= Q(id=contest_id)
-
-    logger.info(f'Request to start contest_id {contest_id}, task {task_id}')
-
-    contest = get_model('api', 'Contest').objects.filter(query_filter).first()
+    contest = get_model('api', 'Contest').objects.filter(id=contest_id).first()
 
     if not contest:
         logger.info(f'Contest {contest_id} not staring, no such contest')
@@ -45,17 +41,11 @@ def start_contest(task, contest_id):
     contest.save()
 
 
-@shared_task(bind=True)
-def end_contest(task, contest_id):
-    task_id = task.request.id
+@shared_task
+def end_contest(contest_id):
+    logger.info(f'Request to end contest_id {contest_id}')
 
-    query_filter = Q(celery_end_task_id=task_id)
-    if contest_id:
-        query_filter &= Q(id=contest_id)
-
-    logger.info(f'Request to end contest_id {contest_id}, task {task_id}')
-
-    contest = get_model('api', 'Contest').objects.filter(query_filter).first()
+    contest = get_model('api', 'Contest').objects.filter(id=contest_id).first()
 
     if not contest:
         logger.info('Contest not ending, no such contest')
@@ -93,39 +83,36 @@ def recalculate_rating(contest_id):
 
     teams = []
     for relation in relations:
-        teams = relation.participant
-        teams.cost_sum = relation.cost_sum
-        teams.last_contest_solve = relation.last_solve
+        team = relation.participant
+        team.cost_sum = relation.cost_sum
+        team.last_contest_solve = relation.last_solve
 
-        teams.players = list(
-            relation.registered_users.all()
-        ).sort(
+        team.players = sorted(
+            list(
+                relation.registered_users.all()
+            ),
             key=lambda x: x.rating,
             reverse=True,
         )
+        teams.append(team)
 
-        teams.append(teams)
-
-    logger.info("Got team list for rating recalculation: ", teams)
+    logger.info(f"Got team list for rating recalculation: {teams}")
 
     players = []
     team_ratings = []
     player_ratings = []
-    for i, team in teams:
+    for i, team in enumerate(teams):
         team_ratings.append((i + 1, team.rating))
-
         players.extend(team.players)
         player_ratings.extend(((i + 1, player.rating) for player in team.players))
 
-    logger.info("Team rating data: ", team_ratings)
-    logger.info("Player rating data: ", player_ratings)
+    logger.info(f"Team rating data: {team_ratings}")
+    logger.info(f"Player rating data: {player_ratings}")
 
-    # team_rs = RatingSystem(team_ratings)
-    # player_rs = RatingSystem(player_ratings)
-    # team_deltas = team_rs.calculate()
-    # player_deltas = player_rs.calculate()
-    team_deltas = [0] * len(teams)
-    player_deltas = [0] * len(players)
+    team_rs = RatingSystem(team_ratings)
+    player_rs = RatingSystem(player_ratings)
+    team_deltas = team_rs.calculate()
+    player_deltas = player_rs.calculate()
 
     for team, delta in zip(teams, team_deltas):
         get_model('api', 'Team').objects.filter(id=team.id).update(

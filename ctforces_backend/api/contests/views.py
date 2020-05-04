@@ -212,7 +212,13 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         contest = self.get_object()
         queryset = api.models.ContestParticipantRelationship.objects.filter(
             contest=contest,
-        ).order_by('-id')
+        ).select_related(
+            'participant',
+        ).prefetch_related(
+            'registered_users',
+        ).order_by(
+            '-id',
+        )
         paginator = api.pagination.ContestRegistrationsPagination()
         page = paginator.paginate_queryset(queryset=queryset, request=self.request)
         serializer = api.contests.serializers.CPRSerializer(page, many=True)

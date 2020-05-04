@@ -109,4 +109,5 @@ if __name__ == "__main__":
 
         for i in range(len(data)):
             if data[i][0] == 1:
+                cur_state = f'{data[i][0]} {delta[i]}'
                 assert delta[i] >= 0, cur_state
