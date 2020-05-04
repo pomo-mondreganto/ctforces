@@ -1,9 +1,9 @@
 #!/bin/bash
 
-domains=(bot.ctforces.com)
+domains=(ctforces.com www.ctforces.com ctforces.ru www.ctforces.ru ctforces.informatics.ru)
 rsa_key_size=4096
 data_path="./volumes/certbot"
-email="ctforces.server@gmail.com" # Adding a valid address is strongly recommended
+email="admin@ctforces.com" # Adding a valid address is strongly recommended
 staging=$STAGING                  # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path" ]; then
