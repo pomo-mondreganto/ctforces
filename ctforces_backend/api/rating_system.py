@@ -37,6 +37,12 @@ class RatingSystem:
         if len(self.ratings) == 0:
             return []
 
+        for i in range(len(self.ratings)):
+            if self.ratings[i][0] != 1:
+                break
+        else:
+            return [0 for _ in range(len(self.ratings))]
+
         delta = [0 for _ in range(len(self.ratings))]
 
         place = 1
@@ -58,19 +64,22 @@ class RatingSystem:
         for i in range(len(delta)):
             delta[i] -= dec
 
-        # not_top_cnt = 0
+        not_top_cnt = 0
 
-        # for i in range(len(delta)):
-        #     if self.ratings[i][0] == 1:
-        #         delta[i] = max(delta[i], 1)
-        #     else:
-        #         not_top_cnt += 1
+        for i in range(len(delta)):
+            if self.ratings[i][0] == 1:
+                delta[i] = max(delta[i], 1)
+            else:
+                not_top_cnt += 1
 
-        # dec = sum(delta) / not_top_cnt
+        dec = sum(delta) / not_top_cnt
 
-        # for i in range(len(delta)):
-        #     if self.ratings[i][0] != 1:
-        #         delta[i] -= dec
+        for i in range(len(delta)):
+            if self.ratings[i][0] != 1:
+                delta[i] -= dec
+
+        for i in range(len(delta)):
+            delta[i] = int(delta[i])
 
         return delta
 
@@ -94,6 +103,10 @@ if __name__ == "__main__":
             for j in range(len(data)):
                 cur_state = f'{data[i]} {data[j]} {delta[i]} {delta[j]}'
                 if data[i][0] > data[j][0] and data[i][1] < data[j][1]:
-                    assert data[i][1] + delta[i] < data[j][1] + delta[j], cur_state
+                    assert data[i][1] + delta[i] <= data[j][1] + delta[j], cur_state
                 if data[i][0] < data[j][0] and data[i][1] < data[j][1]:
-                    assert delta[i] > delta[j], cur_state
+                    assert delta[i] >= delta[j], cur_state
+
+        for i in range(len(data)):
+            if data[i][0] == 1:
+                assert delta[i] >= 0, cur_state
