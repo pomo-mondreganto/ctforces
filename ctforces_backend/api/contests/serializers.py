@@ -8,7 +8,6 @@ from rest_framework.validators import UniqueTogetherValidator
 import api.fields
 import api.models
 from api.mixins import ReadOnlySerializerMixin
-from api.rating_system import RatingSystem
 from api.tasks.serializers import TaskTagSerializer, TaskFileViewSerializer
 from api.teams.serializers import TeamMinimalSerializer
 from api.users.serializers import UserMinimalSerializer
@@ -97,10 +96,6 @@ class CPRSerializer(rest_serializers.ModelSerializer):
         except IntegrityError:
             raise ValidationError({'detail': "User is already registered in another team"})
 
-        user_ratings = list(map(lambda x: x.rating, validated_data))
-        new_instance.rating = RatingSystem.get_team_rating(user_ratings)
-        new_instance.save()
-
         return new_instance
 
     def create(self, validated_data):
@@ -120,10 +115,6 @@ class CPRSerializer(rest_serializers.ModelSerializer):
                 api.models.CPRHelper.objects.bulk_create(to_create_helpers)
         except IntegrityError:
             raise ValidationError({'detail': "User is already registered in another team"})
-
-        user_ratings = list(map(lambda x: x.rating, validated_data))
-        instance.rating = RatingSystem.get_team_rating(user_ratings)
-        instance.save()
 
         return instance
 
@@ -333,10 +324,6 @@ class ContestViewSerializer(rest_serializers.ModelSerializer, ReadOnlySerializer
 class ContestScoreboardParticipantSerializer(rest_serializers.ModelSerializer, ReadOnlySerializerMixin):
     cost_sum = rest_serializers.IntegerField()
     last_contest_solve = rest_serializers.DateTimeField()
-    registered_users = UserMinimalSerializer(
-        many=True,
-        read_only=True,
-    )
     rating = rest_serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -346,16 +333,5 @@ class ContestScoreboardParticipantSerializer(rest_serializers.ModelSerializer, R
             'id',
             'last_contest_solve',
             'name',
-            'registered_users',
             'rating',
-        )
-
-
-class ContestScoreboardParticipantMinimalSerializer(rest_serializers.ModelSerializer,
-                                                    ReadOnlySerializerMixin):
-    class Meta:
-        model = api.models.Team
-        fields = (
-            'id',
-            'name',
         )
