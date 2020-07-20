@@ -13,7 +13,7 @@
     "axios": "^0.19.1",
     "core-js": "^3.4.4",
     "katex": "^0.11.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "markdown-it": "^10.0.0",
     "markdown-it-prism": "^2.0.3",
     "markdown-it-texmath": "^0.6.0",
