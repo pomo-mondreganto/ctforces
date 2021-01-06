@@ -10,7 +10,7 @@
   "dependencies": {
     "@chenfengyuan/vue-countdown": "^1.1.5",
     "@johmun/vue-tags-input": "^2.1.0",
-    "axios": "^0.19.1",
+    "axios": "^0.21.1",
     "core-js": "^3.4.4",
     "katex": "^0.11.1",
     "lodash": "^4.17.15",
