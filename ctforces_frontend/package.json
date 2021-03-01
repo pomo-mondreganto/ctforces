@@ -17,7 +17,7 @@
     "markdown-it": "^10.0.0",
     "markdown-it-prism": "^2.0.3",
     "markdown-it-texmath": "^0.6.0",
-    "prismjs": "^1.19.0",
+    "prismjs": "^1.23.0",
     "vue": "^2.6.10",
     "vue-ctk-date-time-picker": "^2.4.0",
     "vue-progressbar-component": "^1.1.0",
