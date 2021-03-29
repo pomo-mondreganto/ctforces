@@ -65,7 +65,7 @@ ptyprocess==0.6.0
 pyasn1==0.4.8
 pycodestyle==2.5.0
 pydot==1.4.1
-Pygments==2.5.2
+Pygments==2.7.4
 pygraphviz==1.5
 pyparsing==2.4.6
 python-dateutil==2.8.1
