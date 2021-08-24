@@ -1,19 +1,19 @@
-#!/bin/bash
-
-set -e
+#!/bin/bash -e
 
 cd /app
 
 case ${CELERY_CONTAINER_TYPE} in
 "worker")
     echo "[*] Starting celery worker"
-    celery worker -A ctforces_backend \
+    celery -A ctforces \
+        worker \
         -E -l info \
         --concurrency=20
     ;;
 "flower")
     echo "[*] Starting celery flower"
-    celery flower -A ctforces_backend \
+    celery -A ctforces \
+        flower \
         --basic_auth="$FLOWER_BASIC_AUTH" \
         --url-prefix=flower \
         --host=0.0.0.0 \

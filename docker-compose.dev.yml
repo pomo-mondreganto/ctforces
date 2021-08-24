@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: ./configs/django/Dockerfile
     volumes:
-      - ./volumes/static:/static
-      - ./volumes/media:/media
+      - static:/static
+      - ./backend:/app
     restart: on-failure
     env_file:
       - ./configs/django/environment.env
@@ -19,8 +19,7 @@ services:
       context: .
       dockerfile: ./configs/celery/Dockerfile
     volumes:
-      - ./volumes/celery:/celery
-      - ./volumes/media:/media
+      - ./backend:/app
     restart: on-failure
     env_file:
       - ./configs/django/environment.env
@@ -33,9 +32,6 @@ services:
     build:
       context: .
       dockerfile: configs/celery/Dockerfile
-    volumes:
-      - ./volumes/celery:/celery
-      - ./volumes/media:/media
     restart: on-failure
     env_file:
       - ./configs/django/environment.env
@@ -51,9 +47,7 @@ services:
       - ./configs/nginx/app.dev.conf:/etc/nginx/conf.d/default.conf
       - ./configs/nginx/proxy_params:/etc/nginx/proxy_params
       - ./configs/nginx/robots.txt:/var/www/ctforces/robots.txt:ro
-      - ./volumes/static:/static:ro
-      - ./volumes/media:/media:ro
-      - ./ctforces_frontend/dist:/front:ro
+      - static:/static:ro
     ports:
       - "8000:80"
     restart: on-failure
@@ -89,4 +83,8 @@ services:
       dockerfile: ./configs/front/Dockerfile
     restart: on-failure
     volumes:
-      - ./ctforces_frontend:/app
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  static:

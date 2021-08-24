@@ -5,13 +5,13 @@ flower:
 db:
   host: postgres
   port: 5432
-  user: ctforces_admin
+  user: ctforces
   password: secret
   dbname: ctforces
 
 rabbitmq:
   host: rabbitmq
-  user: ctforces_admin
+  user: ctforces
   port: 5672
   vhost: ctforces
   password: secret

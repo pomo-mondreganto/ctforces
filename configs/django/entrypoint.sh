@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 #####
 # Postgres: wait until container is created
@@ -35,6 +35,11 @@ python3 /app/manage.py collectstatic --noinput -v 3
 #####
 echo "[+] Starting server..."
 cd /app
-gunicorn --worker-class gevent --worker-connections 1024 --timeout 60 \
-    --bind 0.0.0.0:8000 \
-    ctforces_backend.wsgi:application
+#gunicorn \
+#    --worker-class gevent \
+#    --worker-connections 1024 \
+#    --timeout 60 \
+#    --bind 0.0.0.0:8000 \
+#    ctforces.wsgi:application
+
+python manage.py runserver_plus --threaded 0.0.0.0:8000

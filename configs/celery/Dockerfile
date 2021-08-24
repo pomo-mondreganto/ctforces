@@ -1,15 +1,11 @@
-FROM python:3.7
-
-MAINTAINER pomo_mondreganto
+FROM python:3.9
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y libpq-dev libgraphviz-dev
-
-ADD ./ctforces_backend/requirements.txt /
-RUN pip3 install -r /requirements.txt
-ADD ./ctforces_backend /app
+WORKDIR /app
+ADD ./backend/requirements.txt .
+RUN pip install -r requirements.txt
+ADD ./backend .
 
 ADD ./configs/celery/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
