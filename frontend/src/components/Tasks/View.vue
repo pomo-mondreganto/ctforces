@@ -50,10 +50,11 @@
         <div v-if="task.files_details.length > 0" class="files mt-1">
             <div>Files:</div>
             <a
-                v-for="file of task.files_details"
-                :key="file.id"
                 :href="`${mediaUrl}/${file.file_field}`"
                 target="_blank"
+                class="nlnk link"
+                v-for="file of task.files_details"
+                :key="file.id"
             >
                 {{ file.name }}
             </a>
