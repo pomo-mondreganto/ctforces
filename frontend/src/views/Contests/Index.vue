@@ -1,23 +1,6 @@
 <template>
     <master-layout-stacked>
-        <tabs
-            :tabs="[
-                {
-                    name: 'Tasks',
-                    to: {
-                        name: 'contest_tasks',
-                        params: { id: $route.params.id },
-                    },
-                },
-                {
-                    name: 'Scoreboard',
-                    to: {
-                        name: 'contest_scoreboard',
-                        params: { id: $route.params.id },
-                    },
-                },
-            ]"
-        >
+        <tabs :tabs="tabs">
             <router-view />
         </tabs>
         <template v-slot:sidebar>
@@ -110,6 +93,30 @@ export default {
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }
+        },
+    },
+
+    computed: {
+        tabs: function() {
+            const result = [
+                {
+                    name: 'Tasks',
+                    to: {
+                        name: 'contest_tasks',
+                        params: { id: this.$route.params.id },
+                    },
+                },
+            ];
+            if (this.contest && this.contest.can_view_scoreboard) {
+                result.push({
+                    name: 'Scoreboard',
+                    to: {
+                        name: 'contest_scoreboard',
+                        params: { id: this.$route.params.id },
+                    },
+                });
+            }
+            return result;
         },
     },
 };

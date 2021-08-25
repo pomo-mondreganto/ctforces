@@ -14,13 +14,9 @@
                     />
                 </div>
                 <div class="ff">
-                    <f-input
-                        class="mt-1-5"
-                        type="text"
-                        name="description"
+                    <editor
                         v-model="description"
                         :errors="errors['description']"
-                        placeholder="Description"
                     />
                 </div>
                 <div class="ff">
@@ -59,6 +55,22 @@
                     />
                 </div>
                 <div class="ff">
+                    <f-checkbox
+                        name="public_scoreboard"
+                        v-model="publicScoreboard"
+                        label="Public scoreboard"
+                        :errors="errors['public_scoreboard']"
+                    />
+                </div>
+                <div class="ff">
+                    <f-checkbox
+                        name="dynamic_scoring"
+                        v-model="dynamicScoring"
+                        label="Dynamic scoring"
+                        :errors="errors['dynamic_scoring']"
+                    />
+                </div>
+                <div class="ff">
                     <f-datetime
                         label="Start time"
                         v-model="startTime"
@@ -84,10 +96,11 @@
 </template>
 
 <script>
+import Editor from '@/components/Editor';
 import FInput from '@/components/Form/Input';
 import FHeader from '@/components/Form/Header';
 import FCheckbox from '@/components/Form/Checkbox';
-import FTaskList from '@/components/Form/TaskList/Index';
+import FTaskList from '@/components/Form/TaskList';
 import FDatetime from '@/components/Form/Datetime';
 
 export default {
@@ -101,6 +114,8 @@ export default {
             isRegistrationOpen: false,
             isRated: false,
             publishTasksAfterFinished: false,
+            publicScoreboard: false,
+            dynamicScoring: false,
             startTime: null,
             endTime: null,
             errors: {},
@@ -110,30 +125,28 @@ export default {
     created: async function() {
         const { id } = this.$route.params;
         try {
-            const rc = await this.$http.get(`/contests/${id}/full`);
-            this.name = rc.data.name;
-            this.description = rc.data.description;
-            this.isPublished = rc.data.is_published;
-            this.isRegistrationOpen = rc.data.is_registration_open;
-            this.isRated = rc.data.is_rated;
-            this.publishTasksAfterFinished =
-                rc.data.publish_tasks_after_finished;
-            this.startTime = rc.data.start_time;
-            this.endTime = rc.data.end_time;
+            const { data } = await this.$http.get(`/contests/${id}/full/`);
+            this.name = data.name;
+            this.description = data.description;
+            this.isPublished = data.is_published;
+            this.isRegistrationOpen = data.is_registration_open;
+            this.isRated = data.is_rated;
+            this.publishTasksAfterFinished = data.publish_tasks_after_finished;
+            this.publicScoreboard = data.public_scoreboard;
+            this.dynamicScoring = data.dynamic_scoring;
+            this.startTime = data.start_time;
+            this.endTime = data.end_time;
             let self = this;
-            this.tasks = await Promise.all(
-                rc.data.contest_task_relationship_details.map(async task => {
-                    self.oldTasks[task.task] = task.id;
-                    return {
-                        cost: task.cost.toString(),
-                        id: task.task.toString(),
-                        name: task.task_name,
-                        mainTag: task.main_tag_details,
-                        tags: (await this.$http.get(`/tasks/${task.task}/`))
-                            .data.tags_details,
-                    };
-                })
-            );
+            this.tasks = data.contest_task_relationship_details.map(ctr => {
+                self.oldTasks[ctr.task.id] = ctr.id;
+                return {
+                    cost: ctr.cost.toString(),
+                    id: ctr.task.toString(),
+                    name: ctr.task_details.name,
+                    mainTag: ctr.main_tag_details,
+                    tags: ctr.task_details.task_tags_details,
+                };
+            });
         } catch (error) {
             this.errors = this.$parse(error.response.data);
         }
@@ -151,6 +164,8 @@ export default {
                     is_rated: this.isRated,
                     publish_tasks_after_finished: this
                         .publishTasksAfterFinished,
+                    public_scoreboard: this.publicScoreboard,
+                    dynamic_scoring: this.dynamicScoring,
                     start_time: new Date(this.startTime).toISOString(),
                     end_time: new Date(this.endTime).toISOString(),
                 });
@@ -201,6 +216,7 @@ export default {
     },
 
     components: {
+        Editor,
         FInput,
         FHeader,
         FCheckbox,

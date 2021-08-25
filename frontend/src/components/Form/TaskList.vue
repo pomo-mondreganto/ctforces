@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import TaskItem from './TaskItem';
+import TaskItem from './TaskListItem';
 
 export default {
     props: {
