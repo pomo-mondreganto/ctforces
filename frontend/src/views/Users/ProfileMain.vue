@@ -36,17 +36,13 @@
             </div>
         </div>
         <div class="user-avatar">
-            <img
-                class="user-avatar-img"
-                :src="`${serverUrl}${user.avatar_main}`"
-            />
+            <img class="user-avatar-img" :src="user.avatar_main" />
         </div>
     </div>
     <f-detail :errors="errors['detail']" v-else />
 </template>
 
 <script>
-import { serverUrl } from '@/config';
 import getInfo from '@/utils/rating';
 
 export default {
@@ -54,7 +50,6 @@ export default {
         return {
             errors: {},
             user: null,
-            serverUrl,
         };
     },
 

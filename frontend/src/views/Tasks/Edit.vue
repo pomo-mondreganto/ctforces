@@ -149,6 +149,10 @@ export default {
         createFiles: async function() {
             let fileIds = [];
             for (const file of this.attachedFiles) {
+                if (file.id) {
+                    fileIds.push(file.id);
+                    continue;
+                }
                 let form = new FormData();
                 form.set('name', file.name);
                 form.append('file_field', file);

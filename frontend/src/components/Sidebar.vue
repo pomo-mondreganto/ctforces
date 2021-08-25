@@ -20,10 +20,7 @@
                     </div>
                 </div>
                 <div class="sidebar-profile-right vc">
-                    <img
-                        class="sidebar-logo"
-                        :src="`${serverUrl}${user.avatar_small}`"
-                    />
+                    <img class="sidebar-logo" :src="user.avatar_small" />
                 </div>
             </div>
         </card>
@@ -61,7 +58,6 @@
 </template>
 
 <script>
-import { serverUrl } from '@/config';
 import User from '@/components/Table/User';
 import FTable from '@/components/Table/Index';
 import { mapState } from 'vuex';
@@ -77,7 +73,6 @@ export default {
             errors: {},
             users: null,
             UserComp: User,
-            serverUrl,
         };
     },
 

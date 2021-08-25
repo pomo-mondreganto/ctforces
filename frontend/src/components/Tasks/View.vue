@@ -50,15 +50,11 @@
         <div class="hr mt-1"></div>
         <div v-if="task.files_details.length > 0" class="files mt-1">
             <div>Files:</div>
-            <a
-                :href="`${mediaUrl}/${file.file_field}`"
-                target="_blank"
-                class="nlnk link"
-                v-for="file of task.files_details"
-                :key="file.id"
-            >
-                {{ file.name }}
-            </a>
+            <div class="mt-1" v-for="file of task.files_details" :key="file.id">
+                <a :href="file.file_field" target="_blank" class="nlnk link">
+                    {{ file.name }}
+                </a>
+            </div>
         </div>
         <div v-if="task.files_details.length > 0" class="hr mt-1"></div>
         <form class="mt-2" @submit.prevent="submitFlag(flag)">
@@ -88,7 +84,6 @@
 <script>
 import Hint from '@/components/Hint';
 import Tag from '@/components/Tag';
-import { mediaUrl } from '@/config';
 import Markdown from '@/components/Markdown';
 import FInput from '@/components/Form/Input';
 
@@ -109,7 +104,6 @@ export default {
 
     data: function() {
         return {
-            mediaUrl,
             flag: null,
         };
     },

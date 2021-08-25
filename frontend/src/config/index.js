@@ -6,9 +6,6 @@ if (process.env.NODE_ENV === 'development') {
     url = window.location.origin;
 }
 
-const serverUrl = url;
+const apiUrl = `${url}/api`;
 
-const apiUrl = `${serverUrl}/api`;
-const mediaUrl = `${serverUrl}/media`;
-
-export { serverUrl, apiUrl, mediaUrl };
+export { apiUrl };
