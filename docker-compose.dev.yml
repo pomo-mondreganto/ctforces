@@ -13,6 +13,7 @@ services:
       - ./configs/django/environment.env
       - ./configs/postgres.env
       - ./configs/rabbitmq.env
+      - ./configs/s3.env
 
   celery:
     build:
@@ -25,6 +26,7 @@ services:
       - ./configs/django/environment.env
       - ./configs/postgres.env
       - ./configs/rabbitmq.env
+      - ./configs/s3.env
     environment:
       - CELERY_CONTAINER_TYPE=worker
 
@@ -38,6 +40,7 @@ services:
       - ./configs/postgres.env
       - ./configs/rabbitmq.env
       - ./configs/admin.env
+      - ./configs/s3.env
     environment:
       - CELERY_CONTAINER_TYPE=flower
 

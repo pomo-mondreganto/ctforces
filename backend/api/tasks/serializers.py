@@ -65,16 +65,13 @@ class TaskFileSerializer(rest_serializers.ModelSerializer):
             'name': {
                 'required': False,
             },
-            'file_field': {
-                'use_url': False,
-            },
         }
 
     def __init__(self, *args, **kwargs):
         super(TaskFileSerializer, self).__init__(*args, **kwargs)
 
     def validate(self, attrs):
-        attrs['name'] = attrs['file_fields'].name
+        attrs['name'] = attrs['file_field'].name
         return attrs
 
     def create(self, validated_data):

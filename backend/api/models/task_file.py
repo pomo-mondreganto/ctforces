@@ -1,5 +1,6 @@
 from django.db import models
 
+from api.storages import DefaultStorage
 from .auxiliary import (
     CustomUploadTo,
     CustomFileField,
@@ -30,7 +31,8 @@ class TaskFile(models.Model):
             path='',
             append_random=True,
         ),
-        blank=False, null=False
+        storage=DefaultStorage(),
+        blank=False, null=False,
     )
 
     class Meta:

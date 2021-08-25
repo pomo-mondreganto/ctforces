@@ -6,6 +6,7 @@ from django.utils.functional import cached_property
 from rest_framework_tricks.models.fields import NestedProxyField
 from stdimage.models import StdImageField
 
+from api.storages import DefaultStorage
 from .auxiliary import (
     CustomImageSizeValidator,
     CustomUploadTo,
@@ -47,8 +48,9 @@ class User(AbstractUser):
             ),
         ],
         render_variations=stdimage_processor,
-        default='avatars/default_avatar.png',
-        blank=False, null=False
+        storage=DefaultStorage(),
+        default='avatars/default.png',
+        null=False, blank=False,
     )
 
     upsolving_annotated = UserUpsolvingAnnotatedManager()

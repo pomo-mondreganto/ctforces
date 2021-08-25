@@ -90,7 +90,7 @@ class CustomImageSizeValidator:
 
     def __call__(self, value):
         cleaned = self.clean(value)
-        if self.compare_min(cleaned, self.min_limit):
+        if self.min_limit and self.compare_min(cleaned, self.min_limit):
             params = {
                 'width': self.min_limit[0],
                 'height': self.min_limit[1],
@@ -98,7 +98,7 @@ class CustomImageSizeValidator:
             raise ValidationError('Your image is too small. '
                                   'The minimal resolution is {width}x{height}'.format(**params),
                                   code='min_resolution')
-        if self.compare_max(cleaned, self.max_limit):
+        if self.max_limit and self.compare_max(cleaned, self.max_limit):
             params = {
                 'width': self.max_limit[0],
                 'height': self.max_limit[1],
@@ -107,7 +107,7 @@ class CustomImageSizeValidator:
                                   'The maximal resolution is {width}x{height}'.format(**params),
                                   code='max_resolution')
 
-        if self.compare_ratio(cleaned, self.ratio_limit):
+        if self.ratio_limit and self.compare_ratio(cleaned, self.ratio_limit):
             params = {
                 'ratio': self.ratio_limit,
             }

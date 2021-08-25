@@ -47,8 +47,16 @@ class DjangoConfig(BaseModel):
     email: EmailConfig
 
 
+class S3Config(BaseModel):
+    endpoint: str
+    access_key: str
+    secret_key: str
+    bucket: str
+
+
 class Config(BaseModel):
     admin: AdminConfig
     db: DatabaseConfig
     rabbitmq: RabbitMQConfig
     django: DjangoConfig
+    s3: S3Config

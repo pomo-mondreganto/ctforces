@@ -13,6 +13,7 @@ def setup(**_kwargs):
     setup_rabbitmq(config.rabbitmq)
     setup_admin_api(config.admin)
     setup_django(config.django)
+    setup_s3(config.s3)
 
 
 def setup_db(config: models.DatabaseConfig):
@@ -91,3 +92,16 @@ def setup_django(config: models.DjangoConfig):
     django_config += email_config
     utils.print_bold(f'Writing django env to {constants.DJANGO_ENV_PATH}')
     constants.DJANGO_ENV_PATH.write_text('\n'.join(django_config))
+
+
+def setup_s3(config: models.S3Config):
+    s3_config = [
+        "# THIS FILE IS MANAGED BY 'control.py'",
+        f'S3_ENDPOINT={config.endpoint}',
+        f'S3_ACCESS_KEY={config.access_key}',
+        f'S3_SECRET_KEY={config.secret_key}',
+        f'S3_BUCKET={config.bucket}',
+    ]
+
+    utils.print_bold(f'Writing s3 env to {constants.S3_ENV_PATH}')
+    constants.S3_ENV_PATH.write_text('\n'.join(s3_config))
