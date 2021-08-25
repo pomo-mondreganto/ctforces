@@ -52,6 +52,9 @@
                             </countdown>
                         </div>
                     </div>
+                    <div class="mt-1">
+                        Scoring is <span class="scoring">{{ scoring }}</span>
+                    </div>
                     <f-detail :errors="errors['detail']" />
                 </card>
             </div>
@@ -118,6 +121,9 @@ export default {
             }
             return result;
         },
+        scoring: function() {
+            return this.contest.dynamic_scoring ? 'dynamic' : 'static';
+        },
     },
 };
 </script>
@@ -133,6 +139,10 @@ export default {
     @include use-theme {
         color: $green;
     }
+}
+
+.scoring {
+    font-weight: 900;
 }
 
 .header {

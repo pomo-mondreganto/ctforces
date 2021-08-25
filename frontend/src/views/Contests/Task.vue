@@ -19,8 +19,8 @@ export default {
     },
 
     created: async function() {
-        await this.fetchTask();
         await this.fetchContest();
+        await this.fetchTask();
     },
 
     data: function() {
@@ -35,8 +35,8 @@ export default {
 
     watch: {
         async $route() {
-            await this.fetchTask();
             await this.fetchContest();
+            await this.fetchTask();
         },
     },
 
@@ -60,10 +60,12 @@ export default {
                 this.task = r.data;
                 this.solved = {
                     number: this.task.solved_count,
-                    link: {
-                        name: 'contest_task_solved',
-                        params: { id, task_id },
-                    },
+                    link: this.contest.can_view_scoreboard
+                        ? {
+                              name: 'contest_task_solved',
+                              params: { id, task_id },
+                          }
+                        : null,
                 };
             } catch (error) {
                 this.errors = this.$parse(error.response.data);

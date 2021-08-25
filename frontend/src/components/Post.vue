@@ -22,7 +22,7 @@
                 :rating="post.author_rating"
                 :username="post.author_username"
             />
-            , {{ new Date(post.created_at) }}
+            {{ createdAt }}
         </div>
         <div class="hr mt-1" />
         <div class="content mt-1">
@@ -35,6 +35,7 @@
 
 <script>
 import Markdown from '@/components/Markdown';
+import moment from 'moment';
 
 export default {
     props: {
@@ -43,6 +44,12 @@ export default {
 
     components: {
         Markdown,
+    },
+
+    computed: {
+        createdAt: function() {
+            return moment(this.post.created_at).format('llll');
+        },
     },
 };
 </script>

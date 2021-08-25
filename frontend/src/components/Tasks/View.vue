@@ -20,9 +20,10 @@
                 :username="task.author_username"
             />
             ,
-            <router-link :to="solved.link" class="link nlnk"
+            <router-link v-if="solved.link" :to="solved.link" class="link nlnk"
                 >{{ solved.number }} solves
             </router-link>
+            <span v-else>{{ solved.number }} solves</span>
         </div>
         <div v-if="task.hints.length > 0" class="hints mt-1">
             <hint
