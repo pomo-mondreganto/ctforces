@@ -3,6 +3,7 @@ from .contest_participant_relationship import ContestParticipantRelationship
 from .contest_task_relationship import ContestTaskRelationship
 from .cpr_helper import CPRHelper
 from .post import Post
+from .submission import Submission
 from .task import Task
 from .task_file import TaskFile
 from .task_hint import TaskHint
@@ -22,4 +23,5 @@ __all__ = (
     'TaskTag',
     'Team',
     'User',
+    'Submission',
 )

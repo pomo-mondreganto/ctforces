@@ -2,7 +2,9 @@ from api.permissions import HasPermissionMixin, HasViewPermissionIfPublishedMixi
 
 
 def get_submission_ratelimit_key(_group, viewset):
-    return str(viewset.request.user.id)
+    contest = viewset.get_contest()
+    team = viewset.get_participating_team(contest)
+    return str(team.id) if team else str(viewset.request.user.id)
 
 
 class HasContestTaskRelationshipPermission(HasPermissionMixin):

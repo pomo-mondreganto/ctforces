@@ -6,6 +6,7 @@ from django.db.models import (
     OuterRef,
     Exists,
     F,
+    Q,
     Prefetch,
     BooleanField,
 )
@@ -34,7 +35,7 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
     permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = api.pagination.ContestDefaultPagination
     lookup_field = 'id'
-    queryset = api.models.Contest.objects.order_by('-start_time')
+    queryset = api.models.Contest.objects.order_by('-start_time').select_related('author')
 
     action_permission_classes = {
         'retrieve': (api.contests.permissions.HasViewContestPermission,),
@@ -61,8 +62,6 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
 
         queryset = queryset.annotate(
             registered_count=Count('participants', distinct=True),
-        ).select_related(
-            'author',
         )
 
         if self.action == 'list':
@@ -73,7 +72,7 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
                     api.models.CPRHelper.objects.filter(
                         user=self.request.user.id,
                         contest=OuterRef('id'),
-                    )
+                    ),
                 ),
             )
 
@@ -94,9 +93,9 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
 
     def list(self, request, *args, **kwargs):
         all_contests = self.get_queryset()
-        upcoming_queryset = list(filter(lambda x: not x.is_running and not x.is_finished, all_contests))
-        running_queryset = list(filter(lambda x: x.is_running, all_contests))
-        finished_queryset = list(filter(lambda x: x.is_finished, all_contests))
+        upcoming_queryset = all_contests.filter(~Q(is_running=True) & ~Q(is_finished=True))
+        running_queryset = all_contests.filter(is_running=True)
+        finished_queryset = all_contests.filter(is_finished=True)
 
         upcoming = self.get_serializer(upcoming_queryset, many=True).data
         running = self.get_serializer(running_queryset, many=True).data
@@ -493,6 +492,12 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
         contest = self.get_contest()
         team = self.get_participating_team(contest)
+
+        # One cannot submit the task during the contest, but not from a team
+        # to prevent abuse.
+        if not team and contest.is_running:
+            raise ValidationError({'flag': 'You are not registered for a contest'})
+
         relation = api.models.ContestTaskRelationship.objects.get(
             contest=contest,
             task=task,
@@ -506,7 +511,22 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             instance=task,
         )
 
-        serializer.is_valid(raise_exception=True)
+        submission = api.models.Submission(
+            user=self.request.user,
+            participant=team,
+            contest=contest,
+            task=task,
+            flag=serializer.initial_data.get('flag'),
+        )
+        try:
+            serializer.is_valid(raise_exception=True)
+            submission.success = True
+        except ValidationError:
+            submission.success = False
+            raise
+        finally:
+            submission.save()
+
         solved_at = timezone.now()
         if team and contest.is_running:
             relation.solved_by.add(team)

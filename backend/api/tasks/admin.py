@@ -6,7 +6,6 @@ from guardian.admin import GuardedModelAdmin
 from api.models import (
     TaskHint,
     TaskFile,
-    TaskTag,
 )
 
 
@@ -186,8 +185,6 @@ class TaskFileAdmin(GuardedModelAdmin):
 
 
 class TaskTagAdmin(GuardedModelAdmin):
-    model = TaskTag
-
     list_display = (
         'id',
         'name',
@@ -198,4 +195,33 @@ class TaskTagAdmin(GuardedModelAdmin):
         'name',
     )
 
-    readonly_fields = ('id',)
+
+class SubmissionAdmin(GuardedModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'task',
+        'success',
+        'flag',
+        'participant',
+        'contest',
+    )
+
+    list_display_links = (
+        'id',
+        'user',
+    )
+
+    list_select_related = (
+        'user',
+        'task',
+        'participant',
+        'contest',
+    )
+
+    raw_id_fields = (
+        'user',
+        'task',
+        'participant',
+        'contest',
+    )

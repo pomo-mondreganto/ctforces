@@ -4,6 +4,7 @@ from rest_framework import mixins as rest_mixins
 from rest_framework import serializers as rest_serializers
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
@@ -122,7 +123,20 @@ class TaskViewSet(api.mixins.CustomPermissionsViewSetMixin,
             raise rest_serializers.ValidationError({'flag': 'You already submitted this task'})
 
         serializer = api.tasks.serializers.TaskSubmitSerializer(data=request.data, instance=instance)
-        serializer.is_valid(raise_exception=True)
+
+        submission = api.models.Submission(
+            user=self.request.user,
+            task=instance,
+            flag=serializer.initial_data.get('flag', ''),
+        )
+        try:
+            serializer.is_valid(raise_exception=True)
+            submission.success = True
+        except ValidationError:
+            submission.success = False
+            raise
+        finally:
+            submission.save()
 
         instance.solved_by.add(request.user)
         request.user.last_solve = timezone.now()
