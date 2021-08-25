@@ -82,6 +82,9 @@ def recalculate_rating(contest_id):
         'registered_users',
     )
 
+    if not contest.always_recalculate_rating:
+        relations = relations.filter(has_opened_contest=True)
+
     teams = []
     for relation in relations:
         team = relation.participant

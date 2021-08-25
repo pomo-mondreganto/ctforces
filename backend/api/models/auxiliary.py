@@ -1,17 +1,15 @@
 import os
 import re
 import uuid
-from io import BytesIO
-
 from PIL import Image
 from django.conf import settings
 from django.contrib.auth.models import UserManager
 from django.core import validators
 from django.core.exceptions import ValidationError
-from django.db import models
-from django.db.models import Sum, Q, Value as V, FileField, F, Count
-from django.db.models.functions import Coalesce, Greatest, Ceil
+from django.db.models import Sum, Q, Value as V, FileField
+from django.db.models.functions import Coalesce
 from django.utils.deconstruct import deconstructible
+from io import BytesIO
 from rest_framework import exceptions
 
 from api.celery_tasks import process_stdimage
@@ -44,47 +42,6 @@ class UserUpsolvingAnnotatedManager(UserManager):
                 V(0),
             )
         )
-
-
-class CTRCurrentCostManager(models.Manager):
-    def __init__(self, dynamic):
-        super(CTRCurrentCostManager, self).__init__()
-        self.dynamic = dynamic
-
-    def get_queryset(self):
-        qs = super(CTRCurrentCostManager, self).get_queryset()
-        if self.dynamic:
-            qs = qs.annotate(
-                solved_count=Coalesce(
-                    Count(
-                        'solved_by',
-                        distinct=True,
-                    ),
-                    V(0),
-                ),
-                current_cost=Greatest(
-                    Ceil(
-                        (F('min_cost') - F('max_cost')) /
-                        (F('decay_value') * F('decay_value')) *
-                        (F('solved_count') * F('solved_count')) +
-                        F('max_cost')
-                    ),
-                    F('min_cost'),
-                ),
-            )
-        else:
-            qs = qs.annotate(
-                solved_count=Coalesce(
-                    Count(
-                        'solved_by',
-                        distinct=True,
-                    ),
-                    V(0),
-                ),
-                current_cost=F('cost'),
-            )
-
-        return qs
 
 
 @deconstructible

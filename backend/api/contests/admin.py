@@ -113,6 +113,10 @@ class ContestAdmin(GuardedModelAdmin):
         'name',
     )
 
+    search_fields = (
+        'name',
+    )
+
     readonly_fields = (
         'registered_count',
     )
@@ -137,6 +141,7 @@ class ContestAdmin(GuardedModelAdmin):
                     'is_running',
                     'is_finished',
                     'is_registration_open',
+                    'public_scoreboard',
                 )
             },
         ),

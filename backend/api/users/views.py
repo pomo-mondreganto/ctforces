@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Count, Exists, OuterRef
+from django.db.models import Exists, OuterRef
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -327,28 +327,17 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_users_tasks(self, request, **_kwargs):
         tasks_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        queryset = api_models.Task.objects.filter(is_published=True)
+        qs = api_models.Task.objects.published()
 
         if tasks_type == 'all':
-            queryset = (queryset | get_objects_for_user(request.user, 'view_task', api_models.Task)).distinct()
+            qs = (qs | get_objects_for_user(request.user, 'view_task', api_models.Task)).distinct()
 
-        queryset = queryset.filter(author=user)
-        queryset = queryset.order_by('-id').annotate(
-            solved_count=Count(
-                'solved_by',
-                distinct=True,
-            ),
-            is_solved_by_user=Exists(
-                api_models.Task.objects.filter(
-                    id=OuterRef('id'),
-                    solved_by__id=self.request.user.id,
-                ),
-            ),
-        ).prefetch_related('tags')
+        qs = qs.filter(author=user).order_by('-id').prefetch_related('tags')
+        qs = qs.with_solved_count().with_solved_by_user(self.request.user)
 
         return api_pagination.get_paginated_response(
             paginator=api_pagination.TaskDefaultPagination(),
-            queryset=queryset,
+            queryset=qs,
             serializer_class=api_tasks_serializers.TaskPreviewSerializer,
             request=request,
         )

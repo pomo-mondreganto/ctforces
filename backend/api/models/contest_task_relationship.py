@@ -1,6 +1,64 @@
 from django.db import models
+from django.db.models import (
+    Count,
+    F,
+    Value as V,
+    Exists,
+    OuterRef,
+    BooleanField,
+)
+from django.db.models.functions import Coalesce, Ceil, Greatest
 
-from api.models.auxiliary import CTRCurrentCostManager
+
+class ContestTaskRelationshipQuerySet(models.QuerySet):
+    def with_dynamic_cost(self):
+        return self.with_solved_count().annotate(
+            current_cost=Greatest(
+                Ceil(
+                    (F('min_cost') - F('max_cost')) /
+                    (F('decay_value') * F('decay_value')) *
+                    (F('solved_count') * F('solved_count')) +
+                    F('max_cost')
+                ),
+                F('min_cost'),
+            ),
+        )
+
+    def with_static_cost(self):
+        return self.with_solved_count().annotate(current_cost=F('cost'))
+
+    def with_solved_by_team(self, team):
+        if not team:
+            sq = V(0, output_field=BooleanField())
+        else:
+            sq = Exists(
+                team.contest_task_relationship_solved.filter(
+                    id=OuterRef('id'),
+                ),
+            )
+        return self.annotate(is_solved_by_user=sq)
+
+    def with_solved_on_upsolving(self, user):
+        if not user.is_authenticated:
+            sq = V(0, output_field=BooleanField())
+        else:
+            sq = Exists(
+                user.solved_tasks.filter(
+                    id=OuterRef('task_id'),
+                ),
+            )
+        return self.annotate(is_solved_on_upsolving=sq)
+
+    def with_solved_count(self):
+        return self.annotate(
+            solved_count=Coalesce(
+                Count(
+                    'solved_by',
+                    distinct=True,
+                ),
+                V(0),
+            ),
+        )
 
 
 class ContestTaskRelationship(models.Model):
@@ -31,14 +89,10 @@ class ContestTaskRelationship(models.Model):
         blank=True,
     )
 
-    objects = models.Manager()
-    dynamic_current_cost_annotated = CTRCurrentCostManager(dynamic=True)
-    static_current_cost_annotated = CTRCurrentCostManager(dynamic=False)
+    objects = ContestTaskRelationshipQuerySet.as_manager()
 
     class Meta:
         unique_together = (
             'contest',
             'task',
         )
-
-        default_manager_name = 'objects'

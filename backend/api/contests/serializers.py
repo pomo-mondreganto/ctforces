@@ -8,7 +8,7 @@ from rest_framework.validators import UniqueTogetherValidator
 import api.fields
 import api.models
 from api.mixins import ReadOnlySerializerMixin
-from api.tasks.serializers import TaskTagSerializer, TaskFileSerializer
+from api.tasks.serializers import TaskTagSerializer, TaskFileSerializer, TaskPreviewSerializer
 from api.teams.serializers import TeamMinimalSerializer
 from api.users.serializers import UserMinimalSerializer
 
@@ -119,12 +119,12 @@ class CPRSerializer(serializers.ModelSerializer):
 class CTRSerializer(serializers.ModelSerializer):
     solved_count = serializers.IntegerField(read_only=True)
     is_solved_by_user = serializers.BooleanField(read_only=True)
-    task_name = serializers.SlugRelatedField(read_only=True, slug_field='name', source='task')
 
     main_tag_details = TaskTagSerializer(
         read_only=True,
         source='main_tag',
     )
+    task_details = TaskPreviewSerializer(read_only=True, source='task')
 
     class Meta:
         model = api.models.ContestTaskRelationship
@@ -140,7 +140,7 @@ class CTRSerializer(serializers.ModelSerializer):
             'decay_value',
             'solved_count',
             'task',
-            'task_name',
+            'task_details',
         )
 
     def validate_contest(self, contest):
@@ -240,6 +240,7 @@ class ContestFullSerializer(serializers.ModelSerializer):
             'is_registration_open',
             'is_running',
             'name',
+            'public_scoreboard',
             'publish_tasks_after_finished',
             'registered_count',
             'start_time',
@@ -281,6 +282,7 @@ class ContestPreviewSerializer(serializers.ModelSerializer, ReadOnlySerializerMi
 
 class ContestViewSerializer(serializers.ModelSerializer, ReadOnlySerializerMixin):
     can_edit_contest = serializers.BooleanField(read_only=True)
+    can_view_scoreboard = serializers.BooleanField(read_only=True)
     author_username = serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
 
     class Meta:
@@ -288,6 +290,7 @@ class ContestViewSerializer(serializers.ModelSerializer, ReadOnlySerializerMixin
         fields = (
             'author_username',
             'can_edit_contest',
+            'can_view_scoreboard',
             'created_at',
             'dynamic_scoring',
             'end_time',

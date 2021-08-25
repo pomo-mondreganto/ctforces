@@ -1,5 +1,4 @@
 import random
-
 from django.core.management.base import BaseCommand
 from django.utils.timezone import get_current_timezone, now
 from faker import Faker
@@ -154,6 +153,7 @@ class Command(BaseCommand):
                 is_rated=fake.pybool(),
                 always_recalculate_rating=fake.pybool(),
                 dynamic_scoring=fake.pybool(),
+                public_scoreboard=fake.pybool(),
             )
 
             c.save()
@@ -192,7 +192,7 @@ class Command(BaseCommand):
                 rel.save()
 
                 if running or finished:
-                    solved = list(set(random.choices(participants, k=random.randint(1, len(participants)))))
+                    solved = list(random.sample(participants, k=random.randint(1, len(participants))))
                     rel.solved_by.add(*solved)
 
             results.append(c)

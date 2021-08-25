@@ -1,14 +1,8 @@
 from collections import defaultdict
 
 from django.db.models import (
-    Count,
-    Value as V,
-    OuterRef,
-    Exists,
     F,
-    Q,
     Prefetch,
-    BooleanField,
 )
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
@@ -35,7 +29,13 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
     permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = api.pagination.ContestDefaultPagination
     lookup_field = 'id'
-    queryset = api.models.Contest.objects.order_by('-start_time').select_related('author')
+    queryset = api.models.Contest.objects.with_participant_count().order_by(
+        '-start_time',
+    ).select_related(
+        'author',
+    ).prefetch_related(
+        'contest_task_relationship__task__tags',
+    )
 
     action_permission_classes = {
         'retrieve': (api.contests.permissions.HasViewContestPermission,),
@@ -44,6 +44,19 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         'update': (api.contests.permissions.HasEditContestPermission,),
         'partial_update': (api.contests.permissions.HasEditContestPermission,),
         'destroy': (api.contests.permissions.HasDeleteContestPermission,),
+
+        'get_scoreboard': (
+            api.contests.permissions.HasViewContestPermission,
+            api.contests.permissions.HasViewScoreboardPermission,
+        ),
+        'get_registrations': (
+            api.contests.permissions.HasViewContestPermission,
+            api.contests.permissions.HasViewScoreboardPermission,
+        ),
+        'get_ctftime_scoreboard': (
+            api.contests.permissions.HasViewContestPermission,
+            api.contests.permissions.HasViewScoreboardPermission,
+        ),
     }
 
     def get_participating_team(self, contest):
@@ -58,25 +71,13 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         return self.request.team_participant
 
     def get_queryset(self):
-        queryset = super(ContestViewSet, self).get_queryset()
-
-        queryset = queryset.annotate(
-            registered_count=Count('participants', distinct=True),
-        )
+        qs = super(ContestViewSet, self).get_queryset()
 
         if self.action == 'list':
-            queryset = queryset.filter(
-                is_published=True,
-            ).annotate(
-                is_registered=Exists(
-                    api.models.CPRHelper.objects.filter(
-                        user=self.request.user.id,
-                        contest=OuterRef('id'),
-                    ),
-                ),
-            )
+            qs = qs.only_published()
+            qs = qs.with_user_registered(self.request.user)
 
-        return queryset
+        return qs
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -89,13 +90,14 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         obj = super(ContestViewSet, self).get_object()
         if self.action == 'retrieve':
             obj.can_edit_contest = self.request.user.has_perm('change_contest', obj)
+            obj.can_view_scoreboard = obj.public_scoreboard or obj.can_edit_contest
         return obj
 
     def list(self, request, *args, **kwargs):
         all_contests = self.get_queryset()
-        upcoming_queryset = all_contests.filter(~Q(is_running=True) & ~Q(is_finished=True))
-        running_queryset = all_contests.filter(is_running=True)
-        finished_queryset = all_contests.filter(is_finished=True)
+        upcoming_queryset = all_contests.only_upcoming()
+        running_queryset = all_contests.only_running()
+        finished_queryset = all_contests.only_finished()
 
         upcoming = self.get_serializer(upcoming_queryset, many=True).data
         running = self.get_serializer(running_queryset, many=True).data
@@ -126,7 +128,7 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
     )
     def get_full_contest(self, _request, *_args, **_kwargs):
         instance = self.get_object()
-        serializer = api.contests.serializers.ContestFullSerializer(instance=instance)
+        serializer = self.get_serializer(instance=instance)
         return Response(serializer.data)
 
     @staticmethod
@@ -274,13 +276,17 @@ class ContestParticipantRelationshipViewSet(rest_viewsets.ModelViewSet):
 
 
 class ContestTaskRelationshipViewSet(CustomPermissionsViewSetMixin,
-                                     rest_mixins.RetrieveModelMixin,
                                      rest_mixins.CreateModelMixin,
                                      rest_mixins.UpdateModelMixin,
                                      rest_mixins.DestroyModelMixin,
                                      rest_viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    queryset = api.models.ContestTaskRelationship.objects.all()
+    queryset = api.models.ContestTaskRelationship.objects.select_related(
+        'main_tag',
+    ).prefetch_related(
+        'task__tags',
+    )
+
     serializer_class = api.contests.serializers.CTRSerializer
 
     action_permission_classes = {
@@ -372,39 +378,20 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         contest = self.get_contest()
 
+        qs = api.models.ContestTaskRelationship.objects.all()
+        qs = qs.with_solved_on_upsolving(self.request.user)
+        qs = qs.with_solved_count()
+
         if contest.dynamic_scoring:
-            manager = api.models.ContestTaskRelationship.dynamic_current_cost_annotated
+            qs = qs.with_dynamic_cost()
         else:
-            manager = api.models.ContestTaskRelationship.static_current_cost_annotated
+            qs = qs.with_static_cost()
 
         team = self.get_participating_team(contest)
-        if not team:
-            is_solved_by_user = V(0, output_field=BooleanField())
-        else:
-            is_solved_by_user = Exists(
-                team.contest_task_relationship_solved.filter(
-                    id=OuterRef('id'),
-                ),
-            )
+        qs = qs.with_solved_by_team(team)
 
-        if self.request.user.is_anonymous:
-            is_solved_on_upsolving = V(0, output_field=BooleanField())
-        else:
-            is_solved_on_upsolving = Exists(
-                self.request.user.solved_tasks.filter(
-                    id=OuterRef('task_id'),
-                ),
-            )
-
-        contest_task_relationship_query = manager.filter(
+        qs = qs.filter(
             contest=contest,
-        ).annotate(
-            solved_count=Count(
-                'solved_by',
-                distinct=True,
-            ),
-            is_solved_by_user=is_solved_by_user,
-            is_solved_on_upsolving=is_solved_on_upsolving,
         ).prefetch_related(
             'task__tags',
         ).select_related(
@@ -414,9 +401,9 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         )
 
         if self.action in ['retrieve', 'get_solved', 'submit_flag']:
-            return contest_task_relationship_query
+            return qs
 
-        tasks = list(map(self.relation_to_task, contest_task_relationship_query))
+        tasks = list(map(self.relation_to_task, qs))
 
         return tasks
 

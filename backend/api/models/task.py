@@ -1,5 +1,29 @@
 from django.db import models
+from django.db.models import Count, OuterRef, Exists
 from django.utils import timezone
+
+
+class TaskQuerySet(models.QuerySet):
+    def published(self):
+        return self.filter(is_published=True)
+
+    def with_solved_count(self):
+        return self.annotate(
+            solved_count=Count(
+                'solved_by',
+                distinct=True,
+            ),
+        )
+
+    def with_solved_by_user(self, user):
+        return self.annotate(
+            is_solved_by_user=Exists(
+                self.filter(
+                    id=OuterRef('id'),
+                    solved_by=user.id or -1,
+                ),
+            ),
+        )
 
 
 class Task(models.Model):
@@ -33,6 +57,8 @@ class Task(models.Model):
         related_name='tasks',
         blank=True,
     )
+
+    objects = TaskQuerySet.as_manager()
 
     def save(self, *args, **kwargs):
         if self.is_published and self.publication_time is None:

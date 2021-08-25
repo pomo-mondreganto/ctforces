@@ -1,4 +1,4 @@
-from django.db.models import Count, Exists, OuterRef
+from django.db.models import Count
 from django.utils import timezone
 from rest_framework import mixins as rest_mixins
 from rest_framework import serializers as rest_serializers
@@ -40,31 +40,20 @@ class TaskViewSet(api.mixins.CustomPermissionsViewSetMixin,
     }
 
     def get_queryset(self):
-        queryset = super(TaskViewSet, self).get_queryset()
+        qs = super(TaskViewSet, self).get_queryset()
 
         if self.action == 'get_solved':
-            return queryset.prefetch_related('solved_by')
+            return qs.prefetch_related('solved_by')
 
-        queryset = queryset.prefetch_related('tags').select_related('author')
+        qs = qs.prefetch_related('tags').select_related('author')
 
         if self.action == 'list':
-            queryset = queryset.filter(show_on_main_page=True)
+            qs = qs.filter(show_on_main_page=True)
 
         if self.action in ['retrieve', 'get_full_task']:
-            queryset = queryset.prefetch_related('files')
+            qs = qs.prefetch_related('files')
 
-        return queryset.annotate(
-            solved_count=Count(
-                'solved_by',
-                distinct=True,
-            ),
-            is_solved_by_user=Exists(
-                api.models.Task.objects.filter(
-                    id=OuterRef('id'),
-                    solved_by=self.request.user.id or -1,
-                )
-            ),
-        )
+        return qs.with_solved_count().with_solved_by_user(self.request.user)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

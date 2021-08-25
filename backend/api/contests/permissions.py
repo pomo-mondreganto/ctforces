@@ -33,3 +33,13 @@ class HasDeleteContestPermission(HasPermissionMixin):
 class HasViewContestPermission(HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_contest'
     must_have_general_permission = False
+
+
+class HasViewScoreboardPermission(HasPermissionMixin):
+    permission_name = 'api.change_contest'
+    must_have_general_permission = False
+
+    def has_object_permission(self, request, view, obj):
+        if obj.public_scoreboard:
+            return True
+        return super(HasViewScoreboardPermission, self).has_object_permission(request, view, obj)

@@ -1,11 +1,48 @@
 from celery import current_app
 from django.db import models
-from django.db.models import IntegerField, OuterRef, Value as V
+from django.db.models import (
+    IntegerField,
+    OuterRef,
+    Value as V,
+    Count,
+    Exists,
+    Q,
+)
 from django.db.models.functions import Coalesce
 
 from api import celery_tasks
 from api.database_functions import SubquerySum
 from .contest_task_relationship import ContestTaskRelationship
+from .cpr_helper import CPRHelper
+
+
+class ContestQuerySet(models.QuerySet):
+    def with_participant_count(self):
+        return self.annotate(
+            registered_count=Count('participants', distinct=True),
+        )
+
+    def with_user_registered(self, user):
+        return self.annotate(
+            is_registered=Exists(
+                CPRHelper.objects.filter(
+                    user=user.id,
+                    contest=OuterRef('id'),
+                ),
+            ),
+        )
+
+    def only_published(self):
+        return self.filter(is_published=True)
+
+    def only_upcoming(self):
+        return self.filter(~Q(is_running=True) & ~Q(is_finished=True))
+
+    def only_running(self):
+        return self.filter(is_running=True)
+
+    def only_finished(self):
+        return self.filter(is_finished=True)
 
 
 class Contest(models.Model):
@@ -30,6 +67,8 @@ class Contest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    public_scoreboard = models.BooleanField(default=True)
+
     publish_tasks_after_finished = models.BooleanField(default=True)
     is_rated = models.BooleanField(default=True)
     always_recalculate_rating = models.BooleanField(default=False)
@@ -51,6 +90,8 @@ class Contest(models.Model):
         through='api.ContestParticipantRelationship',
         blank=True,
     )
+
+    objects = ContestQuerySet.as_manager()
 
     def reset_start_action(self):
         if self.celery_start_task_id:
@@ -77,13 +118,14 @@ class Contest(models.Model):
         return f"Contest object ({self.id}:{self.name})"
 
     def get_scoreboard_relations_queryset(self):
+        task_relations = ContestTaskRelationship.objects.all()
         if self.dynamic_scoring:
-            manager = ContestTaskRelationship.dynamic_current_cost_annotated
+            task_relations = task_relations.with_dynamic_cost()
         else:
-            manager = ContestTaskRelationship.static_current_cost_annotated
+            task_relations = task_relations.with_static_cost()
 
         participant_cost_sum_subquery = SubquerySum(
-            manager.filter(
+            task_relations.filter(
                 contest=self,
                 solved_by__id=OuterRef('participant_id'),
             ).values('current_cost'),
@@ -96,8 +138,5 @@ class Contest(models.Model):
         ).annotate(
             cost_sum=Coalesce(participant_cost_sum_subquery, V(0)),
         ).order_by('-cost_sum', 'last_solve')
-
-        if not self.always_recalculate_rating:
-            relations = relations.filter(has_opened_contest=True)
 
         return relations
