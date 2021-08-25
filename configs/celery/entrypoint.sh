@@ -14,7 +14,7 @@ case ${CELERY_CONTAINER_TYPE} in
     echo "[*] Starting celery flower"
     celery -A ctforces \
         flower \
-        --basic_auth="$FLOWER_BASIC_AUTH" \
+        --basic_auth="${ADMIN_USERNAME}:${ADMIN_PASSWORD}" \
         --url-prefix=flower \
         --host=0.0.0.0 \
         --port=5555

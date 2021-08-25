@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Count, Exists, OuterRef
+from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -32,16 +33,13 @@ class UserCreateView(CreateAPIView):
     serializer_class = api_users_serializers.UserCreateSerializer
     permission_classes = (AllowAny,)
 
-    def perform_create(self, serializer):
-        instance = serializer.save()
-        user_id = instance.id
-        user_username = instance.username
-        user_email = instance.email
-        token = serialize(user_id, 'email_confirmation')
+    @staticmethod
+    def send_confirmation(user):
+        token = serialize(user.id, 'email_confirmation')
 
         context = {
             'token': token,
-            'username': user_username,
+            'username': user.username,
             'email_url': settings.EMAIL_URL,
         }
 
@@ -51,13 +49,21 @@ class UserCreateView(CreateAPIView):
         api_tasks.send_users_mail.delay(
             subject='CTForces account confirmation',
             text_message=message_plain,
-            from_email='noreply@ctforces.com',
-            recipient_list=[user_email],
+            recipient_list=[user.email],
             html_message=message_html,
         )
 
-        instance.last_email_resend = timezone.now()
-        instance.save()
+        user.last_email_resend = timezone.now()
+        user.save()
+
+    @atomic
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        if settings.EMAIL_ENABLED:
+            self.send_confirmation(instance)
+        else:
+            instance.is_active = True
+            instance.save()
 
 
 class EmailConfirmationEndpointView(APIView):
@@ -87,6 +93,9 @@ class ActivationEmailResendView(APIView):
 
     @staticmethod
     def post(request):
+        if not settings.EMAIL_ENABLED:
+            raise ValidationError(detail='Functionality is disabled for this server')
+
         email = request.data.get('email', '').lower()
         user = api_models.User.objects.filter(email=email).first()
         if not user:
@@ -124,7 +133,6 @@ class ActivationEmailResendView(APIView):
         api_tasks.send_users_mail.delay(
             subject='CTForces account confirmation',
             text_message=message_plain,
-            from_email='noreply@ctforces.com',
             recipient_list=[email],
             html_message=message_html,
         )
@@ -139,6 +147,9 @@ class PasswordResetRequestView(APIView):
 
     @staticmethod
     def post(request):
+        if not settings.EMAIL_ENABLED:
+            raise ValidationError(detail='Functionality is disabled for this server')
+
         email = request.data.get('email', '').lower()
         user = api_models.User.objects.filter(email=email).first()
         if not user:

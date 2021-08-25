@@ -11,8 +11,8 @@ services:
     restart: on-failure
     env_file:
       - ./configs/django/environment.env
-      - ./configs/postgres/environment.env
-      - ./configs/rabbitmq/environment.env
+      - ./configs/postgres.env
+      - ./configs/rabbitmq.env
 
   celery:
     build:
@@ -23,8 +23,8 @@ services:
     restart: on-failure
     env_file:
       - ./configs/django/environment.env
-      - ./configs/postgres/environment.env
-      - ./configs/rabbitmq/environment.env
+      - ./configs/postgres.env
+      - ./configs/rabbitmq.env
     environment:
       - CELERY_CONTAINER_TYPE=worker
 
@@ -35,17 +35,17 @@ services:
     restart: on-failure
     env_file:
       - ./configs/django/environment.env
-      - ./configs/postgres/environment.env
-      - ./configs/rabbitmq/environment.env
-      - ./configs/celery/flower.env
+      - ./configs/postgres.env
+      - ./configs/rabbitmq.env
+      - ./configs/admin.env
     environment:
       - CELERY_CONTAINER_TYPE=flower
 
   nginx:
     image: nginx:1.15.9-alpine
     volumes:
-      - ./configs/nginx/app.dev.conf:/etc/nginx/conf.d/default.conf
-      - ./configs/nginx/proxy_params:/etc/nginx/proxy_params
+      - ./configs/nginx/app.dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./configs/nginx/proxy_params:/etc/nginx/proxy_params:ro
       - ./configs/nginx/robots.txt:/var/www/ctforces/robots.txt:ro
       - static:/static:ro
     ports:
@@ -60,7 +60,7 @@ services:
       - "5432:5432"
     restart: on-failure
     env_file:
-      - ./configs/postgres/environment.env
+      - ./configs/postgres.env
 
   redis:
     image: redis:5.0.9-alpine
@@ -75,7 +75,7 @@ services:
     ports:
       - "15672:15672"
     env_file:
-      - configs/rabbitmq/environment.env
+      - configs/rabbitmq.env
 
   front:
     build:

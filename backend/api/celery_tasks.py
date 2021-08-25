@@ -1,6 +1,7 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.apps import apps
+from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import F
 from django.db.models.functions import Greatest
@@ -149,11 +150,17 @@ def publish_tasks(contest_id):
 
 
 @shared_task
-def send_users_mail(subject, text_message, html_message, from_email, recipient_list):
-    send_mail(
-        subject=subject,
-        message=text_message,
-        from_email=from_email,
-        recipient_list=recipient_list,
-        html_message=html_message,
-    )
+def send_users_mail(subject, text_message, html_message, recipient_list):
+    if settings.EMAIL_MODE == 'smtp':
+        send_mail(
+            subject=subject,
+            message=text_message,
+            from_email=None,
+            recipient_list=recipient_list,
+            html_message=html_message,
+        )
+    elif settings.EMAIL_MODE == 'sendgrid':
+        pass
+        # TODO: send emails with sendgrid
+    else:
+        raise ValueError('Sending emails is disabled in current environment')
