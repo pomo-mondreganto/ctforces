@@ -448,6 +448,10 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_solved(self, *_args, **_kwargs):
         task = self.get_object()
         contest = self.get_contest()
+
+        if not contest.public_scoreboard and not self.request.user.has_perm('api.change_contest', contest):
+            raise PermissionDenied('You don\'t have access to this page')
+
         solved_participants_queryset = api.models.ContestTaskRelationship.objects.get(
             task=task,
             contest=contest,
