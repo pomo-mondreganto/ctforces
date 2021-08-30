@@ -1,53 +1,81 @@
 <template>
     <div>
         <div class="task">
-            <div class="field">
-                <f-input
-                    type="text"
-                    name="id"
-                    :value="value.id"
-                    @input="onChange"
-                    placeholder="Id"
-                    class="mr-1"
-                />
+            <div class="row">
+                <div class="field">
+                    <f-input
+                        type="text"
+                        name="id"
+                        :value="value.id"
+                        @input="searchTask"
+                        placeholder="Id"
+                        class="mr-1"
+                    />
+                </div>
+                <div class="field">
+                    <f-input
+                        type="text"
+                        name="name"
+                        :value="value.name"
+                        placeholder="Name"
+                        disabled
+                        class="mr-1"
+                    />
+                </div>
+                <div class="field" v-if="!dynamicCost">
+                    <div>
+                        <f-input
+                            type="text"
+                            name="cost"
+                            :value="value.cost"
+                            placeholder="Cost"
+                            class="mr-1"
+                            :disabled="disableFields"
+                            @input="changeCost"
+                        />
+                    </div>
+                </div>
+                <div class="field">
+                    <f-select
+                        :value="value.mainTag.name"
+                        :options="tagNames"
+                        @input="changeMainTag"
+                    />
+                </div>
             </div>
-            <div class="field">
-                <f-input
-                    type="text"
-                    name="name"
-                    :value="value.name"
-                    placeholder="Name"
-                    disabled
-                    class="mr-1"
-                />
-            </div>
-            <div class="field">
-                <f-input
-                    type="text"
-                    name="cost"
-                    :value="value.cost"
-                    @input="changeCost"
-                    placeholder="Cost"
-                    class="mr-1"
-                    v-if="!$types.isNull(value.cost)"
-                />
-                <f-input
-                    type="text"
-                    name="cost"
-                    :value="value.cost"
-                    @input="changeCost"
-                    placeholder="Cost"
-                    class="mr-1"
-                    disabled
-                    v-else
-                />
-            </div>
-            <div class="field vc">
-                <f-select
-                    :value="value.mainTag.name"
-                    @input="changeMainTag"
-                    :options="value.tags.map(({ name }) => name)"
-                />
+            <div class="row mt-2" v-if="dynamicCost">
+                <div class="field">
+                    <f-input
+                        type="text"
+                        name="cost"
+                        placeholder="Max cost"
+                        class="mr-1"
+                        :value="value.cost"
+                        :disabled="disableFields"
+                        @input="changeCost"
+                    />
+                </div>
+                <div class="field">
+                    <f-input
+                        type="text"
+                        name="min_cost"
+                        placeholder="Min cost"
+                        class="mr-1"
+                        :value="value.minCost"
+                        :disabled="disableFields"
+                        @input="changeMinCost"
+                    />
+                </div>
+                <div class="field">
+                    <f-input
+                        type="text"
+                        name="decay"
+                        placeholder="Decay"
+                        :value="value.decay"
+                        :disabled="disableFields"
+                        @input="changeDecay"
+                    />
+                </div>
             </div>
         </div>
         <div class="ff mb-1">
@@ -63,7 +91,7 @@ import FSelect from '@/components/Form/Select';
 export default {
     props: {
         value: Object,
-        index: Number,
+        dynamicCost: Boolean,
     },
 
     data: function() {
@@ -73,28 +101,40 @@ export default {
     },
 
     methods: {
-        onChange: async function(id) {
+        searchTask: async function(id) {
             let newTask = { ...this.value };
-            newTask['id'] = id;
+            newTask.id = id;
             try {
-                const r = await this.$http.get(`/tasks/${id}/`);
-                const task = r.data;
-                newTask['name'] = task.name;
-                newTask['cost'] = task.cost.toString();
-                newTask['tags'] = task.tags_details;
-                newTask['mainTag'] = task.tags_details[0];
+                const { data } = await this.$http.get(`/tasks/${id}/`);
+                newTask.name = data.name;
+                newTask.cost = data.cost.toString();
+                newTask.minCost = '0';
+                newTask.decay = '1';
+                newTask.tags = data.tags_details;
+                newTask.mainTag = data.tags_details[0];
+                this.errors = {};
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
-                newTask['name'] = null;
-                newTask['cost'] = null;
-                newTask['tags'] = [];
-                newTask['mainTag'] = { name: null, id: null };
+                newTask.name = null;
+                newTask.cost = null;
+                newTask.minCost = null;
+                newTask.decay = null;
+                newTask.tags = [];
+                newTask.mainTag = { name: null, id: null };
             }
             this.$emit('input', newTask);
         },
 
         changeCost: function(cost) {
             this.$emit('input', { ...this.value, cost });
+        },
+
+        changeMinCost: function(minCost) {
+            this.$emit('input', { ...this.value, minCost });
+        },
+
+        changeDecay: function(decay) {
+            this.$emit('input', { ...this.value, decay });
         },
 
         changeMainTag: function(mainTag) {
@@ -109,6 +149,15 @@ export default {
                 ...this.value,
                 mainTag: tag,
             });
+        },
+    },
+
+    computed: {
+        tagNames: function() {
+            return this.value.tags.map(({ name }) => name);
+        },
+        disableFields: function() {
+            return this.$types.isNull(this.value.name);
         },
     },
 
@@ -130,14 +179,15 @@ export default {
 
 .task {
     display: flex;
+    flex-flow: column;
+}
+
+.row {
+    display: flex;
     flex-flow: row nowrap;
 }
 
 .field {
-    flex: 1 1 0;
-
-    &.vc .group {
-        flex: 1 1 0;
-    }
+    flex: 1;
 }
 </style>

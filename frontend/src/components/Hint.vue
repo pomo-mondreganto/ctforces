@@ -46,5 +46,6 @@ export default {
 <style lang="scss" scoped>
 .hint {
     cursor: pointer;
+    line-height: 1.2em;
 }
 </style>

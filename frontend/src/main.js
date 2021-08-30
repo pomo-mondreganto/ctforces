@@ -83,6 +83,7 @@ Vue.prototype.$types = {
     isUndefined,
 };
 store.$http = axios;
+store.$parse = parse;
 
 /* external components */
 

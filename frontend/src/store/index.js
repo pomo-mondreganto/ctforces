@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import contests from './modules/contests';
 
 Vue.use(Vuex);
 
@@ -44,5 +45,7 @@ export default new Vuex.Store({
             context.commit('TOGGLE_SIDEBAR');
         },
     },
-    modules: {},
+    modules: {
+        contests,
+    },
 });

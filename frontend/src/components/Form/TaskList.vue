@@ -14,8 +14,12 @@
                 remove
             </button>
         </div>
+        <hr class="mb-2" />
         <div v-for="(task, index) of value" :key="task.idx">
-            <task-item v-model="value[index]" />
+            <task-list-item
+                v-model="value[index]"
+                :dynamicCost="dynamicScoring"
+            />
             <div class="task-buttons mb-2">
                 <button
                     type="button"
@@ -33,27 +37,33 @@
                     remove
                 </button>
             </div>
+            <hr class="mb-2" />
         </div>
         <div v-if="invalid">
-            <div v-for="error of errors" :key="error" class="error">
-                {{ error }}
+            <div v-for="(error, key) of errors" :key="key" class="error">
+                {{ key }}: {{ error }}
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import TaskItem from './TaskListItem';
+import TaskListItem from './TaskListItem';
 
 export default {
     props: {
         value: Array,
-        errors: Array,
+        errors: Object,
+        dynamicScoring: Boolean,
+    },
+
+    components: {
+        TaskListItem,
     },
 
     computed: {
         invalid: function() {
-            return this.$types.isArray(this.errors) && this.errors.length > 0;
+            return this.errors;
         },
     },
 
@@ -76,10 +86,6 @@ export default {
             tasks.splice(index, 1);
             this.$emit('input', tasks);
         },
-    },
-
-    components: {
-        TaskItem,
     },
 };
 </script>

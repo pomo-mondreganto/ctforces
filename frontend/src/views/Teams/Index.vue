@@ -15,9 +15,7 @@
                     </router-link>
                 </div>
                 <f-header class="ta-l" :text="`Team ${team.name}`" />
-                <div class="mt-1">
-                    Created at {{ new Date(team.created_at) }}
-                </div>
+                <div class="mt-1">Created at {{ createdAt }}</div>
                 <div class="mt-1">
                     Captain:
                     <user
@@ -62,6 +60,7 @@ import User from '@/components/Table/User';
 import FTable from '@/components/Table/Index';
 import FHeader from '@/components/Form/Header';
 import { mapState } from 'vuex';
+import moment from 'moment';
 
 export default {
     components: {
@@ -87,7 +86,7 @@ export default {
                 this.team.participants_details = this.team.participants_details.map(
                     (member, index) => {
                         return {
-                            '#': index,
+                            '#': index + 1,
                             ...member,
                         };
                     }
@@ -127,6 +126,9 @@ export default {
                     ({ id }) => id === this.user.id
                 ).length > 0
             );
+        },
+        createdAt: function() {
+            return moment(this.team.created_at).format('llll');
         },
     },
 };

@@ -64,7 +64,7 @@
 <script>
 import FHeader from '@/components/Form/Header';
 import Pagination from '@/components/Pagination';
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 export default {
     components: {
@@ -74,10 +74,8 @@ export default {
 
     data: function() {
         return {
-            contest: null,
             teams: null,
             team: { id: null, name: null },
-            cerrors: {},
             rerrors: {},
             users: null,
             participants: {},
@@ -87,27 +85,20 @@ export default {
     },
 
     created: async function() {
-        await this.fetchContest();
+        await this.fetchContest(this.contestID);
         await this.fetchTeams();
+        console.log(this.cerrors);
     },
 
     watch: {
         async $route() {
-            await this.fetchContest();
+            await this.fetchContest(this.contestID);
             await this.fetchTeams();
         },
     },
 
     methods: {
-        fetchContest: async function() {
-            const { id } = this.$route.params;
-            try {
-                const r = await this.$http.get(`/contests/${id}/`);
-                this.contest = r.data;
-            } catch (error) {
-                this.cerrors = this.$parse(error.response.data);
-            }
-        },
+        ...mapActions('contests', ['fetchContest']),
 
         fetchTeams: async function() {
             const { page = 1 } = this.$route.query;
@@ -146,12 +137,11 @@ export default {
 
                 if (
                     this.contest.is_running &&
-                    toRegister.filter(({ id }) => id === this.user.id).length >
-                        0
+                    toRegister.includes(this.user.id)
                 ) {
                     this.$router
                         .push({
-                            name: 'contest_tasks',
+                            name: 'contest_info',
                             params: { id: this.contest.id },
                         })
                         .catch(() => {});
@@ -183,7 +173,13 @@ export default {
         },
     },
 
-    computed: mapState(['user']),
+    computed: {
+        ...mapState(['user']),
+        ...mapState('contests', { contest: 'contest', cerrors: 'errors' }),
+        contestID: function() {
+            return this.$route.params.id;
+        },
+    },
 };
 </script>
 

@@ -12,6 +12,7 @@
 
 <script>
 import Task from '@/components/Tasks/View';
+import { mapState } from 'vuex';
 
 export default {
     components: {
@@ -19,7 +20,6 @@ export default {
     },
 
     created: async function() {
-        await this.fetchContest();
         await this.fetchTask();
     },
 
@@ -29,28 +29,16 @@ export default {
             errors: {},
             serrors: {},
             solved: {},
-            contest: null,
         };
     },
 
     watch: {
         async $route() {
-            await this.fetchContest();
             await this.fetchTask();
         },
     },
 
     methods: {
-        fetchContest: async function() {
-            const { id } = this.$route.params;
-            try {
-                const r = await this.$http.get(`/contests/${id}/`);
-                this.contest = r.data;
-            } catch (error) {
-                this.errors = this.$parse(error.response.data);
-            }
-        },
-
         fetchTask: async function() {
             const { id, task_id } = this.$route.params;
             try {
@@ -75,14 +63,15 @@ export default {
         submit: async function(flag) {
             const { id, task_id } = this.$route.params;
             try {
-                await this.$http.post(
+                const { data } = await this.$http.post(
                     `/contests/${id}/tasks/${task_id}/submit/`,
                     {
                         flag: flag,
                     }
                 );
                 this.$toasted.success('Valid flag!');
-                if (this.contest.is_finished) {
+                this.serrors = [];
+                if (data.upsolving) {
                     this.$set(this.task, 'is_solved_on_upsolving', true);
                     this.$toasted.info(
                         'Contest is finished. Points will be added to upsolving.'
@@ -102,5 +91,7 @@ export default {
             }
         },
     },
+
+    computed: mapState('contests', ['contest']),
 };
 </script>

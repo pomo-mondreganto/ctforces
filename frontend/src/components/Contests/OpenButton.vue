@@ -1,7 +1,7 @@
 <template>
     <router-link
         class="link nlnk"
-        :to="{ name: 'contest_tasks', params: { id: row.id } }"
+        :to="{ name: 'contest_info', params: { id: row.id } }"
     >
         Open
     </router-link>

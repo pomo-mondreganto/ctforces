@@ -13,49 +13,49 @@
                 </router-link>
             </div>
         </div>
-        <contest :contest="contest" :contest_tasks="contest_tasks" />
+        <task-view :contest="contest" :contest_tasks="contest_tasks" />
         <f-detail :errors="errors['detail']" />
     </div>
 </template>
 
 <script>
-import Contest from '@/components/Contests/TaskView.vue';
+import TaskView from '@/components/Contests/TaskView.vue';
+import { mapState } from 'vuex';
 
 export default {
     data: function() {
         return {
-            contest: null,
             contest_tasks: null,
             errors: {},
         };
     },
 
     components: {
-        Contest,
+        TaskView,
     },
 
     created: async function() {
-        await this.fetchContest();
+        await this.fetchTasks();
     },
 
     watch: {
         async $route() {
-            await this.fetchContest();
+            await this.fetchTasks();
         },
     },
 
     methods: {
-        fetchContest: async function() {
+        fetchTasks: async function() {
             const { id } = this.$route.params;
             try {
-                const rc = await this.$http.get(`/contests/${id}/`);
-                this.contest = rc.data;
-                const rt = await this.$http.get(`/contests/${id}/tasks/`);
-                this.contest_tasks = rt.data;
+                const { data } = await this.$http.get(`/contests/${id}/tasks/`);
+                this.contest_tasks = data;
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }
         },
     },
+
+    computed: mapState('contests', ['contest']),
 };
 </script>

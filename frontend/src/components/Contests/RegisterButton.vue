@@ -2,7 +2,7 @@
     <router-link
         class="link nlnk"
         v-if="!$types.isNull(user) && user.is_admin"
-        :to="{ name: 'contest_tasks', params: { id: row.id } }"
+        :to="{ name: 'contest_info', params: { id: row.id } }"
     >
         Open
     </router-link>

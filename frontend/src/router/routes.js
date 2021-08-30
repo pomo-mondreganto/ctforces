@@ -17,6 +17,7 @@ import ContestTask from '@/views/Contests/Task';
 import ContestTaskSolved from '@/views/Contests/TaskSolved';
 import ContestList from '@/views/Contests/List';
 import ContestRegister from '@/views/Contests/Register';
+import ContestInfo from '@/views/Contests/Info';
 
 import Rating from '@/views/Users/Rating';
 import Upsolving from '@/views/Users/Upsolving';
@@ -164,18 +165,23 @@ const routes = [
         children: [
             {
                 name: 'contest_task_solved',
-                path: 'task/:task_id/solved',
+                path: 'tasks/:task_id/solved',
                 component: ContestTaskSolved,
             },
             {
                 name: 'contest_task',
-                path: 'task/:task_id',
+                path: 'tasks/:task_id',
                 component: ContestTask,
             },
             {
                 name: 'contest_tasks',
-                path: '',
+                path: 'tasks',
                 component: ContestTasks,
+            },
+            {
+                name: 'contest_info',
+                path: '',
+                component: ContestInfo,
             },
         ],
     },
