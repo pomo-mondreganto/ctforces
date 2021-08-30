@@ -3,8 +3,17 @@ module.exports = {
         loaderOptions: {
             sass: {
                 prependData: `
+            @use "sass:math";
             @import "@/styles/global/_variables.scss";
           `,
+            },
+        },
+    },
+
+    configureWebpack: {
+        optimization: {
+            splitChunks: {
+                chunks: 'all',
             },
         },
     },

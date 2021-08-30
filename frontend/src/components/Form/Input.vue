@@ -44,6 +44,7 @@ export default {
 $height-input: 2.6em;
 $height-label: 1em;
 $border: 0.05em;
+$inv-height-label: math.div(1em, $height-label);
 
 .group {
     position: relative;
@@ -64,12 +65,12 @@ $border: 0.05em;
     outline: none;
     font-family: inherit;
     font-size: $height-label;
-    height: $height-input * (1em / $height-label);
+    height: $height-input * $inv-height-label;
     padding-left: 0.4em;
     @include use-theme {
-        border: $border * (1em / $height-label) solid $darklight;
+        border: $border * $inv-height-label solid $darklight;
     }
-    border-radius: (1em / $height-label) * 0.3em;
+    border-radius: $inv-height-label * 0.3em;
 
     &:focus {
         @include use-theme {
@@ -93,14 +94,14 @@ $border: 0.05em;
         }
     }
 
-    width: calc(100% - 0.4em - #{$border * (1em / $height-label)});
+    width: calc(100% - 0.4em - #{$border * $inv-height-label});
 }
 
 .label {
     position: absolute;
     font-size: $height-label;
     padding-left: 0.3em;
-    top: (1em / $height-label) * ($height-input + 2 * $border) / 2 - 0.5em;
+    top: $inv-height-label * ($height-input + 2 * $border) * 0.5 - 0.5em;
     left: 0.4em;
     transition: all 200ms;
     @include use-theme {

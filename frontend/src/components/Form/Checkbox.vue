@@ -37,6 +37,7 @@ export default {
 $height-input: 1.5em;
 $height-label: 0.9em;
 $border: 0.05em;
+$inv-height-label: math.div(1em, $height-label);
 
 .group {
     display: flex;
@@ -50,11 +51,11 @@ $border: 0.05em;
     outline: none;
     font-family: inherit;
     font-size: $height-label;
-    height: $height-input * (1em / $height-label);
+    height: $height-input * $inv-height-label;
     @include use-theme {
-        border: $border * (1em / $height-label) solid $darklight;
+        border: $border * $inv-height-label solid $darklight;
     }
-    border-radius: (1em / $height-label) * 0.3em;
+    border-radius: $inv-height-label * 0.3em;
 
     &[invalid] {
         @include use-theme {

@@ -1,45 +1,94 @@
-import Index from '@/views/Index/Index';
-import Login from '@/views/Index/Login';
-import Register from '@/views/Index/Register';
+const Index = () =>
+    import(/* webpackChunkName: "group-main" */ '@/views/Index/Index');
+const Login = () =>
+    import(/* webpackChunkName: "group-main" */ '@/views/Index/Login');
+const Register = () =>
+    import(/* webpackChunkName: "group-main" */ '@/views/Index/Register');
 
-import TaskList from '@/views/Tasks/List';
-import TaskIndex from '@/views/Tasks/Index';
-import TaskCreate from '@/views/Tasks/Create';
-import TaskEdit from '@/views/Tasks/Edit';
-import TaskSolved from '@/views/Tasks/Solved';
+const TaskList = () =>
+    import(/* webpackChunkName: "group-tasks" */ '@/views/Tasks/List');
+const TaskIndex = () =>
+    import(/* webpackChunkName: "group-tasks" */ '@/views/Tasks/Index');
+const TaskCreate = () =>
+    import(/* webpackChunkName: "group-tasks" */ '@/views/Tasks/Create');
+const TaskEdit = () =>
+    import(/* webpackChunkName: "group-tasks" */ '@/views/Tasks/Edit');
+const TaskSolved = () =>
+    import(/* webpackChunkName: "group-tasks" */ '@/views/Tasks/Solved');
 
-import ContestCreate from '@/views/Contests/Create';
-import ContestEdit from '@/views/Contests/Edit';
-import ContestIndex from '@/views/Contests/Index';
-import ContestTasks from '@/views/Contests/TaskList';
-import ContestScoreboard from '@/views/Contests/Scoreboard';
-import ContestTask from '@/views/Contests/Task';
-import ContestTaskSolved from '@/views/Contests/TaskSolved';
-import ContestList from '@/views/Contests/List';
-import ContestRegister from '@/views/Contests/Register';
-import ContestInfo from '@/views/Contests/Info';
+const ContestCreate = () =>
+    import(/* webpackChunkName: "group-contests" */ '@/views/Contests/Create');
+const ContestEdit = () =>
+    import(/* webpackChunkName: "group-contests" */ '@/views/Contests/Edit');
+const ContestIndex = () =>
+    import(/* webpackChunkName: "group-contests" */ '@/views/Contests/Index');
+const ContestTasks = () =>
+    import(
+        /* webpackChunkName: "group-contests" */ '@/views/Contests/TaskList'
+    );
+const ContestScoreboard = () =>
+    import(
+        /* webpackChunkName: "group-contests" */ '@/views/Contests/Scoreboard'
+    );
+const ContestTask = () =>
+    import(/* webpackChunkName: "group-contests" */ '@/views/Contests/Task');
+const ContestTaskSolved = () =>
+    import(
+        /* webpackChunkName: "group-contests" */ '@/views/Contests/TaskSolved'
+    );
+const ContestList = () =>
+    import(/* webpackChunkName: "group-contests" */ '@/views/Contests/List');
+const ContestRegister = () =>
+    import(
+        /* webpackChunkName: "group-contests" */ '@/views/Contests/Register'
+    );
+const ContestInfo = () =>
+    import(/* webpackChunkName: "group-contests" */ '@/views/Contests/Info');
 
-import Rating from '@/views/Users/Rating';
-import Upsolving from '@/views/Users/Upsolving';
+const Rating = () =>
+    import(/* webpackChunkName: "group-main" */ '@/views/Users/Rating');
+const Upsolving = () =>
+    import(/* webpackChunkName: "group-main" */ '@/views/Users/Upsolving');
 
-import Profile from '@/views/Users/Profile';
-import ProfileMain from '@/views/Users/ProfileMain';
-import ProfileSettings from '@/views/Users/ProfileSettings';
-import ProfileBlog from '@/views/Users/ProfileBlog';
-import ProfileTeams from '@/views/Users/ProfileTeams';
+const Profile = () =>
+    import(/* webpackChunkName: "group-profile" */ '@/views/Users/Profile');
+const ProfileMain = () =>
+    import(/* webpackChunkName: "group-profile" */ '@/views/Users/ProfileMain');
+const ProfileSettings = () =>
+    import(
+        /* webpackChunkName: "group-profile" */ '@/views/Users/ProfileSettings'
+    );
+const ProfileBlog = () =>
+    import(/* webpackChunkName: "group-profile" */ '@/views/Users/ProfileBlog');
+const ProfileTeams = () =>
+    import(
+        /* webpackChunkName: "group-profile" */ '@/views/Users/ProfileTeams'
+    );
 
-import PostIndex from '@/views/Posts/Index';
-import PostCreate from '@/views/Posts/Create';
-import PostEdit from '@/views/Posts/Edit';
+const PostIndex = () =>
+    import(/* webpackChunkName: "group-posts" */ '@/views/Posts/Index');
+const PostCreate = () =>
+    import(/* webpackChunkName: "group-posts" */ '@/views/Posts/Create');
+const PostEdit = () =>
+    import(/* webpackChunkName: "group-posts" */ '@/views/Posts/Edit');
 
-import TeamCreate from '@/views/Teams/Create';
-import TeamJoin from '@/views/Teams/Join';
-import TeamIndex from '@/views/Teams/Index';
+const TeamCreate = () =>
+    import(/* webpackChunkName: "group-teams" */ '@/views/Teams/Create');
+const TeamJoin = () =>
+    import(/* webpackChunkName: "group-teams" */ '@/views/Teams/Join');
+const TeamIndex = () =>
+    import(/* webpackChunkName: "group-teams" */ '@/views/Teams/Index');
 
-import ConfirmEmail from '@/views/Index/ConfirmEmail';
-import PasswordReset from '@/views/Index/PasswordReset';
-import PasswordResetConfirm from '@/views/Index/PasswordResetConfirm';
-import EmailResend from '@/views/Index/EmailResend';
+const ConfirmEmail = () =>
+    import(/* webpackChunkName: "group-main" */ '@/views/Index/ConfirmEmail');
+const PasswordReset = () =>
+    import(/* webpackChunkName: "group-main" */ '@/views/Index/PasswordReset');
+const PasswordResetConfirm = () =>
+    import(
+        /* webpackChunkName: "group-main" */ '@/views/Index/PasswordResetConfirm'
+    );
+const EmailResend = () =>
+    import(/* webpackChunkName: "group-main" */ '@/views/Index/EmailResend');
 
 const routes = [
     {

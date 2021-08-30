@@ -45,7 +45,7 @@ services:
       - CELERY_CONTAINER_TYPE=flower
 
   nginx:
-    image: nginx:1.15.9-alpine
+    image: nginx:1.21.1-alpine
     volumes:
       - ./configs/nginx/app.dev.conf:/etc/nginx/conf.d/default.conf:ro
       - ./configs/nginx/proxy_params:/etc/nginx/proxy_params:ro

@@ -87,7 +87,6 @@ export default {
     created: async function() {
         await this.fetchContest(this.contestID);
         await this.fetchTeams();
-        console.log(this.cerrors);
     },
 
     watch: {
