@@ -27,21 +27,11 @@ export default {
             await this.$http.post('/logout/');
             await this.$store.dispatch('UPDATE_USER');
 
-            if (this.$route.meta.auth) {
-                localStorage.setItem(
-                    'route',
-                    JSON.stringify({
-                        name: this.$route.name,
-                        query: this.$route.query,
-                        params: this.$route.params,
-                    })
-                );
-                this.$router
-                    .push({
-                        name: 'login',
-                    })
-                    .catch(() => {});
-            }
+            this.$router
+                .push({
+                    name: 'index',
+                })
+                .catch(() => {});
         },
     },
 };

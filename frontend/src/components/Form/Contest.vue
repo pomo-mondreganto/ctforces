@@ -104,6 +104,24 @@
                 />
             </div>
             <div class="ff">
+                <f-checkbox
+                    name="randomize_tasks"
+                    v-model="contest.randomize_tasks"
+                    label="Randomize task set"
+                    :errors="errors.randomize_tasks"
+                />
+            </div>
+            <div v-if="contest.randomize_tasks" class="ff">
+                <f-input
+                    class="mt-1-5"
+                    type="text"
+                    name="randomize_tasks_count"
+                    v-model="contest.randomize_tasks_count"
+                    :errors="errors.randomize_tasks_count"
+                    placeholder="Number of tasks to add"
+                />
+            </div>
+            <div class="ff">
                 <f-datetime
                     label="Start time"
                     v-model="contest.start_time"

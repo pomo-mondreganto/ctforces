@@ -51,7 +51,7 @@
         </div>
         <div class="logreg vc mr-0-5">
             <login-button />
-            <register-button />
+            <register-logout />
             <hamburger />
         </div>
     </div>
@@ -59,14 +59,14 @@
 
 <script>
 import LoginButton from './LoginButton';
-import RegisterButton from './RegisterButton';
+import RegisterLogout from './RegisterLogout';
 import NavButton from './NavButton';
 import Hamburger from './Hamburger';
 
 export default {
     components: {
         LoginButton,
-        RegisterButton,
+        RegisterLogout,
         NavButton,
         Hamburger,
     },

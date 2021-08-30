@@ -74,7 +74,8 @@ export default {
             }
 
             try {
-                let newTasks = {};
+                const newTasks = {};
+                const toCreate = [];
                 for (const task of tasks) {
                     newTasks[task.id] = true;
                     const changes = {
@@ -92,13 +93,15 @@ export default {
                             changes
                         );
                     } else {
-                        await this.$http.post('/contest_task_relationship/', {
+                        toCreate.push({
                             ...changes,
                             task: task.id,
                             contest: data.id,
                         });
                     }
                 }
+
+                await this.$http.post('/contest_task_relationship/', toCreate);
 
                 for (const id in this.oldTasks) {
                     if (newTasks[id]) {

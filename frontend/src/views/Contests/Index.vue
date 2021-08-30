@@ -179,7 +179,7 @@ export default {
                 }
             } else {
                 if (c.is_running) {
-                    return { status: 'RUNNING', time: this.timeUntilStart };
+                    return { status: 'RUNNING', time: this.timeUntilEnd };
                 } else if (c.is_finished) {
                     return { status: 'FINISHED' };
                 } else {

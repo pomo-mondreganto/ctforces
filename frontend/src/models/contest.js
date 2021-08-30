@@ -5,15 +5,17 @@ const defaults = {
     name: '',
     description: '',
     is_published: false,
-    is_registration_open: false,
-    is_rated: false,
+    is_registration_open: true,
+    is_rated: true,
     is_virtual: false,
     virtual_duration: '',
-    publish_tasks_after_finished: false,
-    public_scoreboard: false,
+    publish_tasks_after_finished: true,
+    public_scoreboard: true,
     dynamic_scoring: false,
     start_time: null,
     end_time: null,
+    randomize_tasks: false,
+    randomize_tasks_count: null,
 };
 
 class Contest {
@@ -32,6 +34,8 @@ class Contest {
             dynamic_scoring,
             start_time,
             end_time,
+            randomize_tasks,
+            randomize_tasks_count,
         } = { ...defaults, ...options };
         this.id = id;
         this.name = name;
@@ -46,12 +50,15 @@ class Contest {
         this.dynamic_scoring = dynamic_scoring;
         this.start_time = start_time;
         this.end_time = end_time;
+        this.randomize_tasks = randomize_tasks;
+        this.randomize_tasks_count = randomize_tasks_count;
     }
 
     dumpForAPI() {
         const { ...result } = this;
         result.start_time = moment(result.start_time).toISOString();
         result.end_time = moment(result.end_time).toISOString();
+        result.randomize_tasks_count = result.randomize_tasks_count ?? 0;
         return result;
     }
 }
