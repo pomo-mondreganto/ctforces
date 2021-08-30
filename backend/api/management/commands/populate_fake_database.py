@@ -137,8 +137,6 @@ class Command(BaseCommand):
             author = random.choice(users)
             end_time = fake.date_time_this_year(before_now=True, after_now=True, tzinfo=get_current_timezone())
             start_time = fake.date_time_between(start_date='-1y', end_date=end_time, tzinfo=get_current_timezone())
-            running = (end_time > now() >= start_time)
-            finished = end_time <= now()
             c = models.Contest(
                 author=author,
                 name=fake.sentence(nb_words=2),
@@ -146,14 +144,14 @@ class Command(BaseCommand):
                 start_time=start_time,
                 end_time=end_time,
                 is_published=fake.pybool(),
-                is_running=running,
-                is_finished=finished,
                 is_registration_open=fake.pybool(),
                 publish_tasks_after_finished=fake.pybool(),
                 is_rated=fake.pybool(),
                 always_recalculate_rating=fake.pybool(),
                 dynamic_scoring=fake.pybool(),
                 public_scoreboard=fake.pybool(),
+                randomize_tasks=fake.pybool(),
+                randomize_tasks_count=random.randint(1, 10),
             )
 
             c.save()
@@ -190,7 +188,7 @@ class Command(BaseCommand):
                 )
                 rel.save()
 
-                if running or finished:
+                if end_time > now():
                     solved = list(random.sample(participants, k=random.randint(1, len(participants))))
                     rel.solved_by.add(*solved)
 
