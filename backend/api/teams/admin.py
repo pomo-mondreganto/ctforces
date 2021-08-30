@@ -17,7 +17,7 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
                     'last_solve',
                     'delta',
                     'contest',
-                    'has_opened_contest',
+                    'opened_contest_at',
                 ),
             },
         ),

@@ -25,7 +25,7 @@ class RabbitMQConfig(BaseModel):
 
 
 class SendgridConfig(BaseModel):
-    user: str
+    api_key: str
 
 
 class SMTPConfig(BaseModel):

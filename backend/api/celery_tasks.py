@@ -5,7 +5,10 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import F
 from django.db.models.functions import Greatest
+from django.db.transaction import atomic
 from django.utils import timezone
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from stdimage.utils import render_variations
 
 from api.rating_system import RatingSystem
@@ -23,45 +26,20 @@ def process_stdimage(file_name, variations, storage):
 
 
 @shared_task
-def start_contest(contest_id):
-    logger.info(f'Request to start contest_id {contest_id}')
+def on_contest_ended(contest_id):
+    with atomic:
+        contest = get_model('api', 'Contest').objects.filter(id=contest_id).select_for_update().first()
 
-    contest = get_model('api', 'Contest').objects.filter(id=contest_id).first()
+        if not contest:
+            logger.error('No such contest')
+            return
 
-    if not contest:
-        logger.info(f'Contest {contest_id} not starting, no such contest')
-        return
+        if contest.processed_end_task:
+            logger.warning('End task already run')
 
-    if contest.is_running:
-        logger.info(f'Contest {contest_id} not starting, already started')
-        return
-
-    logger.info(f'Starting contest {contest.id}')
-
-    contest.is_running = True
-    contest.save(update_fields=['is_running', 'updated_at'])
-
-
-@shared_task
-def end_contest(contest_id):
-    logger.info(f'Request to end contest_id {contest_id}')
-
-    contest = get_model('api', 'Contest').objects.filter(id=contest_id).first()
-
-    if not contest:
-        logger.info('Contest not ending, no such contest')
-        return
-
-    logger.info(f'Ending contest {contest.id}')
-
-    if contest.is_finished:
-        logger.info('Contest has already ended')
-        return
-
-    contest.is_running = False
-    contest.is_finished = True
-    contest.is_registration_open = False
-    contest.save(update_fields=['is_running', 'is_finished', 'is_registration_open', 'updated_at'])
+        contest.processed_end_task = True
+        contest.is_registration_open = False
+        contest.save(update_fields=['end_task', 'is_registration_open', 'updated_at'])
 
     if contest.is_rated:
         recalculate_rating.delay(contest.id)
@@ -73,6 +51,7 @@ def end_contest(contest_id):
 @shared_task
 def recalculate_rating(contest_id):
     logger.info(f'Recalculation of rating for contest {contest_id}')
+
     contest = get_model('api', 'Contest').objects.filter(id=contest_id).first()
     if not contest:
         logger.info('No such contest')
@@ -83,7 +62,7 @@ def recalculate_rating(contest_id):
     )
 
     if not contest.always_recalculate_rating:
-        relations = relations.filter(has_opened_contest=True)
+        relations = relations.filter(opened_contest_at__isnull=False)
 
     teams = []
     for relation in relations:
@@ -155,6 +134,7 @@ def publish_tasks(contest_id):
 @shared_task
 def send_users_mail(subject, text_message, html_message, recipient_list):
     if settings.EMAIL_MODE == 'smtp':
+        logger.info('Sending email to %s with smtp', recipient_list)
         send_mail(
             subject=subject,
             message=text_message,
@@ -163,7 +143,15 @@ def send_users_mail(subject, text_message, html_message, recipient_list):
             html_message=html_message,
         )
     elif settings.EMAIL_MODE == 'sendgrid':
-        pass
-        # TODO: send emails with sendgrid
+        logger.info('Sending email to %s with sendgrid', recipient_list)
+        message = Mail(
+            to_emails=recipient_list,
+            subject=subject,
+            html_content=html_message,
+            plain_text_content=text_message,
+        )
+        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        response = sg.send(message)
+        logger.debug('Received sendgrid response: %s', response)
     else:
         raise ValueError('Sending emails is disabled in current environment')

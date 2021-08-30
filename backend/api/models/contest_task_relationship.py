@@ -15,10 +15,10 @@ class ContestTaskRelationshipQuerySet(models.QuerySet):
         return self.with_solved_count().annotate(
             current_cost=Greatest(
                 Ceil(
-                    (F('min_cost') - F('max_cost')) /
+                    (F('min_cost') - F('cost')) /
                     (F('decay_value') * F('decay_value')) *
                     (F('solved_count') * F('solved_count')) +
-                    F('max_cost')
+                    F('cost')
                 ),
                 F('min_cost'),
             ),
@@ -80,8 +80,7 @@ class ContestTaskRelationship(models.Model):
 
     cost = models.IntegerField(default=0)
     min_cost = models.IntegerField(default=0)
-    max_cost = models.IntegerField(default=0)
-    decay_value = models.IntegerField(default=1)
+    decay_value = models.PositiveIntegerField(default=1)
 
     solved_by = models.ManyToManyField(
         'Team',

@@ -16,7 +16,7 @@ class ContestParticipantRelationship(models.Model):
 
     last_solve = models.DateTimeField(default=timezone.now)
     delta = models.IntegerField(null=True, blank=True)
-    has_opened_contest = models.BooleanField(default=False)
+    opened_contest_at = models.DateTimeField(null=True, blank=True)
 
     registered_users = models.ManyToManyField(
         'User',

@@ -1,9 +1,7 @@
 from collections import defaultdict
 
-from django.db.models import (
-    F,
-    Prefetch,
-)
+from django.db.models import F, Prefetch
+from django.db.transaction import atomic
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
 from rest_framework import mixins as rest_mixins
@@ -59,23 +57,15 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         ),
     }
 
-    def get_participating_team(self, contest):
-        if hasattr(self.request, 'team_participant'):
-            return self.request.team_participant
-
-        relation = contest.contest_participant_relationship.filter(
-            registered_users_id=self.request.user.id,
-        ).first()
-
-        self.request.team_participant = getattr(relation, 'participant', None)
-        return self.request.team_participant
-
     def get_queryset(self):
         qs = super(ContestViewSet, self).get_queryset()
 
         if self.action == 'list':
             qs = qs.only_published()
             qs = qs.with_user_registered(self.request.user)
+
+        if self.action in ['list', 'retrieve']:
+            qs = qs.with_opened_at(self.request.user)
 
         return qs
 
@@ -91,6 +81,18 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
         if self.action == 'retrieve':
             obj.can_edit_contest = self.request.user.has_perm('change_contest', obj)
             obj.can_view_scoreboard = obj.public_scoreboard or obj.can_edit_contest
+
+            # if a user is registered & has opened contest, set open contest date
+            if not obj.is_finished:
+                team = obj.get_participating_team(self.request.user)
+                cnt = api.models.ContestParticipantRelationship.objects.filter(
+                    contest=obj,
+                    participant=team,
+                    opened_contest_at__isnull=True,
+                ).update(opened_contest_at=timezone.now())
+                if cnt:
+                    obj.refresh_from_db()
+
         return obj
 
     def list(self, request, *args, **kwargs):
@@ -271,7 +273,7 @@ class ContestParticipantRelationshipViewSet(rest_viewsets.ModelViewSet):
         instance = self.get_object()
         contest = instance.contest
         if contest.is_running or contest.is_finished:
-            raise ValidationError(detail='Too late to unregister')
+            raise ValidationError('Too late to unregister')
         return super(ContestParticipantRelationshipViewSet, self).destroy(request, *args, **kwargs)
 
 
@@ -296,8 +298,13 @@ class ContestTaskRelationshipViewSet(CustomPermissionsViewSetMixin,
         'destroy': (api.contests.permissions.HasContestTaskRelationshipPermission,),
     }
 
+    @atomic
+    def create(self, request, *args, **kwargs):
+        return super(ContestTaskRelationshipViewSet, self).create(request, *args, **kwargs)
+
     def get_serializer(self, *args, **kwargs):
         if self.action == 'create':
+            # noinspection PyUnresolvedReferences
             kwargs['many'] = isinstance(self.request.data, list)
         return super(ContestTaskRelationshipViewSet, self).get_serializer(*args, **kwargs)
 
@@ -308,21 +315,6 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     lookup_field = 'task_id'
     lookup_url_kwarg = 'task_id'
     queryset = api.models.Task.objects.all()
-
-    def get_participating_team(self, contest):
-        if hasattr(self.request, 'team_participant'):
-            return self.request.team_participant
-
-        helper = api.models.CPRHelper.objects.filter(
-            contest=contest,
-            user=self.request.user.id,
-        ).select_related('cpr__participant').first()
-        if not helper:
-            self.request.team_participant = None
-        else:
-            self.request.team_participant = helper.cpr.participant
-
-        return self.request.team_participant
 
     def get_contest(self):
         contest_id = self.kwargs.get('contest_id')
@@ -346,20 +338,22 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
         if not can_view:
             if not contest.is_published:
-                raise NotFound(detail='Contest not found.')
+                raise PermissionDenied('No access.')
 
-            if not contest.is_running and not contest.is_finished:
-                raise PermissionDenied(detail='Contest is not started yet')
+            if contest.is_upcoming:
+                raise PermissionDenied('Contest is not started yet')
 
-        team = self.get_participating_team(contest)
+        team = contest.get_participating_team(self.request.user)
         if not can_view and not contest.is_finished and team is None:
-            raise PermissionDenied(detail='Register for a contest first')
+            raise PermissionDenied('Register for a contest first')
 
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' and not contest.is_finished and team:
+            # if a user is registered & has opened contest, set open contest date
             api.models.ContestParticipantRelationship.objects.filter(
                 contest=contest,
                 participant=team,
-            ).update(has_opened_contest=True)
+                opened_contest_at__isnull=True,
+            ).update(opened_contest_at=timezone.now())
 
         return contest
 
@@ -387,7 +381,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         else:
             qs = qs.with_static_cost()
 
-        team = self.get_participating_team(contest)
+        team = contest.get_participating_team(self.request.user)
         qs = qs.with_solved_by_team(team)
 
         qs = qs.filter(
@@ -423,8 +417,8 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         except api.models.ContestTaskRelationship.DoesNotExist:
             raise NotFound('No such task.')
 
-        if self.action == 'retrieve' and self.request.user.has_perm('change_task', task):
-            task.can_edit_task = True
+        if self.action == 'retrieve':
+            task.can_edit_task = self.request.user.has_perm('change_task', task)
 
         return task
 
@@ -440,7 +434,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         return super(ContestTaskViewSet, self).list(request, *args, **kwargs)
 
-    @cache_response(timeout=5, key_func=api.contests.caching.ContestTaskSolvedKeyConstructor())
+    @cache_response(timeout=30, key_func=api.contests.caching.ContestTaskSolvedKeyConstructor())
     @action(detail=True,
             url_name='solved',
             url_path='solved',
@@ -474,7 +468,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
     )
     def submit_flag(self, *_args, **_kwargs):
         if getattr(self.request, 'limited', False):
-            raise Throttled(detail='You can submit flag 4 times per minute.')
+            raise Throttled(detail='You can submit a flag 4 times per minute.')
 
         task = self.get_object()
 
@@ -482,9 +476,9 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             raise ValidationError({'flag': 'You cannot submit this task'})
 
         contest = self.get_contest()
-        team = self.get_participating_team(contest)
+        team = contest.get_participating_team(self.request.user)
 
-        # One cannot submit the task during the contest, but not from a team
+        # One cannot submit the task during the contest without a registered team
         # to prevent abuse.
         if not team and contest.is_running:
             raise ValidationError({'flag': 'You are not registered for a contest'})
@@ -497,6 +491,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         if team and relation.solved_by.filter(id=team.id).exists():
             raise PermissionDenied('Task already solved.')
 
+        # noinspection PyUnresolvedReferences
         serializer = api.tasks.serializers.TaskSubmitSerializer(
             data=self.request.data,
             instance=task,
@@ -519,16 +514,20 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             submission.save()
 
         solved_at = timezone.now()
-        if team and contest.is_running:
+        user = self.request.user
+        upsolving = True
+        # If is registered and (if virtual) is participating virtually.
+        if team and contest.is_running and (not contest.is_virtual or contest.is_virtually_running_for(user)):
+            upsolving = False
             relation.solved_by.add(team)
             contest.contest_participant_relationship.filter(
-                participant_id=self.request.user.id,
+                participant=team,
             ).update(
                 last_solve=solved_at,
             )
 
-        task.solved_by.add(self.request.user)
+        task.solved_by.add(user)
         self.request.user.last_solve = solved_at
         self.request.user.save(update_fields=['last_solve'])
 
-        return Response('accepted!')
+        return Response(dict(success=True, upsolving=upsolving))

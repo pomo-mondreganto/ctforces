@@ -1,12 +1,20 @@
+from django import forms
 from django.contrib import admin
-from django.db.models import Value as V, Count
-from django.db.models.functions import Coalesce
+from django.db.models import Count
 from guardian.admin import GuardedModelAdmin
 
 import api.models
 
 
+class ContestTaskInlineAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if task := getattr(self.instance, 'task', None):
+            self.fields['main_tag'].queryset = task.tags.all()
+
+
 class ContestTaskInlineAdmin(admin.TabularInline):
+    form = ContestTaskInlineAdminForm
     classes = ('collapse',)
     model = api.models.ContestTaskRelationship
     fieldsets = (
@@ -26,7 +34,6 @@ class ContestTaskInlineAdmin(admin.TabularInline):
                 'fields': (
                     'cost',
                     'min_cost',
-                    'max_cost',
                     'decay_value',
                 ),
             },
@@ -54,12 +61,7 @@ class ContestTaskInlineAdmin(admin.TabularInline):
         return obj.solved_count
 
     def get_queryset(self, request):
-        return super(ContestTaskInlineAdmin, self).get_queryset(request).annotate(
-            solved_count=Coalesce(
-                Count('solved_by'),
-                V(0),
-            )
-        )
+        return super(ContestTaskInlineAdmin, self).get_queryset(request).with_solved_count()
 
 
 class ContestParticipantInlineAdmin(admin.TabularInline):
@@ -72,8 +74,9 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
                 'fields': (
                     'id',
                     'participant',
-                    'last_solve',
                     'registered_users',
+                    'last_solve',
+                    'opened_contest_at',
                 ),
             },
         ),
@@ -103,9 +106,10 @@ class ContestAdmin(GuardedModelAdmin):
         'is_running',
         'is_finished',
         'is_registration_open',
+        'is_virtual',
         'start_time',
         'end_time',
-        'registered_count',
+        'registrations',
     )
 
     list_display_links = (
@@ -118,7 +122,9 @@ class ContestAdmin(GuardedModelAdmin):
     )
 
     readonly_fields = (
-        'registered_count',
+        'registrations',
+        'is_running',
+        'is_finished',
     )
 
     fieldsets = (
@@ -151,8 +157,18 @@ class ContestAdmin(GuardedModelAdmin):
                 'fields': (
                     'start_time',
                     'end_time',
-                    'celery_start_task_id',
                     'celery_end_task_id',
+                    'processed_end_task',
+                ),
+                'classes': ('collapse',),
+            },
+        ),
+        (
+            'Virtual',
+            {
+                'fields': (
+                    'is_virtual',
+                    'virtual_duration',
                 ),
                 'classes': ('collapse',),
             },
@@ -183,7 +199,7 @@ class ContestAdmin(GuardedModelAdmin):
     save_as = True
 
     @staticmethod
-    def registered_count(obj):
+    def registrations(obj):
         return obj.registered_count
 
     def get_queryset(self, request):
@@ -237,25 +253,12 @@ class ContestIDFilter(InputFilter):
             )
 
 
-class TaskIDFilter(InputFilter):
-    parameter_name = 'task_id'
-
-    title = 'Task id'
-
-    def queryset(self, request, queryset):
-        if self.value() is not None:
-            task_id = self.value()
-            return queryset.filter(
-                task_id=task_id,
-            )
-
-
-class ContestTaskParticipantSolvedAdmin(admin.ModelAdmin):
+class CPRHelperAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'participant',
         'contest',
-        'task',
+        'user',
+        'cpr',
     )
 
     list_display_links = (
@@ -264,8 +267,19 @@ class ContestTaskParticipantSolvedAdmin(admin.ModelAdmin):
 
     list_filter = (
         UserIDFilter,
-        TaskIDFilter,
         ContestIDFilter,
+    )
+
+    list_select_related = (
+        'user',
+        'contest',
+        'cpr',
+    )
+
+    raw_id_fields = (
+        'user',
+        'contest',
+        'cpr',
     )
 
     fieldsets = (
@@ -274,17 +288,10 @@ class ContestTaskParticipantSolvedAdmin(admin.ModelAdmin):
             {
                 'fields': (
                     'id',
-                    'participant',
+                    'user',
                     'contest',
-                    'task',
+                    'cpr',
                 ),
             },
         ),
     )
-
-    def get_queryset(self, request):
-        return super(ContestTaskParticipantSolvedAdmin, self).get_queryset(request).select_related(
-            'participant',
-            'contest',
-            'task',
-        )

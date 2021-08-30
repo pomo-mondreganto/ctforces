@@ -1,6 +1,8 @@
 from django.db import models
 
 
+# This model has a single purpose:
+# asserting the uniqueness of a user's registration for a contest.
 class CPRHelper(models.Model):
     contest = models.ForeignKey(
         'api.Contest',

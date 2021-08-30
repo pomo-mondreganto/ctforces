@@ -151,7 +151,7 @@ class TeamContestsHistorySerializer(serializers.ModelSerializer, ReadOnlySeriali
             'contest',
             'contest_title',
             'delta',
-            'has_opened_contest',
+            'opened_contest_at',
             'registered_users_details',
         )
 

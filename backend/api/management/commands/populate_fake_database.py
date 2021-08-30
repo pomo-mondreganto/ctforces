@@ -186,7 +186,6 @@ class Command(BaseCommand):
                     main_tag=random.choice(task.tags.all()),
                     cost=fake.pyint(1, 1000),
                     min_cost=fake.pyint(1, 500),
-                    max_cost=fake.pyint(501, 1000),
                     decay_value=fake.pyint(1, 100),
                 )
                 rel.save()

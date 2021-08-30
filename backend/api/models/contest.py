@@ -2,16 +2,21 @@ from celery import current_app
 from django.db import models
 from django.db.models import (
     IntegerField,
+    BooleanField,
+    DateTimeField,
     OuterRef,
     Value as V,
     Count,
+    Subquery,
     Exists,
-    Q,
 )
 from django.db.models.functions import Coalesce
+from django.utils import timezone
+from django.utils.functional import cached_property
 
 from api import celery_tasks
 from api.database_functions import SubquerySum
+from .contest_participant_relationship import ContestParticipantRelationship
 from .contest_task_relationship import ContestTaskRelationship
 from .cpr_helper import CPRHelper
 
@@ -23,26 +28,47 @@ class ContestQuerySet(models.QuerySet):
         )
 
     def with_user_registered(self, user):
-        return self.annotate(
-            is_registered=Exists(
+        if user.is_authenticated:
+            annotation = Exists(
                 CPRHelper.objects.filter(
-                    user=user.id,
+                    user=user,
                     contest=OuterRef('id'),
                 ),
-            ),
-        )
+            )
+        else:
+            annotation = V(0, output_field=BooleanField())
+        return self.annotate(is_registered=annotation)
 
     def only_published(self):
         return self.filter(is_published=True)
 
-    def only_upcoming(self):
-        return self.filter(~Q(is_running=True) & ~Q(is_finished=True))
+    def only_upcoming(self, at=None):
+        if at is None:
+            at = timezone.now()
+        return self.filter(start_time__gt=at)
 
-    def only_running(self):
-        return self.filter(is_running=True)
+    def only_running(self, at=None):
+        if at is None:
+            at = timezone.now()
+        return self.filter(start_time__lte=at, end_time__gt=at)
 
-    def only_finished(self):
-        return self.filter(is_finished=True)
+    def only_finished(self, at=None):
+        if at is None:
+            at = timezone.now()
+        return self.filter(end_time__lte=at)
+
+    def with_opened_at(self, user):
+        if user.is_authenticated:
+            annotation = Subquery(
+                ContestParticipantRelationship.objects.filter(
+                    contest=OuterRef('id'),
+                    participant__participants=user,
+                ).values('opened_contest_at')[:1],
+            )
+        else:
+            annotation = V(None, output_field=DateTimeField)
+
+        return self.annotate(opened_at=annotation)
 
 
 class Contest(models.Model):
@@ -56,12 +82,10 @@ class Contest(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False)
     description = models.TextField()
 
-    start_time = models.DateTimeField(null=True, blank=True)
-    end_time = models.DateTimeField(null=True, blank=True)
+    start_time = models.DateTimeField(null=False, blank=False)
+    end_time = models.DateTimeField(null=False, blank=False)
 
     is_published = models.BooleanField(default=False)
-    is_running = models.BooleanField(default=False)
-    is_finished = models.BooleanField(default=False)
     is_registration_open = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -74,8 +98,14 @@ class Contest(models.Model):
     always_recalculate_rating = models.BooleanField(default=False)
     dynamic_scoring = models.BooleanField(default=False)
 
-    celery_start_task_id = models.CharField(max_length=50, null=True, blank=True)
+    is_virtual = models.BooleanField(default=False)
+    virtual_duration = models.DurationField(
+        help_text='Virtual participation duration ([DD] [HH:[MM:]]ss[.uuuuuu])',
+        null=True, blank=True,
+    )
+
     celery_end_task_id = models.CharField(max_length=50, null=True, blank=True)
+    processed_end_task = models.BooleanField(default=False)
 
     tasks = models.ManyToManyField(
         'api.Task',
@@ -93,26 +123,62 @@ class Contest(models.Model):
 
     objects = ContestQuerySet.as_manager()
 
-    def reset_start_action(self):
-        if self.celery_start_task_id:
-            current_app.control.revoke(self.celery_start_task_id)
-        result = celery_tasks.start_contest.apply_async(args=(self.id,), eta=self.start_time)
-        self.celery_start_task_id = result.id
-
     def reset_end_action(self):
         if self.celery_end_task_id:
             current_app.control.revoke(self.celery_end_task_id)
-        result = celery_tasks.end_contest.apply_async(args=(self.id,), eta=self.end_time)
+        result = celery_tasks.on_contest_ended.apply_async(args=(self.id,), eta=self.end_time)
         self.celery_end_task_id = result.id
 
     def save(self, *args, **kwargs):
-        if not self.id or Contest.objects.only('start_time').get(id=self.id).start_time != self.start_time:
-            self.reset_start_action()
-
         if not self.id or Contest.objects.only('end_time').get(id=self.id).end_time != self.end_time:
             self.reset_end_action()
 
         super(Contest, self).save(*args, **kwargs)
+
+    @cached_property
+    def is_upcoming(self, at=None):
+        if at is None:
+            at = timezone.now()
+        return at < self.start_time
+
+    @cached_property
+    def is_running(self, at=None):
+        if at is None:
+            at = timezone.now()
+        return self.start_time <= at < self.end_time
+
+    @cached_property
+    def is_finished(self, at=None):
+        if at is None:
+            at = timezone.now()
+        return self.end_time <= at
+
+    def _get_cpr(self, user):
+        helper = CPRHelper.objects.filter(
+            contest=self,
+            user=user.id,
+        ).select_related('cpr__participant').first()
+        return getattr(helper, 'cpr', None)
+
+    def get_participating_team(self, user):
+        return getattr(self._get_cpr(user), 'participant', None)
+
+    def is_virtually_running_for(self, user, at=None):
+        if not self.is_virtual:
+            return False
+        if at is None:
+            at = timezone.now()
+        if at < self.start_time:
+            return False
+
+        cpr = self._get_cpr(user)
+        if not cpr:
+            return False
+        opened_at = cpr.opened_contest_at
+        if not opened_at:
+            return False
+        end = min(self.end_time, opened_at + self.virtual_duration)
+        return at < end
 
     def __str__(self):
         return f"Contest object ({self.id}:{self.name})"
@@ -127,7 +193,7 @@ class Contest(models.Model):
         participant_cost_sum_subquery = SubquerySum(
             task_relations.filter(
                 contest=self,
-                solved_by__id=OuterRef('participant_id'),
+                solved_by=OuterRef('participant_id'),
             ).values('current_cost'),
             output_field=IntegerField(),
             field_name='current_cost',

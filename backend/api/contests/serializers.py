@@ -68,10 +68,12 @@ class CPRSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         team = attrs['participant']
+        registered_users = attrs['registered_users']
         members = team.participants.only('id')
-        diff = set(attrs['registered_users']).difference(set(members))
+        diff = set(registered_users) - set(members)
         if diff:
             raise ValidationError({'registered_users': f'You can\'t register users {diff}'})
+
         return attrs
 
     def create(self, validated_data):
@@ -135,7 +137,6 @@ class CTRSerializer(serializers.ModelSerializer):
             'is_solved_by_user',
             'main_tag',
             'main_tag_details',
-            'max_cost',
             'min_cost',
             'decay_value',
             'solved_count',
@@ -239,6 +240,8 @@ class ContestFullSerializer(serializers.ModelSerializer):
             'is_rated',
             'is_registration_open',
             'is_running',
+            'is_virtual',
+            'virtual_duration',
             'name',
             'public_scoreboard',
             'publish_tasks_after_finished',
@@ -260,6 +263,7 @@ class ContestPreviewSerializer(serializers.ModelSerializer, ReadOnlySerializerMi
     registered_count = serializers.IntegerField(read_only=True)
     author_username = serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     is_registered = serializers.BooleanField(read_only=True)
+    opened_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = api.models.Contest
@@ -274,15 +278,19 @@ class ContestPreviewSerializer(serializers.ModelSerializer, ReadOnlySerializerMi
             'is_registered',
             'is_registration_open',
             'is_running',
+            'is_virtual',
+            'virtual_duration',
             'name',
             'registered_count',
             'start_time',
+            'opened_at',
         )
 
 
 class ContestViewSerializer(serializers.ModelSerializer, ReadOnlySerializerMixin):
     can_edit_contest = serializers.BooleanField(read_only=True)
     can_view_scoreboard = serializers.BooleanField(read_only=True)
+    opened_at = serializers.DateTimeField(read_only=True)
     author_username = serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
 
     class Meta:
@@ -292,6 +300,7 @@ class ContestViewSerializer(serializers.ModelSerializer, ReadOnlySerializerMixin
             'can_edit_contest',
             'can_view_scoreboard',
             'created_at',
+            'description',
             'dynamic_scoring',
             'end_time',
             'id',
@@ -300,8 +309,11 @@ class ContestViewSerializer(serializers.ModelSerializer, ReadOnlySerializerMixin
             'is_rated',
             'is_registration_open',
             'is_running',
+            'is_virtual',
+            'virtual_duration',
             'name',
             'start_time',
+            'opened_at',
             'updated_at',
         )
 

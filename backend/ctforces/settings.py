@@ -84,6 +84,7 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'api.User'
 APPEND_SLASH = False
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 AUTHENTICATION_BACKENDS = [
     'api.backends.CustomAuthenticationBackend',
@@ -185,7 +186,7 @@ if EMAIL_MODE == 'smtp':
     EMAIL_USE_TLS = True
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 elif EMAIL_MODE == 'sendgrid':
-    SENDGRID_USER = os.environ['SENDGRID_USER']
+    SENDGRID_API_KEY = os.environ['SENDGRID_API_KEY']
 
 CELERY_BROKER_URL = f'amqp://{AMQP_USER}:{AMQP_PASS}@{AMQP_HOST}:{AMQP_PORT}/{AMQP_VHOST}'
 CELERY_TASK_SERIALIZER = 'pickle'
