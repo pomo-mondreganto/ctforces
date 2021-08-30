@@ -70,7 +70,7 @@ export default {
                     }
                 );
                 this.$toasted.success('Valid flag!');
-                this.serrors = [];
+                this.serrors = {};
                 if (data.upsolving) {
                     this.$set(this.task, 'is_solved_on_upsolving', true);
                     this.$toasted.info(

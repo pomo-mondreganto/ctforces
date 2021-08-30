@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import ContestForm from '@/components/Contests/Form';
+import ContestForm from '@/components/Form/Contest';
 import Contest from '@/models/contest';
 
 export default {

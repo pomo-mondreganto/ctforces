@@ -1,10 +1,7 @@
 const state = () => {
     return {
         contest: null,
-        errors: [],
-        runningContests: [],
-        upcomingContests: [],
-        finishedContests: [],
+        errors: {},
     };
 };
 
@@ -24,7 +21,7 @@ const actions = {
         try {
             const { data } = await this.$http.get(`/contests/${id}/`);
             commit('setContest', data);
-            commit('setErrors', []);
+            commit('setErrors', {});
         } catch (error) {
             commit('setErrors', this.$parse(error.response.data));
         }
