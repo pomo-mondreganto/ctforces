@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from django.db.models import F, Prefetch
+from django.db.models import Prefetch
 from django.db.transaction import atomic
 from django.utils import timezone
 from ratelimit.decorators import ratelimit
@@ -137,19 +137,17 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
     def get_scoreboard_for_participants_page(paginator, participants_page, contest: api.models.Contest):
         page_ids = list(map(lambda x: x.id, participants_page))
 
-        relationship_queryset = api.models.ContestTaskRelationship.objects.filter(
+        qs = api.models.ContestTaskRelationship.objects.filter(
             contest=contest,
         ).prefetch_related(
             Prefetch(
                 'solved_by',
                 queryset=api.models.Team.objects.filter(id__in=page_ids).only('id'),
-            )
-        ).annotate(
-            task_name=F('task__name'),
-        )
+            ),
+        ).with_task_name()
 
         formatted_data = defaultdict(list)
-        for relation in relationship_queryset:
+        for relation in qs:
             formatted_data[relation.task_name].extend(
                 map(lambda x: x.id, relation.solved_by.all()),
             )
@@ -354,6 +352,23 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
                 opened_contest_at__isnull=True,
             ).update(opened_contest_at=timezone.now())
 
+        if (
+            not can_view and
+            not contest.is_finished and
+            contest.randomize_tasks and
+            cpr and
+            not cpr.randomized_tasks
+        ):
+            with atomic():
+                cpr_copy = api.models.ContestParticipantRelationship.objects.filter(
+                    id=cpr.id,
+                ).select_for_update().first()
+                tasks = cpr_copy.randomize_tasks()
+                for task in tasks:
+                    task.chosen_for.add(cpr.participant_id)
+                cpr_copy.randomized_tasks = True
+                cpr_copy.save(update_fields=['randomized_tasks'])
+
         return contest
 
     @staticmethod
@@ -383,6 +398,9 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         team = contest.get_participating_team(self.request.user)
         qs = qs.with_solved_by_team(team)
 
+        if not contest.is_finished and contest.randomize_tasks:
+            qs = qs.chosen_for(team)
+
         qs = qs.filter(
             contest=contest,
         ).prefetch_related(
@@ -393,12 +411,10 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             'main_tag',
         )
 
-        if self.action in ['retrieve', 'get_solved', 'submit_flag']:
-            return qs
+        if self.action == 'list':
+            return list(map(self.relation_to_task, qs))
 
-        tasks = list(map(self.relation_to_task, qs))
-
-        return tasks
+        return qs
 
     def get_object(self):
         task_id = self.kwargs.get('task_id')

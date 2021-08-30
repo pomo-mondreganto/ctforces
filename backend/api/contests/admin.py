@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib import admin
-from django.db.models import Count
 from guardian.admin import GuardedModelAdmin
 
 import api.models
@@ -44,6 +43,7 @@ class ContestTaskInlineAdmin(admin.TabularInline):
                 'fields': (
                     'solved_count',
                     'solved_by',
+                    'chosen_for',
                 )
             }
         )
@@ -54,6 +54,7 @@ class ContestTaskInlineAdmin(admin.TabularInline):
     raw_id_fields = (
         'task',
         'solved_by',
+        'chosen_for',
     )
 
     @staticmethod
@@ -77,6 +78,7 @@ class ContestParticipantInlineAdmin(admin.TabularInline):
                     'registered_users',
                     'last_solve',
                     'opened_contest_at',
+                    'randomized_tasks',
                 ),
             },
         ),
@@ -174,6 +176,16 @@ class ContestAdmin(GuardedModelAdmin):
             },
         ),
         (
+            'Virtual',
+            {
+                'fields': (
+                    'randomize_tasks',
+                    'randomize_tasks_count',
+                ),
+                'classes': ('collapse',),
+            },
+        ),
+        (
             'Auxiliary',
             {
                 'fields': (
@@ -203,9 +215,10 @@ class ContestAdmin(GuardedModelAdmin):
         return obj.registered_count
 
     def get_queryset(self, request):
-        return super(ContestAdmin, self).get_queryset(request).annotate(
-            registered_count=Count('participants', distinct=True),
-        ).prefetch_related('tasks', 'participants')
+        return super(ContestAdmin, self).get_queryset(request).with_participant_count().prefetch_related(
+            'tasks',
+            'participants',
+        )
 
 
 class InputFilter(admin.SimpleListFilter):

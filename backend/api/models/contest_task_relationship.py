@@ -60,6 +60,14 @@ class ContestTaskRelationshipQuerySet(models.QuerySet):
             ),
         )
 
+    def with_task_name(self):
+        return self.annotate(task_name=F('task__name'))
+
+    def chosen_for(self, team):
+        if not team:
+            return self.none()
+        return self.filter(chosen_for=team)
+
 
 class ContestTaskRelationship(models.Model):
     contest = models.ForeignKey(
@@ -85,6 +93,12 @@ class ContestTaskRelationship(models.Model):
     solved_by = models.ManyToManyField(
         'Team',
         related_name='contest_task_relationship_solved',
+        blank=True,
+    )
+
+    chosen_for = models.ManyToManyField(
+        'Team',
+        related_name='chosen_contest_tasks_relationship',
         blank=True,
     )
 

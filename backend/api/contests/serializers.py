@@ -245,6 +245,8 @@ class ContestFullSerializer(serializers.ModelSerializer):
             'name',
             'public_scoreboard',
             'publish_tasks_after_finished',
+            'randomize_tasks',
+            'randomize_tasks_count',
             'registered_count',
             'start_time',
             'updated_at',

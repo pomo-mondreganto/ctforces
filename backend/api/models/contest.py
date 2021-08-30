@@ -66,7 +66,7 @@ class ContestQuerySet(models.QuerySet):
                 ).values('opened_contest_at')[:1],
             )
         else:
-            annotation = V(None, output_field=DateTimeField)
+            annotation = V(None, output_field=DateTimeField())
 
         return self.annotate(opened_at=annotation)
 
@@ -103,6 +103,9 @@ class Contest(models.Model):
         help_text='Virtual participation duration ([DD] [HH:[MM:]]ss[.uuuuuu])',
         null=True, blank=True,
     )
+
+    randomize_tasks = models.BooleanField(default=False)
+    randomize_tasks_count = models.PositiveIntegerField(default=0)
 
     celery_end_task_id = models.CharField(max_length=50, null=True, blank=True)
     processed_end_task = models.BooleanField(default=False)
