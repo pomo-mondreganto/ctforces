@@ -153,15 +153,18 @@ class Contest(models.Model):
             at = timezone.now()
         return self.end_time <= at
 
-    def _get_cpr(self, user):
-        helper = CPRHelper.objects.filter(
+    def get_cpr(self, user, prefetch=False):
+        qs = CPRHelper.objects.filter(
             contest=self,
             user=user.id,
-        ).select_related('cpr__participant').first()
-        return getattr(helper, 'cpr', None)
+        )
+        if prefetch:
+            qs = qs.select_related('cpr__participant')
+        return getattr(qs.first(), 'cpr', None)
 
     def get_participating_team(self, user):
-        return getattr(self._get_cpr(user), 'participant', None)
+        cpr = self.get_cpr(user, prefetch=True)
+        return getattr(cpr, 'participant', None)
 
     def is_virtually_running_for(self, user, at=None):
         if not self.is_virtual:
@@ -171,7 +174,7 @@ class Contest(models.Model):
         if at < self.start_time:
             return False
 
-        cpr = self._get_cpr(user)
+        cpr = self.get_cpr(user)
         if not cpr:
             return False
         opened_at = cpr.opened_contest_at

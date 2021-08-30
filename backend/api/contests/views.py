@@ -84,14 +84,14 @@ class ContestViewSet(CustomPermissionsViewSetMixin,
 
             # if a user is registered & has opened contest, set open contest date
             if not obj.is_finished:
-                team = obj.get_participating_team(self.request.user)
-                cnt = api.models.ContestParticipantRelationship.objects.filter(
-                    contest=obj,
-                    participant=team,
-                    opened_contest_at__isnull=True,
-                ).update(opened_contest_at=timezone.now())
-                if cnt:
-                    obj.refresh_from_db()
+                cpr = obj.get_cpr(self.request.user)
+                if cpr:
+                    cnt = api.models.ContestParticipantRelationship.objects.filter(
+                        id=cpr.id,
+                        opened_contest_at__isnull=True,
+                    ).update(opened_contest_at=timezone.now())
+                    if cnt:
+                        obj.refresh_from_db()
 
         return obj
 
@@ -343,15 +343,14 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             if contest.is_upcoming:
                 raise PermissionDenied('Contest is not started yet')
 
-        team = contest.get_participating_team(self.request.user)
-        if not can_view and not contest.is_finished and team is None:
+        cpr = contest.get_cpr(self.request.user)
+        if not can_view and not contest.is_finished and cpr is None:
             raise PermissionDenied('Register for a contest first')
 
-        if self.action == 'retrieve' and not contest.is_finished and team:
-            # if a user is registered & has opened contest, set open contest date
+        if not contest.is_finished and cpr and not cpr.opened_contest_at:
+            # if a user is registered & has opened contest, set open contest date in a transaction-safe way.
             api.models.ContestParticipantRelationship.objects.filter(
-                contest=contest,
-                participant=team,
+                id=cpr.id,
                 opened_contest_at__isnull=True,
             ).update(opened_contest_at=timezone.now())
 
@@ -476,11 +475,11 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             raise ValidationError({'flag': 'You cannot submit this task'})
 
         contest = self.get_contest()
-        team = contest.get_participating_team(self.request.user)
+        cpr = contest.get_cpr(self.request.user)
 
         # One cannot submit the task during the contest without a registered team
         # to prevent abuse.
-        if not team and contest.is_running:
+        if not cpr and contest.is_running:
             raise ValidationError({'flag': 'You are not registered for a contest'})
 
         relation = api.models.ContestTaskRelationship.objects.get(
@@ -488,7 +487,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
             task=task,
         )
 
-        if team and relation.solved_by.filter(id=team.id).exists():
+        if cpr and relation.solved_by.filter(id=cpr.participant_id).exists():
             raise PermissionDenied('Task already solved.')
 
         # noinspection PyUnresolvedReferences
@@ -499,7 +498,7 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
         submission = api.models.Submission(
             user=self.request.user,
-            participant=team,
+            participant_id=cpr.participant_id,
             contest=contest,
             task=task,
             flag=serializer.initial_data.get('flag'),
@@ -517,16 +516,18 @@ class ContestTaskViewSet(rest_viewsets.ReadOnlyModelViewSet):
         user = self.request.user
         upsolving = True
         # If is registered and (if virtual) is participating virtually.
-        if team and contest.is_running and (not contest.is_virtual or contest.is_virtually_running_for(user)):
+        if cpr and contest.is_running and (not contest.is_virtual or contest.is_virtually_running_for(user)):
             upsolving = False
-            relation.solved_by.add(team)
+            relation.solved_by.add(cpr.participant_id)
             contest.contest_participant_relationship.filter(
-                participant=team,
+                id=cpr.id,
+                last_solve__lt=solved_at,
             ).update(
                 last_solve=solved_at,
             )
 
         task.solved_by.add(user)
+        # fixme: solved_at is updated even when task is already solved on upsolving
         self.request.user.last_solve = solved_at
         self.request.user.save(update_fields=['last_solve'])
 
