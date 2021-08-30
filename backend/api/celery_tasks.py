@@ -145,6 +145,7 @@ def send_users_mail(subject, text_message, html_message, recipient_list):
     elif settings.EMAIL_MODE == 'sendgrid':
         logger.info('Sending email to %s with sendgrid', recipient_list)
         message = Mail(
+            from_email=settings.SENDGRID_FROM_EMAIL,
             to_emails=recipient_list,
             subject=subject,
             html_content=html_message,

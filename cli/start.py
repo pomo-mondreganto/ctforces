@@ -8,3 +8,4 @@ from .utils import run_docker
 @with_prod_option
 def start(**_kwargs):
     run_docker(['up', '--build', '-d'])
+    run_docker(['restart', 'nginx'])

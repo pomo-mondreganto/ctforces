@@ -78,6 +78,7 @@ def setup_django(config: models.DjangoConfig):
         email_config += [
             'DJANGO_EMAIL_MODE=sendgrid',
             f'SENDGRID_API_KEY={cfg.api_key}',
+            f'SENDGRID_FROM_EMAIL={cfg.from_email}',
         ]
     else:
         email_config += [
