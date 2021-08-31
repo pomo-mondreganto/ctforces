@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Exists, OuterRef
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -16,21 +15,22 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_extensions.cache.decorators import cache_response
 
-from api import celery_tasks as api_tasks
-from api import models as api_models
-from api import pagination as api_pagination
-from api.posts import serializers as api_posts_serializers
-from api.tasks import serializers as api_tasks_serializers
-from api.teams import serializers as api_teams_serializers
+import api.models
+import api.pagination
+import api.posts.serializers
+import api.tasks
+import api.tasks.serializers
+import api.teams.serializers
+import api.users.caching
+import api.users.filters
+import api.users.serializers
+from api.celery_tasks import send_email
 from api.tokens import serialize, deserialize
-from api.users import caching as api_users_caching
-from api.users import filters as api_users_filters
-from api.users import serializers as api_users_serializers
 
 
 class UserCreateView(CreateAPIView):
-    model = api_models.User
-    serializer_class = api_users_serializers.UserCreateSerializer
+    model = api.models.User
+    serializer_class = api.users.serializers.UserCreateSerializer
     permission_classes = (AllowAny,)
 
     @staticmethod
@@ -40,13 +40,14 @@ class UserCreateView(CreateAPIView):
         context = {
             'token': token,
             'username': user.username,
-            'email_url': settings.EMAIL_URL,
+            'url': settings.EMAIL_URL,
+            'logo': settings.LOGO_LINK,
         }
 
         message_plain = render_to_string('email_templates/email_confirmation.txt', context)
         message_html = render_to_string('email_templates/email_confirmation.html', context)
 
-        api_tasks.send_users_mail.delay(
+        send_email.delay(
             subject='CTForces account confirmation',
             text_message=message_plain,
             recipient_list=[user.email],
@@ -78,11 +79,11 @@ class EmailConfirmationEndpointView(APIView):
             if not user_id:
                 raise TypeError
         except TypeError:
-            raise ValidationError({'detail': 'Token is invalid or has expired.'})
+            raise ValidationError('Token is invalid or has expired.')
 
-        user = api_models.User.objects.filter(id=user_id).first()
+        user = api.models.User.objects.filter(id=user_id).first()
         if not user:
-            raise ValidationError({'detail': 'No such user.'})
+            raise ValidationError('No such user.')
         user.is_active = True
         user.save()
         return Response(user_id)
@@ -97,7 +98,7 @@ class ActivationEmailResendView(APIView):
             raise ValidationError(detail='Functionality is disabled for this server')
 
         email = request.data.get('email', '').lower()
-        user = api_models.User.objects.filter(email=email).first()
+        user = api.models.User.objects.filter(email=email).first()
         if not user:
             raise ValidationError({'email': 'User with such email is not registered'})
         if user.is_active:
@@ -124,13 +125,14 @@ class ActivationEmailResendView(APIView):
         context = {
             'token': token,
             'username': user.username,
-            'email_url': settings.EMAIL_URL,
+            'url': settings.EMAIL_URL,
+            'logo': settings.LOGO_LINK,
         }
 
         message_plain = render_to_string('email_templates/email_confirmation.txt', context)
         message_html = render_to_string('email_templates/email_confirmation.html', context)
 
-        api_tasks.send_users_mail.delay(
+        send_email.delay(
             subject='CTForces account confirmation',
             text_message=message_plain,
             recipient_list=[email],
@@ -151,7 +153,7 @@ class PasswordResetRequestView(APIView):
             raise ValidationError(detail='Functionality is disabled for this server')
 
         email = request.data.get('email', '').lower()
-        user = api_models.User.objects.filter(email=email).first()
+        user = api.models.User.objects.filter(email=email).first()
         if not user:
             raise ValidationError({'email': 'User with such email is not registered'})
 
@@ -176,16 +178,16 @@ class PasswordResetRequestView(APIView):
         context = {
             'token': token,
             'username': user.username,
-            'email_url': settings.EMAIL_URL,
+            'url': settings.EMAIL_URL,
+            'logo': settings.LOGO_LINK,
         }
 
         message_plain = render_to_string('email_templates/password_reset.txt', context)
         message_html = render_to_string('email_templates/password_reset.html', context)
 
-        api_tasks.send_users_mail.delay(
+        send_email.delay(
             subject='CTForces password reset',
             text_message=message_plain,
-            from_email='noreply@ctforces.com',
             recipient_list=[email],
             html_message=message_html,
         )
@@ -210,11 +212,11 @@ class PasswordResetEndpointView(APIView):
         except TypeError:
             raise ValidationError({'detail': 'Token is invalid or has expired.'})
 
-        user = api_models.User.objects.filter(id=user_id).first()
+        user = api.models.User.objects.filter(id=user_id).first()
         if not user:
             raise ValidationError({'detail': 'No such user.'})
 
-        serializer = api_users_serializers.UserPasswordResetSerializer(
+        serializer = api.users.serializers.UserPasswordResetSerializer(
             data={
                 'password': new_password
             },
@@ -241,7 +243,7 @@ class LoginView(APIView):
             raise AuthenticationFailed('User is not activated')
 
         login(request, user)
-        response_data = api_users_serializers.UserBasicSerializer(
+        response_data = api.users.serializers.UserBasicSerializer(
             user,
             context={'request': request},
         ).data
@@ -258,29 +260,15 @@ class LogoutView(APIView):
 
 
 class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
+    queryset = api.models.User.objects.all()
     permission_classes = (IsAuthenticated,)
-    serializer_class = api_users_serializers.UserMainSerializer
+    serializer_class = api.users.serializers.UserMainSerializer
 
     def get_queryset(self):
+        qs = super(CurrentUserRetrieveUpdateView, self).get_queryset()
         if self.request.method == 'GET':
-            return api_models.User.upsolving_annotated.annotate(
-                has_tasks=Exists(
-                    api_models.Task.objects.filter(
-                        author_id=OuterRef('id'),
-                    ),
-                ),
-                has_contests=Exists(
-                    api_models.Contest.objects.filter(
-                        author_id=OuterRef('id'),
-                    ),
-                ),
-                has_posts=Exists(
-                    api_models.Post.objects.filter(
-                        author_id=OuterRef('id'),
-                    ),
-                ),
-            ).all()
-        return api_models.User.objects.all()
+            qs = qs.with_cost_sum()
+        return qs
 
     def get_object(self):
         queryset = self.get_queryset()
@@ -288,14 +276,12 @@ class CurrentUserRetrieveUpdateView(RetrieveUpdateAPIView):
 
         if self.request.method == 'GET':
             obj.can_create_tasks = self.request.user.has_perm('api.add_task')
-            obj.can_create_posts = True
             obj.can_create_contests = self.request.user.has_perm('api.add_contest')
-            obj.can_create_taskfiles = self.request.user.has_perm('api.add_taskfile')
             obj.is_admin = self.request.user.is_admin
 
         return obj
 
-    @cache_response(timeout=3600, key_func=api_users_caching.CurrentUserRetrieveKeyConstructor())
+    @cache_response(timeout=3600, key_func=api.users.caching.CurrentUserRetrieveKeyConstructor())
     def retrieve(self, request, *args, **kwargs):
         return super(CurrentUserRetrieveUpdateView, self).retrieve(request, *args, **kwargs)
 
@@ -306,7 +292,7 @@ class AvatarUploadView(APIView):
 
     @staticmethod
     def post(request):
-        serializer = api_users_serializers.AvatarUploadSerializer(data=request.data,
+        serializer = api.users.serializers.AvatarUploadSerializer(data=request.data,
                                                                   instance=request.user,
                                                                   context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -316,29 +302,33 @@ class AvatarUploadView(APIView):
 
 class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     permission_classes = (AllowAny,)
-    serializer_class = api_users_serializers.UserBasicSerializer
-    queryset = api_models.User.upsolving_annotated.all()
-    pagination_class = api_pagination.UserDefaultPagination
+    serializer_class = api.users.serializers.UserBasicSerializer
+    queryset = api.models.User.objects.all().with_cost_sum()
+    pagination_class = api.pagination.UserDefaultPagination
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
-    filterset_class = api_users_filters.UserFilter
+    filterset_class = api.users.filters.UserFilter
+
+    @cache_response(timeout=5, key_func=api.users.caching.UserListKeyConstructor())
+    def list(self, request, *args, **kwargs):
+        return super(UserViewSet, self).list(request, *args, **kwargs)
 
     @action(detail=True, url_name='tasks', url_path='tasks', methods=['get'])
     def get_users_tasks(self, request, **_kwargs):
         tasks_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        qs = api_models.Task.objects.published()
+        qs = api.models.Task.objects.published()
 
         if tasks_type == 'all':
-            qs = (qs | get_objects_for_user(request.user, 'view_task', api_models.Task)).distinct()
+            qs = (qs | get_objects_for_user(request.user, 'view_task', api.models.Task)).distinct()
 
         qs = qs.filter(author=user).order_by('-id').prefetch_related('tags')
         qs = qs.with_solved_count().with_solved_by_user(self.request.user)
 
-        return api_pagination.get_paginated_response(
-            paginator=api_pagination.TaskDefaultPagination(),
+        return api.pagination.get_paginated_response(
+            paginator=api.pagination.TaskDefaultPagination(),
             queryset=qs,
-            serializer_class=api_tasks_serializers.TaskPreviewSerializer,
+            serializer_class=api.tasks.serializers.TaskPreviewSerializer,
             request=request,
         )
 
@@ -346,18 +336,18 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
     def get_users_posts(self, request, **_kwargs):
         posts_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        queryset = api_models.Post.objects.filter(is_published=True)
+        queryset = api.models.Post.objects.filter(is_published=True)
 
         if posts_type == 'all':
-            queryset = (queryset | get_objects_for_user(request.user, 'view_post', api_models.Post)).distinct()
+            queryset = (queryset | get_objects_for_user(request.user, 'view_post', api.models.Post)).distinct()
 
         queryset = queryset.filter(author=user)
         queryset = queryset.order_by('-id').select_related('author')
 
-        return api_pagination.get_paginated_response(
-            paginator=api_pagination.PostDefaultPagination(),
+        return api.pagination.get_paginated_response(
+            paginator=api.pagination.PostDefaultPagination(),
             queryset=queryset,
-            serializer_class=api_posts_serializers.PostMainSerializer,
+            serializer_class=api.posts.serializers.PostMainSerializer,
             request=request,
         )
 
@@ -367,9 +357,9 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
         queryset = user.teams.all()
         queryset = queryset.order_by('-id')
 
-        return api_pagination.get_paginated_response(
-            paginator=api_pagination.TeamDefaultPagination(),
+        return api.pagination.get_paginated_response(
+            paginator=api.pagination.TeamDefaultPagination(),
             queryset=queryset,
-            serializer_class=api_teams_serializers.TeamMinimalSerializer,
+            serializer_class=api.teams.serializers.TeamMinimalSerializer,
             request=request,
         )

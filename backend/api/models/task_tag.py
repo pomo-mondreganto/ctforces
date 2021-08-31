@@ -1,6 +1,12 @@
+from django.core.validators import RegexValidator
 from django.db import models
+from django.utils.deconstruct import deconstructible
 
-from .auxiliary import TagNameValidator
+
+@deconstructible
+class TagNameValidator(RegexValidator):
+    regex = '^[a-z0-9]+(-[a-z0-9]+)*[a-z0-9]+$'
+    message = 'Name must consist of words (lowercase letters and digits), divided my single dash'
 
 
 class TaskTag(models.Model):

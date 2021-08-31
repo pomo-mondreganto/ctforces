@@ -1,7 +1,7 @@
-from api import permissions as api_permissions
+import api.permissions
 
 
-class HasEditTeamPermission(api_permissions.HasPermissionMixin):
+class HasEditTeamPermission(api.permissions.HasPermissionMixin):
     permission_name = 'api.change_team'
     must_have_general_permission = False
 
@@ -9,7 +9,7 @@ class HasEditTeamPermission(api_permissions.HasPermissionMixin):
         return True
 
 
-class HasDeleteTeamPermission(api_permissions.HasPermissionMixin):
+class HasDeleteTeamPermission(api.permissions.HasPermissionMixin):
     permission_name = 'api.delete_team'
     must_have_general_permission = False
 

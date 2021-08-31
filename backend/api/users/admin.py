@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.db.models import Sum, Value as V, Q
 from django.db.models.functions import Coalesce
 
-from api import models as api_models
+import api.models
 
 
 class UserAdminActionForm(ActionForm):
@@ -76,7 +76,6 @@ class CustomUserAdmin(UserAdmin):
                     'rating',
                     'max_rating',
                     'cost_sum',
-                    'has_participated_in_rated_contest',
                     'show_in_ratings',
                 ),
             }
@@ -134,7 +133,7 @@ class CustomUserAdmin(UserAdmin):
         except ValueError:
             raise forms.ValidationError('Invalid contest_id')
 
-        contest = api_models.Contest.objects.filter(id=contest_id).only('id').first()
+        contest = api.models.Contest.objects.filter(id=contest_id).only('id').first()
         if not contest:
             raise forms.ValidationError('Invalid contest')
 
@@ -143,8 +142,8 @@ class CustomUserAdmin(UserAdmin):
 
         to_register_ids = list(to_register_ids.difference(already_registered))
 
-        api_models.ContestParticipantRelationship.objects.bulk_create([
-            api_models.ContestParticipantRelationship(
+        api.models.ContestParticipantRelationship.objects.bulk_create([
+            api.models.ContestParticipantRelationship(
                 contest_id=contest.id,
                 participant_id=user_id,
             ) for user_id in to_register_ids

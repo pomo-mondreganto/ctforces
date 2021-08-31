@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from .constants import DEFAULT_LOGO
+
 
 class AdminConfig(BaseModel):
     user: str
@@ -45,6 +47,7 @@ class EmailConfig(BaseModel):
 class DjangoConfig(BaseModel):
     debug: bool = False
     secret_key: Optional[str]
+    logo: str = DEFAULT_LOGO
     email: EmailConfig
 
 

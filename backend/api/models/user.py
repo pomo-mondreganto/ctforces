@@ -1,7 +1,17 @@
+import re
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager
+from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models import (
+    Sum,
+    Value as V,
+    Q,
+)
+from django.db.models.functions import Coalesce
 from django.utils import timezone
+from django.utils.deconstruct import deconstructible
 from django.utils.functional import cached_property
 from rest_framework_tricks.models.fields import NestedProxyField
 from stdimage.models import StdImageField
@@ -11,13 +21,39 @@ from .auxiliary import (
     CustomImageSizeValidator,
     CustomUploadTo,
     stdimage_processor,
-    CustomASCIIUsernameValidator,
-    UserUpsolvingAnnotatedManager,
 )
 
 
+@deconstructible
+class ASCIIUsernameValidator(RegexValidator):
+    regex = r'^[\w_-]{3,15}$'
+    message = (
+        'Username needs to contain from 3 to 15 English letters, '
+        'numbers, and -/_ characters'
+    )
+    flags = re.ASCII
+
+
+class UserQuerySet(models.QuerySet):
+    def with_cost_sum(self):
+        return self.annotate(
+            cost_sum=Coalesce(
+                Sum(
+                    'solved_tasks__cost',
+                    filter=Q(solved_tasks__show_on_main_page=True),
+                ),
+                V(0),
+            ),
+        )
+
+
+class CustomUserManager(UserManager):
+    def get_queryset(self):
+        return UserQuerySet(self.model, using=self._db)
+
+
 class User(AbstractUser):
-    username_validator = CustomASCIIUsernameValidator()
+    username_validator = ASCIIUsernameValidator()
     email = models.EmailField('email address', blank=False, unique=True, null=False)
 
     rating = models.IntegerField(default=2000)
@@ -26,7 +62,6 @@ class User(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
     last_solve = models.DateTimeField(default=timezone.now)
 
-    has_participated_in_rated_contest = models.BooleanField(default=False)
     show_in_ratings = models.BooleanField(default=True)
     last_email_resend = models.DateTimeField(null=True, blank=True)
 
@@ -53,7 +88,7 @@ class User(AbstractUser):
         null=False, blank=False,
     )
 
-    upsolving_annotated = UserUpsolvingAnnotatedManager()
+    objects = CustomUserManager()
 
     telegram = models.CharField(max_length=255, blank=True, null=False, default="")
     hide_personal_info = models.BooleanField(default=False)
@@ -72,5 +107,3 @@ class User(AbstractUser):
         permissions = (
             ('view_personal_info', 'Can view user\'s personal information'),
         )
-
-        default_manager_name = 'objects'

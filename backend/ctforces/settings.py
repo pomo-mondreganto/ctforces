@@ -2,8 +2,8 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = os.environ.get('DJANGO_DEBUG') == '1'
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'testing')
+DEBUG = os.getenv('DJANGO_DEBUG') == '1'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'testing')
 
 ALLOWED_HOSTS = ['*']
 
@@ -173,7 +173,7 @@ CORS_ORIGIN_REGEX_WHITELIST = [
     r"^http://127.0.0.1:\d+$",
 ]
 
-EMAIL_MODE = os.environ.get('DJANGO_EMAIL_MODE')
+EMAIL_MODE = os.getenv('DJANGO_EMAIL_MODE')
 EMAIL_ENABLED = EMAIL_MODE in ['smtp', 'sendgrid']
 EMAIL_URL = os.environ['DJANGO_EMAIL_URL']
 EMAIL_RESEND_COOLDOWN = 120
@@ -224,3 +224,5 @@ AWS_S3_ENDPOINT_URL = os.environ['S3_ENDPOINT']
 AWS_ACCESS_KEY_ID = os.environ['S3_ACCESS_KEY']
 AWS_SECRET_ACCESS_KEY = os.environ['S3_SECRET_KEY']
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+LOGO_LINK = os.getenv('DJANGO_LOGO_LINK')

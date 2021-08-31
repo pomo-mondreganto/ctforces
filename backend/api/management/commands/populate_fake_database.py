@@ -188,7 +188,7 @@ class Command(BaseCommand):
                 )
                 rel.save()
 
-                if end_time > now():
+                if start_time <= now():
                     solved = list(random.sample(participants, k=random.randint(1, len(participants))))
                     rel.solved_by.add(*solved)
 

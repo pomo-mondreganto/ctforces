@@ -1,11 +1,11 @@
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 
-from api import models as api_models
+import api.models
 
 
 class ContestParticipantInlineAdmin(admin.TabularInline):
-    model = api_models.ContestParticipantRelationship
+    model = api.models.ContestParticipantRelationship
     classes = ('collapse',)
 
     fieldsets = (

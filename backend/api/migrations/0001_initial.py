@@ -71,7 +71,6 @@ class Migration(migrations.Migration):
                 'default_manager_name': 'objects',
             },
             managers=[
-                ('upsolving_annotated', api.models.auxiliary.UserUpsolvingAnnotatedManager()),
                 ('objects', django.contrib.auth.models.UserManager()),
             ],
         ),
@@ -129,7 +128,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name',
-                 models.CharField(max_length=15, unique=True, validators=[api.models.auxiliary.TagNameValidator])),
+                 models.CharField(max_length=15, unique=True, validators=[api.models.task_tag.TagNameValidator])),
             ],
             options={
                 'ordering': ('name',),

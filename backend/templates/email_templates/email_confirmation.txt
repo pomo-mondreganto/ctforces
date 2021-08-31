@@ -1,5 +1,5 @@
-Welcome to CTForces, {{ username }}!
+Welcome to CTForces!
 
 To confirm your email, open this link in your browser:
 
-{{ email_url }}/confirm_email?token={{ token }}
+{{ url }}/confirm_email?token={{ token }}

@@ -7,6 +7,9 @@ class TaskQuerySet(models.QuerySet):
     def published(self):
         return self.filter(is_published=True)
 
+    def on_main_page(self):
+        return self.filter(show_on_main_page=True)
+
     def with_solved_count(self):
         return self.annotate(
             solved_count=Count(

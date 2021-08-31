@@ -89,6 +89,7 @@ def setup_django(config: models.DjangoConfig):
         "# THIS FILE IS MANAGED BY 'control.py'",
         f'DJANGO_DEBUG={debug}',
         f'DJANGO_SECRET_KEY={secret_key}',
+        f'DJANGO_LOGO_LINK={config.logo}',
     ]
     django_config += email_config
     utils.print_bold(f'Writing django env to {constants.DJANGO_ENV_PATH}')

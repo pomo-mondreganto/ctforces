@@ -1,17 +1,17 @@
-from api import permissions as api_permissions
+import api.permissions
 
 
-class HasEditPostPermission(api_permissions.HasPermissionMixin):
+class HasEditPostPermission(api.permissions.HasPermissionMixin):
     permission_name = 'api.change_post'
     must_have_general_permission = False
 
 
-class HasEditPostPermissionOrReadOnly(api_permissions.HasPermissionOrReadOnlyMixin):
+class HasEditPostPermissionOrReadOnly(api.permissions.HasPermissionOrReadOnlyMixin):
     permission_name = 'api.change_post'
     must_have_general_permission = False
 
 
-class HasViewPostPermission(api_permissions.HasViewPermissionIfPublishedMixin):
+class HasViewPostPermission(api.permissions.HasViewPermissionIfPublishedMixin):
     permission_name = 'api.view_post'
     must_have_general_permission = False
 

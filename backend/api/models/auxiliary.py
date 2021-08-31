@@ -1,47 +1,14 @@
 import os
-import re
 import uuid
 from PIL import Image
 from django.conf import settings
-from django.contrib.auth.models import UserManager
-from django.core import validators
 from django.core.exceptions import ValidationError
-from django.db.models import Sum, Q, Value as V, FileField
-from django.db.models.functions import Coalesce
+from django.db.models import FileField
 from django.utils.deconstruct import deconstructible
 from io import BytesIO
 from rest_framework import exceptions
 
 from api.celery_tasks import process_stdimage
-
-
-@deconstructible
-class CustomASCIIUsernameValidator(validators.RegexValidator):
-    regex = r'^[\w_-]{3,15}$'
-    message = (
-        'Username needs to contain from 3 to 15 English letters, '
-        'numbers, and -/_ characters'
-    )
-    flags = re.ASCII
-
-
-@deconstructible
-class TagNameValidator(validators.RegexValidator):
-    regex = '^[a-z0-9]+(-[a-z0-9]+)*[a-z0-9]+$'
-    message = 'Name must consist of words (lowercase letters and digits), divided my single dash'
-
-
-class UserUpsolvingAnnotatedManager(UserManager):
-    def get_queryset(self):
-        return super(UserUpsolvingAnnotatedManager, self).get_queryset().annotate(
-            cost_sum=Coalesce(
-                Sum(
-                    'solved_tasks__cost',
-                    filter=Q(solved_tasks__show_on_main_page=True),
-                ),
-                V(0),
-            )
-        )
 
 
 @deconstructible

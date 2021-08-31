@@ -48,7 +48,7 @@ class TaskViewSet(api.mixins.CustomPermissionsViewSetMixin,
         qs = qs.prefetch_related('tags').select_related('author')
 
         if self.action == 'list':
-            qs = qs.filter(show_on_main_page=True)
+            qs = qs.on_main_page()
 
         if self.action in ['retrieve', 'get_full_task']:
             qs = qs.prefetch_related('files')
@@ -144,6 +144,7 @@ class TaskTagViewSet(rest_mixins.CreateModelMixin,
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'create':
+            # noinspection PyUnresolvedReferences
             kwargs['many'] = isinstance(self.request.data, list)
         return super(TaskTagViewSet, self).get_serializer(*args, **kwargs)
 

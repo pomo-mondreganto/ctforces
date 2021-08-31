@@ -5,13 +5,13 @@ from rest_framework import serializers as rest_serializers
 from rest_framework import validators as rest_validators
 from rest_framework.fields import empty
 
-from api import mixins as api_mixins
-from api import models as api_models
+import api.mixins
+import api.models
 
 
 class UserCreateSerializer(rest_serializers.ModelSerializer):
     class Meta:
-        model = api_models.User
+        model = api.models.User
         fields = (
             'email',
             'id',
@@ -24,9 +24,9 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
             },
             'username': {
                 'validators': [
-                    api_models.User.username_validator,
+                    api.models.User.username_validator,
                     rest_validators.UniqueValidator(
-                        queryset=api_models.User.objects.all(),
+                        queryset=api.models.User.objects.all(),
                         message='User with this username already exists',
                     ),
                 ],
@@ -36,12 +36,12 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
     @staticmethod
     def validate_email(value):
         new_email = value.lower()
-        if api_models.User.objects.filter(email=new_email).exists():
+        if api.models.User.objects.filter(email=new_email).exists():
             raise rest_serializers.ValidationError('User with this email is already registered.')
         return new_email
 
     def validate(self, data):
-        user = api_models.User(**data)
+        user = api.models.User(**data)
         password = data.get('password')
 
         errors = dict()
@@ -56,14 +56,14 @@ class UserCreateSerializer(rest_serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = api_models.User.objects.create_user(**validated_data, is_active=False)
+        user = api.models.User.objects.create_user(**validated_data, is_active=False)
         assign_perm('view_personal_info', user, user)
         return user
 
 
 class UserPasswordResetSerializer(rest_serializers.ModelSerializer):
     class Meta:
-        model = api_models.User
+        model = api.models.User
         fields = (
             'password',
         )
@@ -95,7 +95,7 @@ class UserPasswordResetSerializer(rest_serializers.ModelSerializer):
 
 class UserPersonalInfoSerializer(rest_serializers.ModelSerializer):
     class Meta:
-        model = api_models.User
+        model = api.models.User
         fields = (
             'first_name',
             'last_name',
@@ -104,19 +104,18 @@ class UserPersonalInfoSerializer(rest_serializers.ModelSerializer):
         nested_proxy_field = True
 
 
-class UserBasicSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class UserBasicSerializer(rest_serializers.ModelSerializer, api.mixins.ReadOnlySerializerMixin):
     avatar_main = rest_serializers.URLField(source='avatar.main.url')
     avatar_small = rest_serializers.URLField(source='avatar.small.url')
     cost_sum = rest_serializers.IntegerField(read_only=True)
     personal_info = UserPersonalInfoSerializer(read_only=True)
 
     class Meta:
-        model = api_models.User
+        model = api.models.User
         fields = (
             'avatar_main',
             'avatar_small',
             'cost_sum',
-            'has_participated_in_rated_contest',
             'hide_personal_info',
             'id',
             'max_rating',
@@ -138,11 +137,11 @@ class UserBasicSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlyS
             self.fields.pop('personal_info')
 
 
-class UserMinimalSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class UserMinimalSerializer(rest_serializers.ModelSerializer, api.mixins.ReadOnlySerializerMixin):
     cost_sum = rest_serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = api_models.User
+        model = api.models.User
         fields = (
             'cost_sum',
             'id',
@@ -159,28 +158,18 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
     password = rest_serializers.CharField(write_only=True, required=False, allow_blank=True)
     personal_info = UserPersonalInfoSerializer(required=False)
     can_create_tasks = rest_serializers.BooleanField(read_only=True)
-    can_create_posts = rest_serializers.BooleanField(read_only=True)
     can_create_contests = rest_serializers.BooleanField(read_only=True)
-    can_create_taskfiles = rest_serializers.BooleanField(read_only=True)
-    has_tasks = rest_serializers.BooleanField(read_only=True)
-    has_posts = rest_serializers.BooleanField(read_only=True)
-    has_contests = rest_serializers.BooleanField(read_only=True)
     is_admin = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
-        model = api_models.User
+        model = api.models.User
         fields = (
             'avatar_main',
             'avatar_small',
             'can_create_contests',
-            'can_create_posts',
-            'can_create_taskfiles',
             'can_create_tasks',
             'cost_sum',
             'email',
-            'has_contests',
-            'has_posts',
-            'has_tasks',
             'is_admin',
             'hide_personal_info',
             'id',
@@ -260,5 +249,5 @@ class UserMainSerializer(rest_serializers.ModelSerializer):
 
 class AvatarUploadSerializer(rest_serializers.ModelSerializer):
     class Meta:
-        model = api_models.User
+        model = api.models.User
         fields = ('avatar',)

@@ -1,13 +1,13 @@
 from guardian.shortcuts import assign_perm
 from rest_framework import serializers as rest_serializers
 
-from api import mixins as api_mixins
-from api import models as api_models
+import api.mixins
+import api.models
 
 
 class TaskTagSerializer(rest_serializers.ModelSerializer):
     class Meta:
-        model = api_models.TaskTag
+        model = api.models.TaskTag
         fields = ('id', 'name')
         extra_kwargs = {
             'name': {
@@ -21,18 +21,18 @@ class TaskTagSerializer(rest_serializers.ModelSerializer):
         return data.lower()
 
     def create(self, validated_data):
-        instance, _ = api_models.TaskTag.objects.get_or_create(**validated_data)
+        instance, _ = api.models.TaskTag.objects.get_or_create(**validated_data)
         return instance
 
 
-class TaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class TaskPreviewSerializer(rest_serializers.ModelSerializer, api.mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
     task_tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     author_username = rest_serializers.SlugRelatedField(read_only=True, slug_field='username', source='author')
     is_solved_by_user = rest_serializers.BooleanField(read_only=True)
 
     class Meta:
-        model = api_models.Task
+        model = api.models.Task
         fields = (
             'author',
             'author_username',
@@ -49,7 +49,7 @@ class TaskPreviewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnl
 
 class TaskFileSerializer(rest_serializers.ModelSerializer):
     class Meta:
-        model = api_models.TaskFile
+        model = api.models.TaskFile
         fields = (
             'file_field',
             'id',
@@ -96,7 +96,7 @@ class TaskHintSerializer(rest_serializers.ModelSerializer):
     )
 
     class Meta:
-        model = api_models.TaskHint
+        model = api.models.TaskHint
         fields = (
             'author',
             'author_rating',
@@ -122,7 +122,7 @@ class TaskHintSerializer(rest_serializers.ModelSerializer):
         return instance
 
 
-class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class TaskViewSerializer(rest_serializers.ModelSerializer, api.mixins.ReadOnlySerializerMixin):
     solved_count = rest_serializers.IntegerField(read_only=True)
     tags_details = TaskTagSerializer(many=True, read_only=True, source='tags')
     files_details = TaskFileSerializer(many=True, read_only=True, source='files')
@@ -133,7 +133,7 @@ class TaskViewSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySe
     hints = rest_serializers.SerializerMethodField('get_hints_method')
 
     class Meta:
-        model = api_models.Task
+        model = api.models.Task
         fields = (
             'author_rating',
             'author_username',
@@ -166,7 +166,7 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
     hints_details = TaskHintSerializer(read_only=True, many=True, source='hints')
 
     class Meta:
-        model = api_models.Task
+        model = api.models.Task
         fields = (
             'author',
             'author_rating',
@@ -219,9 +219,9 @@ class TaskFullSerializer(rest_serializers.ModelSerializer):
         return super(TaskFullSerializer, self).update(instance, validated_data)
 
 
-class TaskSubmitSerializer(rest_serializers.ModelSerializer, api_mixins.ReadOnlySerializerMixin):
+class TaskSubmitSerializer(rest_serializers.ModelSerializer, api.mixins.ReadOnlySerializerMixin):
     class Meta:
-        model = api_models.Task
+        model = api.models.Task
         fields = ('flag',)
 
     def validate_flag(self, flag):
