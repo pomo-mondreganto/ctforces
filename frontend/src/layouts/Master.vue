@@ -13,9 +13,7 @@
                 </div>
             </div>
         </container>
-        <footer class="ta-c mt-2">
-            Powered by <span class="team">C4T BuT S4D</span> CTF team
-        </footer>
+        <base-footer />
     </div>
 </template>
 
@@ -23,12 +21,14 @@
 import Topbar from '@/components/Topbar/Index';
 import Container from '@/components/Container';
 import Sidebar from '@/components/Sidebar';
+import BaseFooter from '@/components/BaseFooter';
 
 export default {
     components: {
         Topbar,
         Container,
         Sidebar,
+        BaseFooter,
     },
 };
 </script>
@@ -74,10 +74,5 @@ export default {
             }
         }
     }
-}
-
-.team {
-    font-size: 1.1em;
-    font-weight: 900;
 }
 </style>

@@ -8,19 +8,19 @@
                 <slot />
             </div>
         </container>
-        <footer class="ta-c mt-2">
-            Powered by <span class="team">C4T BuT S4D</span> CTF team
-        </footer>
+        <base-footer />
     </div>
 </template>
 
 <script>
+import BaseFooter from '@/components/BaseFooter';
 import Topbar from '@/components/Topbar/Index';
 import Container from '@/components/Container';
 
 export default {
     components: {
         Topbar,
+        BaseFooter,
         Container,
     },
 };

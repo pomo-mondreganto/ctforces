@@ -1,6 +1,8 @@
 <template>
     <div>
-        <span v-if="!show" class="link" @click="change">Hint {{ num }}</span>
+        <span v-if="!show" class="hint link" @click="change"
+            >Hint {{ num }}</span
+        >
         <div v-else>
             <hr />
             <span class="hint" @click="change">Hint {{ num }}: {{ text }}</span>
