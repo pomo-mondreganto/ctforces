@@ -2,11 +2,10 @@ import secrets
 
 import click
 
-from . import utils, constants, models, options
+from . import utils, constants, models
 
 
 @click.command(help='Initialize CTForces configuration')
-@options.with_prod_option
 def setup(**_kwargs):
     config = utils.load_config()
     setup_db(config.db)
