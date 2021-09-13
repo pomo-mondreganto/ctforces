@@ -56,8 +56,14 @@ class Contest {
 
     dumpForAPI() {
         const { ...result } = this;
-        result.start_time = moment(result.start_time).toISOString();
-        result.end_time = moment(result.end_time).toISOString();
+        result.start_time = moment(
+            result.start_time,
+            'YYYY-MM-DD hh:mm a'
+        ).toISOString();
+        result.end_time = moment(
+            result.end_time,
+            'YYYY-MM-DD hh:mm a'
+        ).toISOString();
         result.randomize_tasks_count = result.randomize_tasks_count ?? 0;
         return result;
     }
