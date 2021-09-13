@@ -123,13 +123,17 @@ export default {
                 form.append('file_field', file);
                 try {
                     let self = this;
-                    const resp = await this.$http.post('/task_files/', form, {
-                        onUploadProgress: function(progressEvent) {
-                            self.progress =
-                                progressEvent.loaded / progressEvent.total;
-                        },
-                    });
-                    fileIds.push(resp.data.id);
+                    const { data } = await this.$http.post(
+                        '/task_files/',
+                        form,
+                        {
+                            onUploadProgress: function(progressEvent) {
+                                self.progress =
+                                    progressEvent.loaded / progressEvent.total;
+                            },
+                        }
+                    );
+                    fileIds.push(data.id);
                 } catch (error) {
                     this.errors = this.$parse(error.response.data);
                     return null;
@@ -144,23 +148,23 @@ export default {
             let toCreate = [];
             for (const tag of this.tags) {
                 const tagName = tag.text;
-                const resp = await this.$http.get(
-                    `/task_tags/?name=${tagName}`
-                );
+                const { data } = await this.$http.get(`/task_tags/`, {
+                    params: { name: tagName },
+                });
 
                 if (
-                    resp.data.results.length > 0 &&
-                    resp.data.results[0].name == tagName
+                    data.results.length > 0 &&
+                    data.results[0].name == tagName
                 ) {
-                    tagIds.push(resp.data[0].id);
+                    tagIds.push(data.results[0].id);
                     continue;
                 }
 
                 toCreate.push({ name: tagName });
             }
             try {
-                const resp = await this.$http.post(`/task_tags/`, toCreate);
-                resp.data.forEach(tag => tagIds.push(tag.id));
+                const { data } = await this.$http.post(`/task_tags/`, toCreate);
+                data.forEach(tag => tagIds.push(tag.id));
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
                 return null;
@@ -195,7 +199,7 @@ export default {
                 return;
             }
             try {
-                const resp = await this.$http.post('/tasks/', {
+                const { data } = await this.$http.post('/tasks/', {
                     name: this.name,
                     cost: this.cost,
                     flag: this.flag,
@@ -205,11 +209,11 @@ export default {
                     tags: tagIds,
                     hints: [],
                 });
-                await this.createHints(resp.data.id);
+                await this.createHints(data.id);
                 this.$router
                     .push({
                         name: 'task_index',
-                        params: { id: resp.data.id },
+                        params: { id: data.id },
                     })
                     .catch(() => {});
             } catch (error) {

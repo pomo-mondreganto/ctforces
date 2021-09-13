@@ -117,16 +117,16 @@ export default {
 
     created: async function() {
         try {
-            const resp = await this.$http.get(
+            const { data } = await this.$http.get(
                 `/tasks/${this.$route.params.id}/full/`
             );
-            this.name = resp.data.name;
-            this.description = resp.data.description;
-            this.cost = String(resp.data.cost);
-            this.flag = resp.data.flag;
-            this.isPublished = resp.data.is_published;
-            this.attachedFiles = resp.data.files_details;
-            this.hints = resp.data.hints_details.map(
+            this.name = data.name;
+            this.description = data.description;
+            this.cost = String(data.cost);
+            this.flag = data.flag;
+            this.isPublished = data.is_published;
+            this.attachedFiles = data.files_details;
+            this.hints = data.hints_details.map(
                 ({ id, body, task, is_published }) => {
                     this.oldHints[id] = true;
                     return {
@@ -137,7 +137,7 @@ export default {
                     };
                 }
             );
-            this.tags = resp.data.task_tags_details.map(tag => {
+            this.tags = data.task_tags_details.map(tag => {
                 return { text: tag.name, id: tag.id };
             });
         } catch (error) {
@@ -158,13 +158,17 @@ export default {
                 form.append('file_field', file);
                 try {
                     let self = this;
-                    const resp = await this.$http.post('/task_files/', form, {
-                        onUploadProgress: function(progressEvent) {
-                            self.progress =
-                                progressEvent.loaded / progressEvent.total;
-                        },
-                    });
-                    fileIds.push(resp.data.id);
+                    const { data } = await this.$http.post(
+                        '/task_files/',
+                        form,
+                        {
+                            onUploadProgress: function(progressEvent) {
+                                self.progress =
+                                    progressEvent.loaded / progressEvent.total;
+                            },
+                        }
+                    );
+                    fileIds.push(data.id);
                 } catch (error) {
                     this.errors = this.$parse(error.response.data);
                     return null;
@@ -183,9 +187,9 @@ export default {
                     continue;
                 }
 
-                const { data } = await this.$http.get(
-                    `/task_tags/?name=${tag.text}`
-                );
+                const { data } = await this.$http.get(`/task_tags/`, {
+                    params: { name: tag.text },
+                });
 
                 if (
                     data.results.length > 0 &&
@@ -253,7 +257,7 @@ export default {
                 return;
             }
             try {
-                const resp = await this.$http.put(
+                const { data } = await this.$http.put(
                     `/tasks/${this.$route.params.id}/`,
                     {
                         name: this.name,
@@ -266,11 +270,11 @@ export default {
                         hints: [],
                     }
                 );
-                await this.createHints(resp.data.id);
+                await this.createHints(data.id);
                 this.$router
                     .push({
                         name: 'task_index',
-                        params: { id: resp.data.id },
+                        params: { id: data.id },
                     })
                     .catch(() => {});
             } catch (error) {
