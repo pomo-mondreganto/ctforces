@@ -1,47 +1,6 @@
 <template>
     <master-layout>
-        <tabs
-            :tabs="
-                [
-                    {
-                        name: $route.params.username,
-                        to: {
-                            name: 'profile',
-                            params: { username: $route.params.username },
-                        },
-                    },
-                    {
-                        name: 'Blog',
-                        to: {
-                            name: 'blog',
-                            params: { username: $route.params.username },
-                        },
-                    },
-                    {
-                        name: 'Teams',
-                        to: {
-                            name: 'teams',
-                            params: { username: $route.params.username },
-                        },
-                    },
-                ].concat(
-                    $types.isNull(user) ||
-                        user.username !== $route.params.username
-                        ? []
-                        : [
-                              {
-                                  name: 'Settings',
-                                  to: {
-                                      name: 'settings',
-                                      params: {
-                                          username: $route.params.username,
-                                      },
-                                  },
-                              },
-                          ]
-                )
-            "
-        >
+        <tabs :tabs="tabs">
             <router-view />
         </tabs>
     </master-layout>
@@ -56,6 +15,54 @@ export default {
         Tabs,
     },
 
-    computed: mapState(['user']),
+    computed: {
+        ...mapState(['user']),
+        tabs: function() {
+            const username = this.$route.params.username;
+            const result = [
+                {
+                    name: username,
+                    to: {
+                        name: 'profile',
+                        params: { username },
+                    },
+                },
+                {
+                    name: 'Blog',
+                    to: {
+                        name: 'blog',
+                        params: { username },
+                    },
+                },
+                {
+                    name: 'Tasks',
+                    to: {
+                        name: 'user_tasks',
+                        params: { username },
+                    },
+                },
+                {
+                    name: 'Teams',
+                    to: {
+                        name: 'teams',
+                        params: { username },
+                    },
+                },
+            ];
+            if (
+                !this.$types.isNull(this.user) &&
+                this.user.username !== this.$route.params.username
+            ) {
+                result.push({
+                    name: 'Settings',
+                    to: {
+                        name: 'settings',
+                        params: { username },
+                    },
+                });
+            }
+            return result;
+        },
+    },
 };
 </script>

@@ -68,7 +68,7 @@ export default {
                     data,
                 } = await this.$http.get(
                     `/contests/${this.contestID}/scoreboard/`,
-                    { params: params }
+                    { params }
                 );
                 this.data = data;
                 this.count = data.participants.count;

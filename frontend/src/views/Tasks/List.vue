@@ -12,33 +12,7 @@
                 </div>
             </div>
             <f-header text="Tasks" />
-            <div class="mt-1" v-if="!$types.isNull(tasks)">
-                <f-table
-                    :fields="[
-                        { name: '#', pos: 'c', grow: 1 },
-                        {
-                            name: 'Name',
-                            pos: 'l',
-                            grow: 7,
-                            comp: TaskLinkComp,
-                        },
-                        { name: 'Cost', grow: 2 },
-                        {
-                            name: 'Tags',
-                            grow: 5,
-                            key: 'task_tags_details',
-                            comp: TagsComp,
-                        },
-                        {
-                            name: 'Solved',
-                            grow: 2,
-                            key: 'solved_count',
-                            comp: TaskSolvedLinkComp,
-                        },
-                    ]"
-                    :data="tasks"
-                />
-            </div>
+            <task-list :tasks="tasks" v-if="!$types.isNull(tasks)" />
             <f-detail :errors="errors['detail']" />
             <pagination :count="count" :pagesize="pagesize" />
         </card>
@@ -65,10 +39,7 @@
 <script>
 import FInput from '@/components/Form/Input';
 import FHeader from '@/components/Form/Header';
-import FTable from '@/components/Table/Index';
-import Tags from '@/components/Tasks/Tags';
-import TaskLink from '@/components/Tasks/Link';
-import TaskSolvedLink from '@/components/Tasks/SolvedLink';
+import TaskList from '@/components/Tasks/List';
 import Pagination from '@/components/Pagination';
 import Sidebar from '@/components/Sidebar';
 import { mapState } from 'vuex';
@@ -77,17 +48,14 @@ export default {
     components: {
         FInput,
         FHeader,
-        FTable,
         Pagination,
         Sidebar,
+        TaskList,
     },
 
     data: function() {
         return {
             tasks: null,
-            TagsComp: Tags,
-            TaskLinkComp: TaskLink,
-            TaskSolvedLinkComp: TaskSolvedLink,
             errors: {},
             count: null,
             pagesize: 30,
@@ -127,29 +95,25 @@ export default {
         fetchTasks: async function() {
             const { search = null, tag = null, page = 1 } = this.$route.query;
             try {
-                let r;
+                const params = {
+                    page: page,
+                    page_size: this.pagesize,
+                };
                 if (!this.$types.isNull(tag)) {
-                    r = await this.$http.get(
-                        `/tasks/?tag=${tag}&page=${page}&page_size=${this.pagesize}`
-                    );
-                } else if (this.$types.isNull(search)) {
-                    r = await this.$http.get(
-                        `/tasks/?page=${page}&page_size=${this.pagesize}`
-                    );
-                } else {
-                    r = await this.$http.get(
-                        `/tasks/?q=${search}&page=${page}&page_size=${this.pagesize}`
-                    );
+                    params['tag'] = tag;
+                } else if (!this.$types.isNull(search)) {
+                    params['q'] = search;
                 }
+                const { data } = await this.$http.get(`/tasks/`, { params });
 
-                this.tasks = r.data.results.map((row, index) => {
+                this.tasks = data.results.map((row, index) => {
                     return {
                         '#': 1 + index + (page - 1) * this.pagesize,
                         customClasses: row.is_solved_by_user ? ['solved'] : [],
                         ...row,
                     };
                 });
-                this.count = r.data.count;
+                this.count = data.count;
             } catch (error) {
                 this.errors = this.$parse(error.response.data);
             }

@@ -64,6 +64,10 @@ const ProfileTeams = () =>
     import(
         /* webpackChunkName: "group-profile" */ '@/views/Users/ProfileTeams'
     );
+const ProfileTasks = () =>
+    import(
+        /* webpackChunkName: "group-profile" */ '@/views/Users/ProfileTasks'
+    );
 
 const PostIndex = () =>
     import(/* webpackChunkName: "group-posts" */ '@/views/Posts/Index');
@@ -276,6 +280,11 @@ const routes = [
                 name: 'teams',
                 path: 'teams',
                 component: ProfileTeams,
+            },
+            {
+                name: 'user_tasks',
+                path: 'tasks',
+                component: ProfileTasks,
             },
         ],
     },
