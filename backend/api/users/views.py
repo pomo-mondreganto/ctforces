@@ -4,7 +4,6 @@ from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
-from guardian.shortcuts import get_objects_for_user
 from rest_framework import viewsets as rest_viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
@@ -315,15 +314,11 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, url_name='tasks', url_path='tasks', methods=['get'])
     def get_users_tasks(self, request, **_kwargs):
-        tasks_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        qs = api.models.Task.objects.published()
-
-        if tasks_type == 'all':
-            qs = (qs | get_objects_for_user(request.user, 'view_task', api.models.Task)).distinct()
-
-        qs = qs.filter(author=user).order_by('-id').prefetch_related('tags')
+        qs = api.models.Task.objects.filter(author=user).order_by('-id').prefetch_related('tags')
         qs = qs.with_solved_count().with_solved_by_user(self.request.user)
+        if user != self.request.user:
+            qs = qs.published()
 
         return api.pagination.get_paginated_response(
             paginator=api.pagination.TaskDefaultPagination(),
@@ -334,19 +329,14 @@ class UserViewSet(rest_viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, url_name='posts', url_path='posts', methods=['get'])
     def get_users_posts(self, request, **_kwargs):
-        posts_type = request.query_params.get('type', 'all')
         user = self.get_object()
-        queryset = api.models.Post.objects.filter(is_published=True)
-
-        if posts_type == 'all':
-            queryset = (queryset | get_objects_for_user(request.user, 'view_post', api.models.Post)).distinct()
-
-        queryset = queryset.filter(author=user)
-        queryset = queryset.order_by('-id').select_related('author')
+        qs = api.models.Post.objects.filter(author=user).order_by('-id').select_related('author')
+        if user != self.request.user:
+            qs = qs.filter(is_published=True)
 
         return api.pagination.get_paginated_response(
             paginator=api.pagination.PostDefaultPagination(),
-            queryset=queryset,
+            queryset=qs,
             serializer_class=api.posts.serializers.PostMainSerializer,
             request=request,
         )
