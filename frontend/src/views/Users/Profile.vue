@@ -51,7 +51,7 @@ export default {
             ];
             if (
                 !this.$types.isNull(this.user) &&
-                this.user.username !== this.$route.params.username
+                this.user.username === username
             ) {
                 result.push({
                     name: 'Settings',
