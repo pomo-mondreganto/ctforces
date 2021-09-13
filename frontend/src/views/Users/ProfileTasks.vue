@@ -1,7 +1,7 @@
 <template>
     <div class="p-r">
         <div class="a-tr" v-if="showCreateButton">
-            <router-link :to="{ name: 'team_create' }" class="btn nlnk">
+            <router-link :to="{ name: 'task_create' }" class="btn nlnk">
                 Create task
             </router-link>
         </div>
