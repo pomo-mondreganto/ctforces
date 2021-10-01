@@ -27,6 +27,7 @@
                                 >
                                     {{ teamV.name }}
                                 </card>
+                                <f-detail :errors="rerrors['participant']" />
                             </div>
                             <div class="participant-list">
                                 <div v-if="!$types.isNull(users)">
@@ -45,6 +46,9 @@
                                     >
                                         {{ user.username }}
                                     </card>
+                                    <f-detail
+                                        :errors="rerrors['registered_users']"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -104,14 +108,14 @@ export default {
             const { username = null } = this.user;
             if (!this.$types.isNull(username)) {
                 try {
-                    const r = await this.$http.get(
+                    const { data } = await this.$http.get(
                         `/users/${username}/teams/?page=${page}&page_size=${this.pagesize}`
                     );
-                    this.teams = r.data.results;
+                    this.teams = data.results;
                     if (this.teams.length > 0) {
                         this.changeTeam(this.teams[0]);
                     }
-                    this.count = r.data.count;
+                    this.count = data.count;
                 } catch (error) {
                     this.rerrors = this.$parse(error.response.data);
                 }
@@ -156,8 +160,9 @@ export default {
             this.team = team;
             this.participants = {};
             try {
-                const r = await this.$http.get(`/teams/${team.id}/`);
-                this.users = r.data.participants_details;
+                const { data } = await this.$http.get(`/teams/${team.id}/`);
+                this.users = data.participants_details;
+                this.changeParticipant(this.user.id);
             } catch (error) {
                 this.rerrors = this.$parse(error.response.data);
             }
