@@ -10,6 +10,8 @@ from django.db.models import (
     Q,
 )
 from django.db.models.functions import Coalesce
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.deconstruct import deconstructible
 from django.utils.functional import cached_property
@@ -22,6 +24,7 @@ from .auxiliary import (
     CustomUploadTo,
     stdimage_processor,
 )
+from .team import Team
 
 
 @deconstructible
@@ -107,3 +110,15 @@ class User(AbstractUser):
         permissions = (
             ('view_personal_info', 'Can view user\'s personal information'),
         )
+
+
+@receiver(post_save, sender=User)
+def on_user_saved(instance: User, created, **_kwargs):
+    if created:
+        name = f'{instance.username} personal team'
+        team = Team.objects.create(
+            name=name,
+            join_token=Team.gen_join_token(name),
+            captain=instance,
+        )
+        team.participants.add(instance)

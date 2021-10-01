@@ -1,4 +1,4 @@
-from guardian.shortcuts import assign_perm, remove_perm
+from guardian.shortcuts import remove_perm
 from rest_framework import serializers
 
 import api.models
@@ -104,14 +104,15 @@ class TeamFullSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('Only a team member can be made captain')
         return captain
 
+    def validate_name(self, name):
+        if not self.instance and 'personal team' in name:
+            raise serializers.ValidationError('Reserved team name')
+        return name
+
     def create(self, validated_data):
         validated_data['captain'] = self.context['request'].user
         validated_data['join_token'] = api.models.Team.gen_join_token(validated_data["name"])
         instance = super(TeamFullSerializer, self).create(validated_data)
-        assign_perm('view_team', instance.captain, instance)
-        assign_perm('change_team', instance.captain, instance)
-        assign_perm('delete_team', instance.captain, instance)
-        assign_perm('register_team', instance.captain, instance)
         instance.participants.add(instance.captain)
         return instance
 
@@ -119,12 +120,9 @@ class TeamFullSerializer(serializers.ModelSerializer):
         if 'join_token' in validated_data or 'name' in validated_data:
             name = validated_data.get('name', instance.name)
             validated_data['join_token'] = api.models.Team.gen_join_token(name)
-        if 'captain' in validated_data and validated_data['captain'] != instance.captain:
-            new_captain = validated_data['captain']
-            assign_perm('view_team', new_captain, instance)
-            assign_perm('change_team', new_captain, instance)
-            assign_perm('delete_team', new_captain, instance)
 
+        # Permissions will be given to an instance by a post_save signal handler.
+        if 'captain' in validated_data and validated_data['captain'] != instance.captain:
             remove_perm('view_team', instance.captain, instance)
             remove_perm('change_team', instance.captain, instance)
             remove_perm('delete_team', instance.captain, instance)
